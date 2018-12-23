@@ -1,5 +1,6 @@
 
 import imp
+import importlib
 import io
 import sys
 import types
@@ -157,6 +158,8 @@ def superreload(module, reload=reload, old_objects=None):
 
 def reload_grammar(module_path, *args, **kwargs):
     print('reload grammar', module_path, args, kwargs)
+    if module_path not in sys.modules:
+        importlib.import_module(module_path)
     cached_module = sys.modules[module_path]    
     cached_module.grammar.unload()
     superreload(cached_module, reload=imp.reload)

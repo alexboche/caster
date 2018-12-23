@@ -162,6 +162,7 @@ _DEFAULT_SETTINGS = {
 
     # Apps Section
     "apps": {
+        "anyapp": True,
         "atom": True,
         "chrome": True,
         "cmd": True,

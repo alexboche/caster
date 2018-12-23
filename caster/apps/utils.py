@@ -58,3 +58,30 @@ class MultiAppContext(Context):
 
         return False
 
+
+
+
+class AnyAppContext(Context):
+
+    # ----------------------------------------------------------------------
+    # Initialization methods.
+
+    def __init__(self, relevant_apps=None, title=None, exclude=False):
+        super(AnyAppContext, self)
+
+        if relevant_apps is None:
+            self._relevant_apps = None
+        else:
+            self._relevant_apps = set(relevant_apps)
+
+        self._title = title
+        self._exclude = bool(exclude)
+
+        self._str = "%s, %s, %s" % (self._relevant_apps, self._title,
+                                    self._exclude)
+
+    # ----------------------------------------------------------------------
+    # Matching methods.
+
+    def matches(self, executable, title, handle):
+        return True

@@ -16,6 +16,7 @@ class AnkiWordRule(MergeRule):
 
     mapping = {
         "add": R(Key("a"), rdescript="Multi: Add"),
+        "adder": R(Key("b")),
     }
     extras = [
         Dictation("dict"),

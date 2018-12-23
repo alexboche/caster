@@ -25,6 +25,17 @@ class ChromeRule(MergeRule):
     pronunciation = "google chrome"
 
     mapping = { # most keybinds are taken from https://support.google.com/chrome/answer/157179?hl=en
+        
+      # "[use] function <n> [<dict>]if :":  R(Function(my_function, extra={'n', 'dict'})),
+        #"[use] function <n> [<dict>]":  Text('%(dict)s'),
+        #"[use] function <n> [<dictation>]":  R(TextMaker((my_function, extra={'n', 'dictation'}))),
+        "reload grammars": R(utils.Texter(reloader.reload_app_grammars)),
+        #"test <n>": R(Key("tab:extra="n"")),
+        "add <n> <m>": R(Function(add, extra={'n', 'm'})),
+        "subtract <n> <m>": R(utils.Texter(subtract, extra={'n', 'm'})),
+        #"add <n> <m>": R(Text("%(Function(add, extra={'n', 'm'}))d")),
+ 
+
         "[new] incognito window":       R(Key("cs-n"), rdescript="Browser: New Incognito Window"),
         "new tab [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "reopen tab [<n>]":             R(Key("cs-t"), rdescript="Browser: Reopen Tab") * Repeat(extra="n"),
@@ -64,12 +75,28 @@ class ChromeRule(MergeRule):
         "step out":                     R(Key("s-f11"), rdescript="Browser: Step Out"),
 
         "IRC identify":                 R(Text("/msg NickServ identify PASSWORD"), rdescript="IRC Chat Channel Identify"),
+        "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")+Key("enter")),
+
+
         }
     extras = [
-        Dictation("dict"),
+        Choice("click_by_voice_options", {
+            "go": "f",
+            "click": "c",
+            "push": "b",
+            "tab": "t",
+            "window": "w",
+            "hover": "h",
+            "link": "k",
+            "copy": "s",
+        }),
+        Dictation("dictation"),
         IntegerRefST("n", 1, 10),
+        IntegerRefST("m", 1, 10),
+        IntegerRefST("numbers", 1, 1000),
+
     ]
-    defaults = {"n": 1, "dict": "nothing"}
+    defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
 
 
 #---------------------------------------------------------------------------

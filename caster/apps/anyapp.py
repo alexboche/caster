@@ -17,6 +17,10 @@ class AnyAppRule(MergeRule):
     mapping = {
         "red blue": R(Text("green"), rdescript="red blue"),
         "reload grammars": R(Function(reloader.reload_app_grammars)),
+        "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
+        "switch [<n>]": Key("alt:down, tab/20:%(n)d, alt:up")   
+        # "soap": R(Playback([(["switch"], 0.0)]))
+
     }
     extras = [
         Dictation("dict"),

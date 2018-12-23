@@ -1,0 +1,4 @@
+reload_grammar_modules = [
+    "caster.apps.vscode",
+    "caster.apps.chrome",    
+]

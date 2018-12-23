@@ -36,6 +36,8 @@ HMC_SEPARATOR = "[hmc]"
 
 WSR = False
 
+USER_SETTINGS_PATH = os.path.join(BASE_PATH, 'user_settings.toml')
+
 
 def _validate_engine_path():
     '''

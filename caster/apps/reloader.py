@@ -1,10 +1,14 @@
 
 import imp
+import io
 import sys
 import types
 import weakref
 
+import toml
+
 from caster.lib import settings
+
 
 
 func_attrs = ['__code__', '__defaults__', '__doc__',
@@ -160,7 +164,8 @@ def reload_grammar(module_path, *args, **kwargs):
 
 
 def reload_app_grammars(*args, **kwargs):
-    print('reload all app grammars', args, kwargs)
-    for path in settings.MODULES_TO_RELOAD:
+    with io.open(settings.USER_SETTINGS_PATH) as f:
+        data = toml.load(f)
+    
+    for path in data['reload_grammar_modules']:
             reload_grammar(path)    
-    return ''

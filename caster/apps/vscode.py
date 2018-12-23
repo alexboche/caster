@@ -9,6 +9,9 @@ from caster.lib.dfplus.merge import gfilter
 from caster.lib.dfplus.merge.mergerule import MergeRule
 from caster.lib.dfplus.state.short import R
 
+from . import reloader
+from . import utils
+
 
 def findNthToken(text, n, direction):
     Key("c-f").execute()
@@ -21,11 +24,15 @@ def findNthToken(text, n, direction):
         print("no? %(n)d")
     Key('escape').execute()
 
+def temporary():
+    return 10
 
 class VisualStudioCodeRule(MergeRule):
     pronunciation = "visual studio code"
 
     mapping = {
+        "temporary": R(utils.Texter(temporary)),
+        "reload grammars": R(Function(reloader.reload_app_grammars)),
         ### ported from my dragonfly scripts
         # File management
         "[open] command palette":

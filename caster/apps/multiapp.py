@@ -24,7 +24,6 @@ class AnkiWordRule(MergeRule):
     defaults = {"n": 1, "dict": "nothing"}
 
 
-
 grammar = Grammar("anki_word", context=utils.MultiAppContext(relevant_apps={'anki', 'word'}))
 
 if settings.SETTINGS["apps"]["multi"]:

@@ -12,7 +12,6 @@ from . import utils
 
 
 class AnkiWordRule(MergeRule):
-   
 
     mapping = {
         "add": R(Key("a"), rdescript="Multi: Add"),

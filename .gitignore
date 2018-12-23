@@ -21,12 +21,6 @@ complexity_report*
 # Ignore Natlink
 /core/
 
-# Ignore User Rules and Filters
-/caster/user
-
-# Ignore Custom Sikuli Scripts
-/caster/asynch/sikuli/scripts
-
 # Ignore SonarQube
 .sonar
 sonar-project.properties
@@ -35,6 +29,3 @@ sonar-project.properties
 .project
 .pydevproject
 .settings
-
-# Ignore User Data
-caster/bin/data

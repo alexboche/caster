@@ -29,3 +29,5 @@ sonar-project.properties
 .project
 .pydevproject
 .settings
+
+*_vcl.py

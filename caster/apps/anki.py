@@ -79,7 +79,7 @@ class MultiAppContext(Context):
 
 
 
-context = MultiAppContext(relevant_apps={'anki', 'word'})
+context = MultiAppContext(relevant_apps={'anki'})
 grammar = Grammar("anki", context=context)
 
 if settings.SETTINGS["apps"]["anki"]:

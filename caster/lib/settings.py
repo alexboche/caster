@@ -184,6 +184,7 @@ _DEFAULT_SETTINGS = {
         "ssms": True,
         "jetbrains": True,
         "msvc": True,
+        "multi":True,
         "totalcmd": True,
         "notepadplusplus": True,
         "sqldeveloper": True,

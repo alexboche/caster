@@ -25,9 +25,7 @@ class AnkiWordRule(MergeRule):
 
 
 
-
-context = utils.MultiAppContext(relevant_apps={'anki', 'word'})
-grammar = Grammar("anki_word", context=context)
+grammar = Grammar("anki_word", context=utils.MultiAppContext(relevant_apps={'anki', 'word'}))
 
 if settings.SETTINGS["apps"]["multi"]:
         rule = AnkiWordRule(name="multi")

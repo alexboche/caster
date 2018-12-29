@@ -66,7 +66,7 @@ class Punctuation(MergeRule):
             R(Text("#"), rdescript="Hash Tag"),
         "apostrophe":
             R(Text("'"), rdescript="Apostrophe"),
-        "underscore":
+        "downscore":
             R(Text("_"), rdescript="Underscore"),
         "backslash":
             R(Text("\\"), rdescript="Back Slash"),

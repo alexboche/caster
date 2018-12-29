@@ -15,9 +15,9 @@ from caster.lib.actions import Key, Text, Mouse
 from caster.lib.clipboard import Clipboard
 
 DIRECTION_STANDARD = {
-    "sauce [E]": "up",
-    "dunce [E]": "down",
-    "lease [E]": "left",
+    "soss [E]": "up",
+    "dunss [E]": "down",
+    "leese [E]": "left",
     "Ross [E]": "right",
     "back": "left"
 }

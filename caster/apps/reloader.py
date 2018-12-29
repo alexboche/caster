@@ -3,6 +3,7 @@ import imp
 import importlib
 import io
 import sys
+import traceback
 import types
 import weakref
 
@@ -12,20 +13,20 @@ from caster.lib import settings
 
 
 
-func_attrs = ['__code__', '__defaults__', '__doc__',
+_func_attrs = ['__code__', '__defaults__', '__doc__',
               '__closure__', '__globals__', '__dict__']
 
 
-def update_function(old, new):
+def _update_function(old, new):
     """Upgrade the code object of a function"""
-    for name in func_attrs:
+    for name in _func_attrs:
         try:
             setattr(old, name, getattr(new, name))
         except (AttributeError, TypeError):
             pass
 
 
-def update_class(old, new):
+def _update_class(old, new):
     """Replace stuff in the __dict__ of a class, and upgrade
     method code objects, and add new methods, if any"""
     for key in list(old.__dict__.keys()):
@@ -42,7 +43,7 @@ def update_class(old, new):
                 pass
             continue
 
-        if update_generic(old_obj, new_obj): continue
+        if _update_generic(old_obj, new_obj): continue
 
         try:
             setattr(old, key, getattr(new, key))
@@ -57,11 +58,11 @@ def update_class(old, new):
                 pass # skip non-writable attributes
 
 
-def update_property(old, new):
+def _update_property(old, new):
     """Replace get/set/del functions of a property"""
-    update_generic(old.fdel, new.fdel)
-    update_generic(old.fget, new.fget)
-    update_generic(old.fset, new.fset)
+    _update_generic(old.fdel, new.fdel)
+    _update_generic(old.fget, new.fget)
+    _update_generic(old.fset, new.fset)
 
 
 def isinstance2(a, b, typ):
@@ -70,18 +71,18 @@ def isinstance2(a, b, typ):
 
 UPDATE_RULES = [
     (lambda a, b: isinstance2(a, b, type),
-     update_class),
+     _update_class),
     (lambda a, b: isinstance2(a, b, types.FunctionType),
-     update_function),
+     _update_function),
     (lambda a, b: isinstance2(a, b, property),
-     update_property),
+     _update_property),
 ]
 UPDATE_RULES.extend([(lambda a, b: isinstance2(a, b, types.MethodType),
-                      lambda a, b: update_function(a.__func__, b.__func__)),
+                      lambda a, b: _update_function(a.__func__, b.__func__)),
 ])
 
 
-def update_generic(a, b):
+def _update_generic(a, b):
     for type_check, update in UPDATE_RULES:
         if type_check(a, b):
             update(a, b)
@@ -89,14 +90,14 @@ def update_generic(a, b):
     return False
 
 
-class StrongRef(object):
+class _StrongRef(object):
     def __init__(self, obj):
         self.obj = obj
     def __call__(self):
         return self.obj
 
 
-def superreload(module, reload=reload, old_objects=None):
+def _superreload(module, reload=reload, old_objects=None):
     """Enhanced version of the builtin reload function.
     superreload remembers objects previously in the module, and
     - upgrades the class dictionary of every old class in the module
@@ -144,7 +145,7 @@ def superreload(module, reload=reload, old_objects=None):
             old_obj = old_ref()
             if old_obj is None: continue
             new_refs.append(old_ref)
-            update_generic(old_obj, new_obj)
+            _update_generic(old_obj, new_obj)
 
         if new_refs:
             old_objects[key] = new_refs
@@ -162,7 +163,7 @@ def reload_grammar(module_path, *args, **kwargs):
         importlib.import_module(module_path)
     cached_module = sys.modules[module_path]    
     cached_module.grammar.unload()
-    superreload(cached_module, reload=imp.reload)
+    _superreload(cached_module, reload=imp.reload)
     cached_module.grammar.load()
 
 
@@ -171,4 +172,7 @@ def reload_app_grammars(*args, **kwargs):
         data = toml.load(f)
     
     for path in data['reload_grammar_modules']:
+        try:
             reload_grammar(path)    
+        except Exception:
+            traceback.print_exception(*sys.exc_info())

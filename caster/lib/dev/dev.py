@@ -169,6 +169,7 @@ class Experimental(MappingRule):
         "short talk number <n2>": Text("%(n2)d"),
         #     "dredge [<id> <text>]":         Function(dredge),
         "test dragonfly paste": Paste("some text"),
+        "tutoring": Text("ella"),
     }
     extras = [Dictation("text"), Dictation("text2"), IntegerRefST("n2", 1, 100)]
     defaults = {"text": "", "text2": ""}

@@ -18,13 +18,14 @@ class AnyAppRule(MergeRule):
         "red blue": R(Text("green"), rdescript="red blue"),
         "reload grammars": R(Function(reloader.reload_app_grammars)),
         "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
-        "switch [<n>]": Key("alt:down, tab/20:%(n)d, alt:up")   
-        # "soap": R(Playback([(["switch"], 0.0)]))
-
+        "switch [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),   
+        # "soap": R(Playback([(["switch"], 0.0)])), {.}early numb 5,
+        # "num <n2>": R(Text("%(n2)d")),
     }
     extras = [
         Dictation("dict"),
         IntegerRefST("n", 1, 10),
+        IntegerRefST("n2", 1, 10),
     ]
     defaults = {"n": 1, "dict": "nothing"}
 

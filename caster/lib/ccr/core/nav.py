@@ -106,6 +106,8 @@ class NavigationNon(MappingRule):
             R(Key("w-left"), rdescript="Window Left")*Repeat(extra="n"),
         "window (right | ross) [<n>]":
             R(Key("w-right"), rdescript="Window Right")*Repeat(extra="n"),
+        "swight": R(Key("ws-right"), rdescript="Window Right"),
+        "lite": R(Key("ws-left"), rdescript="Window Right"),
         "monitor (left | lease) [<n>]":
             R(Key("sw-left"), rdescript="Monitor Left")*Repeat(extra="n"),
         "monitor (right | ross) [<n>]":

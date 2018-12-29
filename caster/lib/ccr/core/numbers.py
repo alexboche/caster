@@ -1,4 +1,4 @@
-from dragonfly import Function
+from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice)
 
 from caster.lib import control, alphanumeric
 from caster.lib.dfplus.additions import IntegerRefST
@@ -12,10 +12,13 @@ class Numbers(MergeRule):
     mapping = {
         "word number <wn>":
             R(Function(alphanumeric.word_number, extra="wn"), rdescript="Number As Word"),
-        "numb <wnKK>":
-            R(Function(alphanumeric.numbers2, extra="wnKK"),
-              rspec="number",
-              rdescript="Number"),
+        # "numb <wnKK>":
+        #     R(Function(alphanumeric.numbers2, extra="wnKK"),
+        #       rspec="number",
+        #       rdescript="Number"),
+        "numb <wnKK>": R(Text("%(wnKK)s")),
+        "hello world test": R(Text("hello world")),
+
     }
 
     extras = [

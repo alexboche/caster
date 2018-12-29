@@ -9,7 +9,7 @@ Command-module for Chrome and Firefox
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Dictation, Repeat)
+from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice)
 
 from caster.lib import control
 from caster.lib import settings
@@ -29,11 +29,11 @@ class ChromeRule(MergeRule):
       # "[use] function <n> [<dict>]if :":  R(Function(my_function, extra={'n', 'dict'})),
         #"[use] function <n> [<dict>]":  Text('%(dict)s'),
         #"[use] function <n> [<dictation>]":  R(TextMaker((my_function, extra={'n', 'dictation'}))),
-        "reload grammars": R(utils.Texter(reloader.reload_app_grammars)),
+        # "reload grammars": R(utils.Texter(reloader.reload_app_grammars)),
         #"test <n>": R(Key("tab:extra="n"")),
-        "add <n> <m>": R(Function(add, extra={'n', 'm'})),
-        "subtract <n> <m>": R(utils.Texter(subtract, extra={'n', 'm'})),
-        #"add <n> <m>": R(Text("%(Function(add, extra={'n', 'm'}))d")),
+        # "add <n> <m>": R(Function(add, extra={'n', 'm'})),
+        # "subtract <n> <m>": R(utils.Texter(subtract, extra={'n', 'm'})),
+        # #"add <n> <m>": R(Text("%(Function(add, extra={'n', 'm'}))d")),
  
 
         "[new] incognito window":       R(Key("cs-n"), rdescript="Browser: New Incognito Window"),
@@ -76,6 +76,9 @@ class ChromeRule(MergeRule):
 
         "IRC identify":                 R(Text("/msg NickServ identify PASSWORD"), rdescript="IRC Chat Channel Identify"),
         "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")+Key("enter")),
+        
+        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter")),
+        "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter")),
 
 
         }

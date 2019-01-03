@@ -1,6 +1,4 @@
 #
-# This file is a command-module for Dragonfly.
-# (c) Copyright 2008 by Christo Butcher
 # Licensed under the LGPL, see <http://www.gnu.org/licenses/>
 #
 """
@@ -29,9 +27,7 @@ class LyxRule(MergeRule):
         
       
 
-        "[new] incognito window":       R(Key("cs-n"), rdescript="Browser: New Incognito Window"),
-        "insert <environment>":              
-                        R(Key("a-i, right, %(environment)s/5, w-d/5,w-d")), 
+        
 
         }
     extras = [
@@ -41,7 +37,7 @@ class LyxRule(MergeRule):
             "(display formula | display)": "d",
             "(equation array environment | equation array)": "e",
             "(AMS align environment | AMS align)": "a",
-            "AMS alignat [environment]": "t",
+            "AMS align at [environment]": "t",
             "AMS flalign [environment]": "f",
             "(AMS gathered environment | AMS gather)": "g",
             "(AMS multline [environment]| multiline)": "m",

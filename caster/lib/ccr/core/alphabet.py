@@ -73,6 +73,21 @@ class Alphabet(MergeRule):
         #         "sigh": "psi",
         #         "omega": "omega",
         #     }),
+
+        Choice(
+            "index_operator",
+            {
+                "(large direct sum | large oh plus)": "bigoplus",
+                "integ": "int",
+                "double integ": "iint",
+                "triple integ": "iiint",
+                 "intersection": "cap",
+                "union": "cup",
+                "(large direct sum | large oh plus)": "bigoplus",
+                "product": "prod",
+                
+            }),
+
         Choice(
             "symbol",
             {
@@ -104,23 +119,23 @@ class Alphabet(MergeRule):
                 # operators
                 "root": "sqrt",
                 "generic root": "root",
+                "times": "times",
+                "divide": "div",
+                "stop": "cdot",
+                "sum": "sum",
+                "(direct sum | oh plus)": "oplus",
+                "plus or minus": "pm",
+
+                # index operators
+                "(large direct sum | large oh plus)": "bigoplus",
                 "integ": "int",
                 "double integ": "iint",
                 "triple integ": "iiint",
-                "times": "times",
-                "divide": "div",
-                "intersection": "cap",
+                 "intersection": "cap",
                 "union": "cup",
-                "stop": "cdot",
-                "sum": "sum",
-                "product": "prod",
-                "(direct sum | oh plus)": "oplus",
                 "(large direct sum | large oh plus)": "bigoplus",
-                "plus or minus": "pm",
-
-
+                "product": "prod",
                 
-
                 # fractions and related things in the lyx fractions menu
                 "frac": "frac",
                 "(nice frack | nice fraction)": "nicefrac",
@@ -150,7 +165,7 @@ class Alphabet(MergeRule):
                 "degree": "deg",
                 "determinant": "det",
                 "dimension": "dim",
-                "exp": "exp",
+                "exponential": "exp",
                 "GCD": "gcd",
                 "cat hom": "hom",
                 "infimum": "inf",

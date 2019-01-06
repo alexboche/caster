@@ -3,24 +3,54 @@ from dragonfly import Context
 from dragonfly import Text
 
 
-class Texter(ActionBase):
+class Texter(object):
 
     def __init__(self, func, extra=()):
         self.func = func
         self.extra = extra
         self._str = func.__name__ 
 
-    def _execute(self, data):
-        arguments = {k:v for k,v in data.items() if k in self.extra}
+    def execute(self, data):
+        print('dataaaaaaaa', data)
+        arguments = {k: data[k] for k in self.extra}
         result = self.func(**arguments)
         Text(str(result)).execute()
+
+
+class ValueTexter(object):
+
+    def __init__(self, func, extra=()):
+        self.func = func
+        self.extra = extra
+        self._str = func.__name__ 
+
+    def execute(self, data):
+        argument = data[list(self.extra)[0]]
+        if argument is None:
+            return
+        result = self.func(argument)
+        Text(str(result)).execute()
+
+
+
+# class Texter(ActionBase):
+
+#     def __init__(self, func, extra=()):
+#         self.func = func
+#         self.extra = extra
+#         self._str = func.__name__ 
+
+#     def _execute(self, data):
+#         arguments = {k: v for k, v in data.items() if k in self.extra}
+#         result = self.func(**arguments)
+#         Text(str(result)).execute()
 
 
 
 class MultiAppContext(Context):
 
     # ----------------------------------------------------------------------
-    # Initialization methods.
+    # Initialization methods.  \sqrt %(symbol)s
 
     def __init__(self, relevant_apps=None, title=None, exclude=False):
         super(MultiAppContext, self)

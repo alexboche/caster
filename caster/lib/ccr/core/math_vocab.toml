@@ -1,0 +1,226 @@
+# non_braces
+
+[non_braces.greek]
+# does not require curly braces in latex
+alpha = "alpha"
+beater = "beta"
+gamma = "gamma"
+delta = "delta"
+epsilon = "epsilon"
+zita = "zeta"
+eater = "eta"
+theta = "theta"
+iota = "iota"
+kappa = "kappa"
+lambda = "lambda"
+mu = "mu"
+new = "nu"
+zee = "xi"
+cherry = "pi"
+row = "rho"
+sigma = "sigma"
+tau = "tau"
+upsilon = "upsilon"
+phi = "phi"
+chi = "chi"
+sigh = "psi"
+omega = "omega"
+
+[non_braces.binary_operators]
+# does not require curly braces in latex.
+times = "times"
+divide = "div"
+stop = "cdot"
+union = "cup"
+intersect = "cap"
+"(direct sum)" = "oplus"
+"(direct product )" = "otimes"
+"plus or minus" = "pm"
+"myplus" = "mp"
+"astar" = "ast"
+"starboard" = "star"
+"cirky" = "circ"
+"bullet" = "bullet"
+"applis" = "uplus"
+"set minus" = "setminus"
+
+
+
+[non_braces.functions]
+# does not require curly braces in latex
+arccoase = "arccos"
+arcsine = "arcsin"
+arctan = "arctan"
+argument = "arg"
+beemod = "bmod"
+coase = "cos"
+kosh = "cosh"
+"hyperbolic tangent" = "cot"
+"hyperbolic cotangent" = "coth"
+colecant = "csc"
+degree = "deg"
+determinant = "det"
+dimension = "dim"
+exponential = "exp"
+GCD = "gcd"
+"cat hom" = "hom"
+infimum = "inf"
+kernel = "ker"
+limit = "lim"
+liminf = "liminf"
+LN = "ln"
+log = "log"
+max = "max"
+min = "min"
+secant = "sec"
+sine = "sin"
+sinch = "sinh"
+supremum = "sup"
+tangent = "tan"
+tanch = "tanh"
+prob = "Pr"
+
+[non_braces.relations]
+# does not require curly braces in latex
+subset = "subset"
+superset = "supset"
+"strict subset" = "subsetneq"
+"strict superset" = "supsetneq"
+preck = "prec"
+"preck equals" = "preceq"
+suck = "succ"
+"suck equals" = "succeq"
+"indifferent" = "sim"
+approximate = "approx"
+proportional = "propto"
+"not equal" = "neq"
+equivalent = "equiv"
+geequal = "geq"
+leaqual = "leq"
+"much greater" = "gg"
+"much less" = "ll"
+"perp" = "perp"
+"(member|in)" = "in"
+"not member" = "notin"
+"back member" = "ni"
+
+
+
+[non_braces.logic]
+# does not require curly races in latex
+"(land|logic and)" = "land"
+"logic or" = "lor"
+primmer = "prime"
+"logic not" = "lnot"
+"for all" = "forall"
+"there exists" = "exists"
+"proves" = "vdash"
+models = "models"
+"negation" = "neg"
+
+
+
+[non_braces.arrows]
+# does not require curly braces in latex
+"left arrow" = "leftarrow"
+"right arrow" = "rightarrow"
+"up arrow" = "uparrow"
+"down arrow" = "downarrow"
+"left right arrow" = "leftrightarrow"
+"mapsta" = "mapsto"
+"longmapsta" = "longmapsto"
+
+[non_braces.dots]
+dots = "dots"
+longdots = "ldots"
+"middle dots" = "cdots"
+"vertical dots" = "vdots"
+"diagonal dots" = "ddots"
+
+
+
+
+[non_braces.misc]
+partial = "partial"
+infinity = "infty"
+aleph = "aleph"
+imagine = "imath"
+box = "Box"
+diamond = "Diamond"
+triangle = "triangle"
+blash = "backslash"
+truthy = "top"
+falsy = "bot"
+gradient = "nabla"
+text = "text"
+
+
+
+
+# braces
+
+[braces.math_fonts]
+# requires curly braces in latex
+"(beebee|blackboard bold)" = "mathbb"
+roman = "mathrm"
+bold = "mathbf"
+"bold symbol" = "boldsymbol"
+"sans serif" = "mathsf"
+italic = "mathit"
+typewriter = "matttt"
+blackboard = "mathbb"
+fraktur = "mathfrak"
+calligraphic = "mathcal"
+"formal script" = "mathscr"
+"normal text mode" = "textrm"
+
+[braces.fractions]
+# requires curly braces in latex.
+frac = "frac"
+"(nice frack | nice fraction)" = "nicefrac"
+unit = "unitone"
+"unit two" = "unittwo"
+"unit fraction " = "unitfrac"
+"text fraction" = "tfrac"
+"display fraction" = "dfrac"
+"continued fraction" = "cfrac"
+"continued fraction (left)" = "cfracleft"
+"continued fraction (right)" = "cfracright"
+binomial = "binom"
+"text binomial" = "tbinom"
+"display binomial" = "dbinom"
+
+[braces.index_operators]
+# requires curly braces in latex.
+sum = "sum"
+"(large direct sum | large oh plus)" = "bigoplus"
+integ = "int"
+"double integ" = "iint"
+"triple integ" = "iiint"
+"line integral" = "oint"
+"tall intersect" = "cap"
+"tall union" = "cup"
+product = "prod"
+
+[braces.accents]
+hat = "hat"
+bar = "bar"
+dotter = "dot"
+acute = "acute"
+breve = "breve"
+check = "check"
+grave = "grave"
+vector = "vector"
+tilde = "tilde"
+
+[braces.multi_accents]
+overline = "overline"
+"over right arrow" = "overrightarrow"
+
+
+
+
+[braces.misc_with_braces]
+# requires curly braces in latex.
+"root" = "sqrt"
+"generic root" = "root"

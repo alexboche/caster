@@ -1,7 +1,9 @@
+import io
+import toml
 from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
-                       Function, Choice)
-
-from caster.lib import control, alphanumeric
+                       Function, Choice, Mouse)
+from caster.lib import context, navigation, alphanumeric, textformat, text_utils
+from caster.lib import control 
 from caster.lib.dfplus.additions import IntegerRefST
 from caster.lib.dfplus.merge.ccrmerger import CCRMerger
 from caster.lib.dfplus.merge.mergerule import MergeRule
@@ -9,49 +11,57 @@ from caster.lib.dfplus.state.short import R
 from caster.apps import utils
 from caster.lib.ccr.core import math_vocab
 
+# formatting for latex symbols without curly braces and all Lyx codes
+def format_without_braces(vocab_dict):
+    lyx_vocab_dict = {k:"\\{} ".format(vocab_dict[k]) for k in vocab_dict}
+    return lyx_vocab_dict
 
-def symbol_letters(big, symbol):
+# formatting for LaTeX operators with curly braces only
+def format_with_braces(vocab_dict):
+    
+    latex_vocab_dict = {k:"\\{}{{}} ".format(vocab_dict[k]) for k in vocab_dict}    
+    return latex_vocab_dict
+
+def cap_symbol_letters(big, symbol):
     if big:
         symbol = symbol.title()
-    Text(str(symbol)).execute()
-
-
-def symbol_letters_small(symbol):
-    Text(str(symbol)).execute()
-
-
-def symbol_optional(symbol):
-    #     Key("backslash").execute()
-    #  Text("\\" + str(symbol) + " ").execute()
-
-    Text(str(symbol)).execute()
-
-
-def dummy(symbol):
     return symbol
+  
+# load the toml file
+with io.open("C:\NatLink\NatLink\MacroSystem\caster\lib\ccr\core\math_vocab.toml") as f:
+        math_vocab = toml.load(f)
 
+# generate math vocabulary for symbols not requiring braces in latex
+non_braces_math_vocab = {}
+for category in math_vocab["non_braces"]:
+    for spec in math_vocab["non_braces"][category]:
+        non_braces_math_vocab[spec] = math_vocab["non_braces"][category][spec]
 
-def index_operator(index_operator, lower_limit, upper_limit, operand):
-    pass
+# generate math vocabulary for symbols requiring braces in latex
+braces_math_vocab = {}
+for category in math_vocab["braces"]:
+    for spec in math_vocab["braces"][category]:
+        braces_math_vocab[spec] = math_vocab["braces"][category][spec]
 
-
-def latex_command(symbol):
-    if symbol is None:
-        return None
-    return '\\{} '.format(symbol)
-
-# \int _\alpha  ^\beta  
-
-
-
+# generate full Lyx math vocabulary
+full_lyx_math_vocab = non_braces_math_vocab.copy()
+for spec in braces_math_vocab:
+    full_lyx_math_vocab[spec] = braces_math_vocab[spec]
 
 
 class Alphabet(MergeRule):
     pronunciation = CCRMerger.CORE[0]
 
     mapping = {
-        "[<big_1>] <letter>":
-            R(Function(alphanumeric.letters2, extra={"big_1", "letter"}),
+        "shsh": Mouse("left"),
+        "mick": Mouse("left"),
+        "ss": Mouse("left:2"),
+        "dick": Mouse("left:2"),
+        "rick": Mouse("right"),
+        
+
+        "[<big>] <letter>":
+            R(Function(alphanumeric.letters2, extra={"big", "letter"}),
               rdescript="Spell"),
         # "word number <wn>":
         #     R(Function(alphanumeric.word_numxber, extra="wn"), rdescript="Number As Word"),
@@ -59,72 +69,140 @@ class Alphabet(MergeRule):
             R(Function(alphanumeric.numbers2, extra="wnKK"),
               rspec="number",
               rdescript="Number"),
-        "<index_operator> from <symbol_1> to <symbol_2> [<symbol_3>]":
-            R(
-                Text("\%(index_operator)s _") + Text("\%(symbol_1)s ") +
-                Key("right, caret") + Text("\%(symbol_2)s ") +
-                utils.ValueTexter(func=latex_command, extra={'symbol_3'}) + Key("right")),
-        #"justice <symbol_1>": R(utils.Texter((dusquadmmy, extra={"symbol_1"})),
-        # "justice": R(Text("\\")),
-        # "hello <name>":
-        #     R(Function(symbol_optional, extra={"name"})),
 
-        # "<symbol_1> sub <symbol_2>": R(Text("\%(symbol_1)s _"
-        # "<symbol_1> sub <symbol_2>": R(Text("") +
-        #     Function(symbol_letters_small, extra={"symbol_1"}) + Text(" ") +
-        #         Text("\%(symbol_2)s ")),
-        # # "<symbol_1>":
-        #     R(Text("\%(symbol_1)s") + Key("space")),
-        # # # "[<big>] <greekletter>":
-        #     R(Function(symbol_letters, extra={"big", "greekletter"}),
-        #         rdescript="potentially capitalized greek letters"),
-        # "[<big_1>] <symbol_1>":
-        #     R(Text("\\") + Function(symbol_letters, extra={"big_1", "symbol_1"}) +
-        #        Text(" "),
-        #          rdescript="LaTeX: Insert symbols"),
-        # "<index_operator> from <[big_1]> <symbol_1> to [<big_2>] <symbol_2>":
-        #     R(Text("\\") + Text("%(index_operator)s ") + Key("underscore") +
-        #         Function(symbol_letters, extra={"big_1", "symbol_1"}) +
-        #             Key("right, caret") + Function(symbol_letters, extra={"big_2", "symbol_2"}) +
+        # main math command
+        "[<big>] <symbol_1>":
+            R(utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"])),
+        
+        "dollz": R(Text("$$") + Key("left")),
+        "doubledill":R(Text("$$$$") + Key("left:2")),
+        "toter": R(Key("right, caret")),
+        "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s"))
+            + Key("c-v, down"),
+        "inverse": R(Text("^-1") + Key("right")),
+        "squared": R(Text("^2") + Key("right")),
+        "cubed": R(Text("^3") + Key("right")),
+        "<mathbb_symbol>": R(Text("\mathbb %(mathbb_symbol)s") + Key("right")),
+        
+        "<accent> [<big>] <symbol_1>": R(Text("%(accent)s") + 
+            utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"]) +
+            Key("right")),
+        "<accent> [<big>] <letter>": R(Text("%(accent)s") + 
+            Function(alphanumeric.letters2, extra={"big", "letter"}) +
+            Key("right")),
+        "add line": R(Key("c-enter")),
+    
+        # commented out because I was getting the Natlink error or overly complex grammar.
+        # "<index_operator> from <symbol_1> [<symbol_2>] to <symbol_3> [<symbol_4>]":
+        #     R(Text("%(index_operator)s_") + Text("%(symbol_1)s") + Text("%(symbol_2)s") + 
+        #         Key("right, caret") + Text("%(symbols_3)s") + Text("%(symbols_4)s") +
         #             Key("right")),
-        # # "from":
-        #     Key("underscore"),
-        # "to":
-        #     Key("right, caret"),
-        # "smath":
-        #     Key("c-m"),
+        
+        # Lyx commands
+        "smath":
+             Key("c-m"),
+        # Lyx insert_menu commands
+        "insert <environment>": R(Key("a-i,h") + Text("%(environment)s")),
+        "number that": R(Key("a-m, n")),
+        "<mode> <my_words>": R(Key("a-p, %(mode)s") + Text("%(my_words)s")),
+        "numbered <mode> <my_words>": R(Key("a-p, s-asterisk, %(mode)s") + Text("%(my_words)s")),
+        "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s")) + Key("enter"),
+        "delim <delimiter>": R(Key("a-x") + Text("math-delim %(delimiter)s") + Key("enter")),
+        
+
     }
 
     extras = [
         alphanumeric.get_alphabet_choice("letter"),
-        Choice("big_1", {
+        Dictation("my_words"),
+        Choice("big", {
             "big": True,
         }),
         Choice("big_2", {
             "big": True,
         }),
+        IntegerRefST("m", 0, 10),
+        IntegerRefST("n", 0, 10),
         IntegerRefST("wn", 0, 10),
         IntegerRefST("wnKK", 0, 1000000),
         Choice(
-            "index_operator", {
-                "integ": "int",
-                "double integ": "iint",
-                "triple integ": "iiint",
-                "intersection": "cap",
-                "union": "cup",
-                "(large direct sum | large oh plus)": "bigoplus",
-                "product": "prod",
-            }),
-        Choice("symbol_1", math_vocab.symbol),
-        Choice("symbol_2", math_vocab.symbol),
-        Choice("symbol_3", math_vocab.symbol),
-        Choice("name", {"bill": "william"})
-        # Choice("symbol_2", symbol),
+            "index_operator", 
+                format_without_braces(math_vocab["braces"]["index_operators"])),
+        Choice(
+            "fraction_type", format_without_braces(math_vocab["braces"]["fractions"])),
+        Choice(
+            "accent", format_without_braces(math_vocab["braces"]["accents"])),
+        Choice("delimiter", {"paren": "(", "bracket": "[]"}),
+
+        Choice(
+            "mathbb_symbol", {
+             "reals": "R",
+             "complex": "C",
+             "integers": "Z",
+             "rationals": "Q",
+             "naturals": "N",
+            }),    
+
+        Choice("symbol_1", format_without_braces(full_lyx_math_vocab)),
+        
+        Choice("environment", {
+            "(in line formula | in line)": "i",
+            "(numbered formula | numbered)": "n",
+            "(display formula | display)": "d",
+            "equation array": "e",
+            "(AMS align environment | AMS align)": "a",
+            "AMS align at": "t",
+            "AMS flalign": "f",
+            "AMS gathered": "g",
+            "AMS multline": "m",
+            "array ": "y",
+            "(cases | piecewise)": "c",
+            "aligned": "l",
+            "aligned at": "v",
+            "gathered": "h",
+            "split": "s",
+            "delimiters": "r",
+            "matrix": "x",
+            "macro": "o",
+            }),  
+        Choice("mode", {
+            "standard": "s",
+            "(itemize | bullets)": "b",
+            "(enumerate | numbering)": "e",
+            "description": "d",
+            
+            "part": "0",
+            "section": "2",
+            "subsection": "3",
+            "subsubsection": "4",
+            "paragraph": "5",
+            "subparagraph": "6",
+            "title": "t",
+            "author": "s-a",
+            "date": "s-d",
+            "abstract": "a",
+            "address": "a-a",
+            "(bibliography | biblio)": "s-b",
+            "quotation": "a-q",
+            # i'm not sure what the differences between quotation and quote
+            "quote": "q",
+            "verse": "v",            
+        })
     ]
 
     defaults = {
         "big": False,
-        "symbol_3": None,
+        "symbol_1": "",
+        "my_words": ""
+        # "symbol_2": "",
+        # "symbol_3": "",
+        # "symbol_4": "",
+        # "symbol_5": "",
+        # "symbol_6": "",
+        # "symbol_7": "",
+        # "symbol_8": "",
+        # "symbol_9": "",
+                
     }
 
 

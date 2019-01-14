@@ -66,7 +66,7 @@ class Punctuation(MergeRule):
             R(Text("#"), rdescript="Hash Tag"),
         "apostrophe":
             R(Text("'"), rdescript="Apostrophe"),
-        "downscore":
+        "score":
             R(Text("_"), rdescript="Underscore"),
         "backslash":
             R(Text("\\"), rdescript="Back Slash"),
@@ -84,7 +84,20 @@ class Punctuation(MergeRule):
             R(Key("ampersand"), rdescript="Ampersand"),
         "tilde":
             R(Key("tilde"), rdescript="Tilde"),
+        "absolute": R(Text("||") + Key("left")),
+        
 
+        "laz": Key("lparen"),
+        "raz": Key("rparen"),
+        "lapper": Key("lbrace"),
+        "rapper": Key("rbrace"),
+        "lack": Key("lbracket"),
+        "rack": Key("rbracket"),
+        "langle": Key("langle"),
+        "rangle": Key("rangle"),
+        # "lefty": Key("lquote"),
+        # "righty": Key("rquote"),
+        "dote": Key("dquote"),
 
     }
 

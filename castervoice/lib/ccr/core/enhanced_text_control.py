@@ -7,7 +7,7 @@ accessibility = get_accessibility_controller()
 release = Key("shift:up, ctrl:up")
 noSpaceNoCaps = Mimic("\\no-caps-on") + Mimic("\\no-space-on") #this gets added on the right side
 
-cmd.map = {
+mapping = {
 # Spoken-form    ->    ->    ->  Action object
 "some command goes here": R(Pause("100"), rdescript="test command"), 
                 
@@ -26,7 +26,7 @@ cmd.map = {
     "replace <text_query> with <replacement>": Function(
         accessibility.replace_text),
 }
-cmd.extras = [
+extras = [
 
     Dictation("replacement"),
     Compound(
@@ -66,6 +66,6 @@ cmd.extras = [
         end_relative_phrase=str(extras["relative_phrase"])))
 
 ]
-cmd.defaults = {
+defaults = {
 
 }

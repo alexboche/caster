@@ -30,7 +30,12 @@ sonar-project.properties
 .pydevproject
 .settings
 
-*_vcl.py
+# Ignore User Data
+caster/bin/data
 
-*.code-workspace
-pyia2
+# Ignore dist files
+dist
+castervoice.egg-info
+
+# ignore vcl (vocola) files
+*_vcl.py

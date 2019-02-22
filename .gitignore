@@ -31,3 +31,6 @@ sonar-project.properties
 .settings
 
 *_vcl.py
+
+*.code-workspace
+pyia2

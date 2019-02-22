@@ -64,6 +64,7 @@ class Alias(AliasRule):
         for spec in aliases[Alias.toml_path]:
             mapping[spec] = R(
                 Text(str(aliases[Alias.toml_path][spec])),
+                # utils.PositionalTexter(context.paste_string_without_altering_clipboard, extra=["aliases[Alias.toml_path][spec]"]),
                 rdescript="Alias: " + spec)
         mapping["alias [<s>]"] = R(
             Function(lambda s: self.alias(s)), rdescript="Create Alias")

@@ -102,10 +102,12 @@ class BringRule(SelfModifyingRule):
         self.reset(self.mapping)
 
     mapping = {
-       "bring me <desired_item>":
+        "bring me <desired_item>":
             R(Function(bring_it), rdescript="Launch preconfigured program, folder or website"),
-       "<launch> to bring me as <key>":
-            R(Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
+         #"<launch> to bring me as <key>":
+          #   R(Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
+          "<launch> to bring me as <key>":
+              R(Key("c-l/1000") + Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
        "remove <key> from bring me":
             R(Function(bring_remove, extra="key"), rdescript="Remove program, folder or website from the bring me list"),
        "restore bring me defaults":
@@ -114,11 +116,17 @@ class BringRule(SelfModifyingRule):
     
     extras = [
         Choice("desired_item", _rebuild_items()),
+        
+        # Choice("launch", {
+        #     "[current] program": "program",
+        #     "file": "file",
+        #     "website": "website",
+        #     "folder": "folder",            
+        # }),
+
         Choice("launch", {
-            "[current] program": "program",
             "website": "website",
-            "folder": "folder",
-            "file": "file",
+            "folder": "folder",            
         }),
         Dictation("key"),
     ]

@@ -24,22 +24,16 @@ from castervoice.lib.dfplus.state.short import R
 class ChromeRule(MergeRule):
     pronunciation = "google chrome"
 
-    mapping = { # most keybinds are taken from https://support.google.com/chrome/answer/157179?hl=en
-        
-      # "[use] function <n> [<dict>]if :":  R(Function(my_function, extra={'n', 'dict'})),
-        #"[use] function <n> [<dict>]":  Text('%(dict)s'),
-        #"[use] function <n> [<dictation>]":  R(TextMaker((my_function, extra={'n', 'dictation'}))),
-        # "reload grammars": R(utils.Texter(reloader.reload_app_grammars)),
-        #"test <n>": R(Key("tab:extra="n"")),
-        # "add <n> <m>": R(Function(add, extra={'n', 'm'})),
-        # "subtract <n> <m>": R(utils.Texter(subtract, extra={'n', 'm'})),
-        # #"add <n> <m>": R(Text("%(Function(add, extra={'n', 'm'}))d")),
+    mapping = { 
  
-
-        "[new] incognito window":       R(Key("cs-n"), rdescript="Browser: New Incognito Window"),
-        "new tab [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
+    
+       
+        "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "reopen tab [<n>]":             R(Key("cs-t"), rdescript="Browser: Reopen Tab") * Repeat(extra="n"),
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
+        "nab [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
+        "lab [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
+    
 
         "go back [<n>]":                R(Key("a-left/20"), rdescript="Browser: Navigate History Backward") * Repeat(extra="n"),
         "go forward [<n>]":             R(Key("a-right/20"), rdescript="Browser: Navigate History Forward") * Repeat(extra="n"),
@@ -53,8 +47,8 @@ class ChromeRule(MergeRule):
         "[toggle] caret browsing":      R(Key("f7"), rdescript="Browser: Caret Browsing"), # now available through an add on, was a standard feature
 
         "home page":                    R(Key("a-home"), rdescript="Browser: Home Page"),
-        "show history":                 R(Key("c-h"), rdescript="Browser: Show History"),
-        "address bar":                  R(Key("c-l"), rdescript="Browser: Address Bar"),
+        "[show] history":                 R(Key("c-h"), rdescript="Browser: Show History"),
+        "[address] bar":                  R(Key("c-l"), rdescript="Browser: Address Bar"),
         "show downloads":               R(Key("c-j"), rdescript="Browser: Show Downloads"),
         "[add] bookmark":               R(Key("c-d"), rdescript="Browser: Add Bookmark"),
         "bookmark all tabs":            R(Key("cs-d"), rdescript="Browser: Bookmark All Tabs"),
@@ -67,6 +61,7 @@ class ChromeRule(MergeRule):
         "allow notification":           R(Key("as-a"), rdescript="Browser: Allow Notification"),
         "deny notification":            R(Key("as-a"), rdescript="Browser: Deny Notification"),
 
+
         "developer tools":              R(Key("f12"), rdescript="Browser: Developer Tools"),
         "view [page] source":           R(Key("c-u"), rdescript="Browser: View Page Source"),
         "resume":                       R(Key("f8"), rdescript="Browser: Resume"),
@@ -75,10 +70,35 @@ class ChromeRule(MergeRule):
         "step out":                     R(Key("s-f11"), rdescript="Browser: Step Out"),
 
         "IRC identify":                 R(Text("/msg NickServ identify PASSWORD"), rdescript="IRC Chat Channel Identify"),
-        "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")+Key("enter")),
+
+        "google that": R(Key("c-t, c-v, enter"), rdescript="googles highlighted text"),
+        "duplicate tab":R(Key("a-d,a-c,c-t/15,c-v/15, enter")),
+        "duplicate window":R(Key("a-d,a-c,c-n/15,c-v/15, enter")),
+        "extensions": R(Key("a-f/20, l, e/15, enter")),
         
+        #Todo (actually these two should be global commands)
+        # google <dictation> 
+        # duck go <dictation> # duck go allows you to go to navigate the result links using the arrow keys
+            # thus you can make a command to do the following: search dictation in duck duck go and then press down enter
+            #  to select the first link. very useful in my experience using this in other utilities (I don't know how to make it here)
+
+
+# click by voice chrome extension commands
+        "<numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+            + Key("enter/30") + Text("%(dictation)s"), 
+            rdescript="input dictation into numbered text field"),
+        "go <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+            + Key("enter/30") + Text("%(dictation)s") + Key("enter"), 
+            rdescript="input dictation into numbered text field then press enter"),
+        "next <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+            + Key("enter/30") + Text("%(dictation)s") + Key("tab"), 
+            rdescript="input dictation into numbered text field then press tab"),
+        "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")
+            + Text("%(numbers)d:%(click_by_voice_options)s") + Key("enter"), 
+            rdescript="click link with click by voice options"),
         "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter")),
         "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter")),
+
 
 
         }
@@ -97,7 +117,6 @@ class ChromeRule(MergeRule):
         IntegerRefST("n", 1, 10),
         IntegerRefST("m", 1, 10),
         IntegerRefST("numbers", 1, 1000),
-
     ]
     defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
 

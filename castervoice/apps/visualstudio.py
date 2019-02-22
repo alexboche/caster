@@ -35,6 +35,7 @@ class VisualStudioRule(MergeRule):
             R(Key("c-q"), rdescript="Visual Studio: Quick Launch"),
         "go to line":
             R(Key("c-g"), rdescript="Visual Studio: Go To Line"),
+        "comment": R(Key("c-/")),
         "comment line":
             R(Key("c-k, c-c"), rdescript="Visual Studio: Comment Selection"),
         "comment block":

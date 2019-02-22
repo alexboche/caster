@@ -28,7 +28,8 @@ class AcrobatRule(MergeRule):
         "benjamin [<n>]": R(Key('a/20')) * Repeat(extra='n'),
         #"go to pager [<n>]": R(Key("a-v, an, g/50")+nNotNull(""), rdescript="go to page acrobat)"),
         "open": R(Key("c-o")),
-        "nindow":R(Key("a-w,n/40,ws-left"))
+        "nindow":R(Key("a-w,n/40,ws-left")),
+        "enable scrolling": R(Key("a-v, p, c")),
     }
     extras = [
         Dictation("dict"),
@@ -44,7 +45,7 @@ grammar = Grammar("acrobat", context=context)
 
 if settings.SETTINGS["apps"]["acrobat"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
-        control.nexus().merger.add_global_rule(MSWordRule())
+        control.nexus().merger.add_global_rule(AcrobatRule())
     else:
         rule = AcrobatRule(name="acrobat")
         gfilter.run_on(rule)

@@ -24,7 +24,11 @@ class AlexRule(MergeRule):
     mapping = {
         "press key <my_key>": Key("%(a)s"),
         "print these words <my_words>": Text("words I said: %(my_words)s"),
-        "(talk | talking) <my_words>": Text(''),
+        By the way I find the following commands really useful especially when I'm using a headset or long-range  table Mike. The first to ignore whatever you said. The 3rd ignores whatever you said and turned off the mic.
+"<my_words> (Peru)": Text(''),
+"(talk | talking) <my_words>": Text(''),
+" <my_words> (Brazil)": Key('f1'),
+
         " <my_words> (Peru)": Text(''),
         " <my_words> (Brazil)": Key('f1'),
 

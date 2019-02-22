@@ -1,4 +1,4 @@
-from dragonfly import (Grammar, Dictation, Repeat, Function)
+from dragonfly import (Grammar, Dictation, Repeat, Function, Choice)
 
 from castervoice.lib import control
 from castervoice.lib import settings
@@ -11,6 +11,8 @@ from castervoice.lib.dfplus.state.short import R
 
 from . import reloader
 from . import utils
+from caster.lib.ccr.core import math_vocab
+
 
 
 def findNthToken(text, n, direction):
@@ -24,16 +26,30 @@ def findNthToken(text, n, direction):
         print("no? %(n)d")
     Key('escape').execute()
 
-def temporary():
-    return 10
 
+# def temporary():
+#     return 1/0
+
+def symbol_letters_small(symbol):
+    Text(str(symbol)).execute()
+
+def latex_command(symbol):
+    # if symbol is None:
+    #     return ''
+    return '\\{} '.format(symbol)
+
+# \alpha Justice\None 
 class VisualStudioCodeRule(MergeRule):
     pronunciation = "visual studio code"
 
     mapping = {
-        "temporary": R(utils.Texter(temporary)),
-        "reload grammars": R(Function(reloader.reload_app_grammars)),
-        ### ported from my dragonfly scripts
+        "justice [<symbol_1>]": R(utils.ValueTexter(func=latex_command, extra={"symbol_1"})),
+        "pimple <name>": R(Function(symbol_letters_small, extras={'name'})),
+        # "temporary":
+        #     R(utils.Texter(temporary)),
+        "reload grammars":
+            R(Function(reloader.reload_app_grammars)),
+        ### ported from my dragonfly scripts10
         # File management
         "[open] command palette":
             R(Key("cs-p"), rdescript="Visual Studio Code: Command Palette"),
@@ -121,13 +137,19 @@ class VisualStudioCodeRule(MergeRule):
             R(Key("s-f11"), rdescript="Visual Studio Code:Step Out"),
         "resume":
             R(Key("f5"), rdescript="Visual Studio Code:Resume"),
+        "(line | liner) <n>":
+            R(Key("c-g") + Text("%(n)d") + Key("enter")),
+        "black":
+            R(Key("sa-f"))
     }
     extras = [
         Dictation("text"),
         Dictation("mim"),
+        Dictation("name"),
         IntegerRefST("n", 1, 1000),
+        Choice("symbol_1", math_vocab.symbol),
     ]
-    defaults = {"n": 1, "mim": "", "text": ""}
+    defaults = {"n": 1, "mim": "", "text": "", 'symbol_1': None}
 
 
 #---------------------------------------------------------------------------

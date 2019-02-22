@@ -17,7 +17,7 @@ class Texter(object):
         Text(str(result)).execute()
 
 
-class ValueTexter(object):
+class PositionalTexter(object):
 
     def __init__(self, func, extra=()):
         self.func = func
@@ -25,10 +25,11 @@ class ValueTexter(object):
         self._str = func.__name__ 
 
     def execute(self, data):
-        argument = data[list(self.extra)[0]]
-        if argument is None:
+        # argument = (data[self.extra[0]], data[self.extra[1]])
+        arguments = [data[argument_name] for argument_name in self.extra]
+        if not arguments:
             return
-        result = self.func(argument)
+        result = self.func(*arguments)
         Text(str(result)).execute()
 
 

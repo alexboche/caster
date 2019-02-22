@@ -9,29 +9,29 @@ def get_alphabet_choice(spec):
         spec, {
             "arch": "a",
             "brov": "b",
-            "char": "c",
-            "delta": "d",
+            "char": "c", 
+            "dutch": "d",
             "echo": "e",
-            "foxy": "f",
+            "(foxy|fail)": "f",
             "goof": "g",
             "hotel": "h",
             "Indie": "i",
-            "julie": "j",
+            "(julie|jick)": "j",
             "kilo": "k",
             "Lima": "l",
             "Mike": "m",
             "Nova": "n",
             "oscar": "o",
             "prime": "p",
-            "Quebec": "q",
-            "Romma": "r",
-            "Slap": "s",
-            "tango": "t",
+            "quill": "q",
+            "(Romeo| rat)": "r",
+            "slap": "s",
+            "(tango|ting)": "t",
             "uncle": "u",
-            "victor": "v",
-            "whiskey": "w",
-            "x-ray": "x",
-            "yankee": "y",
+            "(vin|victor)": "v",
+            "(whiskey)": "w",
+            "ex": "x",
+            "(yankee|yale)": "y",
             "Zulu": "z",
         })
 
@@ -95,6 +95,14 @@ def letters2(big, letter):
         Key(letter.capitalize()).execute()
     else:
         Key(letter).execute()
+
+# alex made this
+def word_capitalize(big, word):
+    if big:
+        Text(word.capitalize()).execute()
+    else:
+        Text(word).execute()
+
 
 
 '''for fun'''

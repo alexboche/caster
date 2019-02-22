@@ -1,4 +1,5 @@
 import toml
+import io
 from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
                        Function, Choice, Mouse)
 from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils
@@ -8,7 +9,7 @@ from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import utils
-from castervoice.lib.ccr.core import math_vocab
+
 
 # formatting for latex symbols without curly braces and all Lyx codes
 def format_without_braces(vocab_dict):
@@ -16,6 +17,8 @@ def format_without_braces(vocab_dict):
     return lyx_vocab_dict
 
 # formatting for LaTeX operators with curly braces only
+# note that commands inputting latex symbols with curly braces must conclude
+    # by pressing the left arrow key.
 def format_with_braces(vocab_dict):
     
     latex_vocab_dict = {k:"\\{}{{}} ".format(vocab_dict[k]) for k in vocab_dict}    
@@ -27,7 +30,7 @@ def cap_symbol_letters(big, symbol):
     return symbol
   
 # load the toml file
-with io.open("C:\NatLink\NatLink\MacroSystem\caster\lib\ccr\core\math_vocab.toml") as f:
+with io.open("C:\NatLink\NatLink\MacroSystem\castervoice\lib\ccr\core\math_vocab.toml") as f:
         math_vocab = toml.load(f)
 
 # generate math vocabulary for symbols not requiring braces in latex
@@ -47,9 +50,20 @@ full_lyx_math_vocab = non_braces_math_vocab.copy()
 for spec in braces_math_vocab:
     full_lyx_math_vocab[spec] = braces_math_vocab[spec]
 
+class Alphabet(MergeRule):
+    pronunciation = CCRMerger.CORE[0]
+
+    mapping = {
+
         "dick": Mouse("left:2"),
         "rick": Mouse("right"),
-        
+        "Key": R(Text('Key("")') + Key("left:2")),
+        "Text": R(Text('Text("")') + Key("left:2")),
+        "smack [<n>] [<my_words>]": R(Key("cs-left:%(n)s, del") + Text("%(my_words)s")),
+        "frack [<my_words>]": R(Key("cs-right:%(n)s, del") + Text("%(my_words)s")),
+        "salor [<n>]": R(Key("cs-left:%(n)s")),
+        "jalor [<n>]": R(Key("cs-right:%(n)s")),
+
 
         "[<big>] <letter>":
             R(Function(alphanumeric.letters2, extra={"big", "letter"}),
@@ -62,19 +76,42 @@ for spec in braces_math_vocab:
               rdescript="Number"),
 
         # main math command
-        "[<big>] <symbol_1>":
-            R(utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"])),
+         #"[<big>] <symbol_1>":
+            #R(utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"])),
         
         "dollz": R(Text("$$") + Key("left")),
-        "doubledill":R(Text("$$$$") + Key("left:2")),
+        "doubledill":R(Text("$$$$") + Key("left:2")), 
+        
+    
+        # commented out because I was getting the Natlink error for overly complex grammar.
+        # "<index_operator> from <symbol_1> [<symbol_2>] to <symbol_3> [<symbol_4>]":
+        #     R(Text("%(index_operator)s_") + Text("%(symbol_1)s") + Text("%(symbol_2)s") + 
+        #         Key("right, caret") + Text("%(symbols_3)s") + Text("%(symbols_4)s") +
+        #             Key("right")),
+        
+        # Lyx-specific commands
+        "smath": Key("c-m"),
+        "insert <environment>": R(Key("a-i,h") + Text("%(environment)s")),
+        "number that": R(Key("a-m, n")),
+        "<mode> [<my_words>]": R(Key("a-p, %(mode)s") + Text("%(my_words)s")),
+        "numbered <mode> [<my_words>]": R(Key("a-p, s-asterisk, %(mode)s") + Text("%(my_words)s")),
+        "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s")) + Key("enter"),
+        "delim <delimiter>": R(Key("a-x") + Text("math-delim %(delimiter)s") + Key("enter")),
+        
         "toter": R(Key("right, caret")),
         "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s"))
             + Key("c-v, down"),
         "inverse": R(Text("^-1") + Key("right")),
         "squared": R(Text("^2") + Key("right")),
         "cubed": R(Text("^3") + Key("right")),
+        "one half": R(Text("\\frac 1") + Key("down, 2, right")),
+        "<number> <denominator>": R(Text("\\frac %(number)d") + Key("down")
+            + Text("%(denominator)s") + Key("right")),    
+        "[one] <denominator_single>": R(Text("\\frac 1") + Key("down")
+            + Text("%(denominator_single)s") + Key("right")),    
+
         "<mathbb_symbol>": R(Text("\mathbb %(mathbb_symbol)s") + Key("right")),
-        
+
         "<accent> [<big>] <symbol_1>": R(Text("%(accent)s") + 
             utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"]) +
             Key("right")),
@@ -82,24 +119,6 @@ for spec in braces_math_vocab:
             Function(alphanumeric.letters2, extra={"big", "letter"}) +
             Key("right")),
         "add line": R(Key("c-enter")),
-    
-        # commented out because I was getting the Natlink error or overly complex grammar.
-        # "<index_operator> from <symbol_1> [<symbol_2>] to <symbol_3> [<symbol_4>]":
-        #     R(Text("%(index_operator)s_") + Text("%(symbol_1)s") + Text("%(symbol_2)s") + 
-        #         Key("right, caret") + Text("%(symbols_3)s") + Text("%(symbols_4)s") +
-        #             Key("right")),
-        
-        # Lyx commands
-        "smath":
-             Key("c-m"),
-        # Lyx insert_menu commands
-        "insert <environment>": R(Key("a-i,h") + Text("%(environment)s")),
-        "number that": R(Key("a-m, n")),
-        "<mode> <my_words>": R(Key("a-p, %(mode)s") + Text("%(my_words)s")),
-        "numbered <mode> <my_words>": R(Key("a-p, s-asterisk, %(mode)s") + Text("%(my_words)s")),
-        "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s")) + Key("enter"),
-        "delim <delimiter>": R(Key("a-x") + Text("math-delim %(delimiter)s") + Key("enter")),
-        
 
     }
 
@@ -114,8 +133,52 @@ for spec in braces_math_vocab:
         }),
         IntegerRefST("m", 0, 10),
         IntegerRefST("n", 0, 10),
+        IntegerRefST("number", 2, 100),
         IntegerRefST("wn", 0, 10),
         IntegerRefST("wnKK", 0, 1000000),
+        Choice("denominator", {
+                "halves": "2",
+                "thirds": "3",
+                "fourths": "4",
+                "fifths": "5",
+                "sixths": "6",
+                "sevenths": "7",
+                "eighths": "8",
+                "ninths": "9",
+                "tenths": "10",
+                "elevenths": "11",
+                "twelfths": "12",
+                "thirteenths": "13",
+                "fourteenths": "14",
+                "fifteenths": "15",
+                "sixteenths": "16",
+                "seventeens": "17",
+                "eighteenths": "18",
+                "nineteenths": "19",
+                "twentieths": "20",
+            }),
+        Choice("denominator_single", {
+                "half": "2",
+                "third": "3",
+                "fourth": "4",
+                "fifth": "5",
+                "sixth": "6",
+                "seventh": "7",
+                "eighth": "8",
+                "ninth": "9",
+                "tenth": "10",
+                "eleventh": "11",
+                "twelfth": "12",
+                "thirteenth": "13",
+                "fourteenth": "14",
+                "fifteenth": "15",
+                "sixteenth": "16",
+                "seventeen": "17",
+                "eighteenth": "18",
+                "nineteenth": "19",
+                "twentieth": "20",
+            }),
+
         Choice(
             "index_operator", 
                 format_without_braces(math_vocab["braces"]["index_operators"])),
@@ -184,7 +247,10 @@ for spec in braces_math_vocab:
     defaults = {
         "big": False,
         "symbol_1": "",
-        "my_words": ""
+        "my_words": "",
+        "dictation": "",
+        "my_words": "",
+        "n": "1",
         # "symbol_2": "",
         # "symbol_3": "",
         # "symbol_4": "",

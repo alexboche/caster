@@ -8,15 +8,18 @@ Command-module for Chrome and Firefox
 
 """
 #---------------------------------------------------------------------------
-import dragonfly
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat)
+from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError)
 
-from caster.lib import control
-from caster.lib import settings
-from caster.lib.dfplus.additions import IntegerRefST
-from caster.lib.dfplus.merge import gfilter
-from caster.lib.dfplus.merge.mergerule import MergeRule
-from caster.lib.dfplus.state.short import R
+
+from castervoice.lib import control
+from castervoice.lib import settings
+from castervoice.lib.actions import Key, Text
+from castervoice.lib.context import AppContext
+from castervoice.lib.dfplus.additions import IntegerRefST
+from castervoice.lib.dfplus.merge import gfilter
+from castervoice.lib.dfplus.merge.mergerule import MergeRule
+from castervoice.lib.dfplus.state.short import R
+from castervoice.apps import utils
 
 
 class AnkiRule(MergeRule):
@@ -36,50 +39,8 @@ class AnkiRule(MergeRule):
 
 
 
-class MultiAppContext(Context):
 
-    # ----------------------------------------------------------------------
-    # Initialization methods.
-
-    def __init__(self, relevant_apps=None, title=None, exclude=False):
-        Context.__init__(self)
-
-        if relevant_apps is None:
-            self._relevant_apps = None
-        else:
-            self._relevant_apps = set(relevant_apps)
-
-        self._title = title
-        self._exclude = bool(exclude)
-
-        self._str = "%s, %s, %s" % (self._relevant_apps, self._title,
-                                    self._exclude)
-
-    # ----------------------------------------------------------------------
-    # Matching methods.
-
-    def matches(self, executable, title, handle):
-        executable = executable.lower()
-
-        if not self._relevant_apps:
-            # If no apps are relevant, then all apps will match.
-
-            if self._log_match:
-                self._log_match.debug("%s: Match." % self)
-            return True
-
-        for app in self._relevant_apps:
-            if app.lower() in executable:
-                if self._log_match:
-                    self._log_match.debug("%s: Match." % self)
-                return True
-
-        return False
-
-
-
-
-context = MultiAppContext(relevant_apps={'anki'})
+context = utils.MultiAppContext(relevant_apps={'anki', 'winword'})
 grammar = Grammar("anki", context=context)
 
 if settings.SETTINGS["apps"]["anki"]:

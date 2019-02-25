@@ -1,5 +1,5 @@
 from dragonfly import ActionBase
-from dragonfly import Context
+from dragonfly import AppContext
 from dragonfly import Text
 
 
@@ -48,13 +48,13 @@ class PositionalTexter(object):
 
 
 
-class MultiAppContext(Context):
+class MultiAppContext(AppContext):
 
     # ----------------------------------------------------------------------
-    # Initialization methods.  \sqrt %(symbol)s
+    # Initialization methods.
 
     def __init__(self, relevant_apps=None, title=None, exclude=False):
-        super(MultiAppContext, self)
+        AppContext.__init__(self)
 
         if relevant_apps is None:
             self._relevant_apps = None
@@ -71,7 +71,6 @@ class MultiAppContext(Context):
     # Matching methods.
 
     def matches(self, executable, title, handle):
-        
         executable = executable.lower()
 
         if not self._relevant_apps:
@@ -91,8 +90,7 @@ class MultiAppContext(Context):
 
 
 
-
-class AnyAppContext(Context):
+class AnyAppContext(AppContext):
 
     # ----------------------------------------------------------------------
     # Initialization methods.

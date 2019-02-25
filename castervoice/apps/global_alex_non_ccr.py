@@ -4,12 +4,10 @@
 # Licensed under the LGPL, see <http://www.gnu.org/licenses/>
 #
 """
-global
+
 
 """
-# ---------------------------------------------------------------------------
-from inspect import getargspec
-
+#---------------------------------------------------------------------------
 from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError)
 
 
@@ -22,47 +20,46 @@ from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import utils
+from castervoice.apps import reloader
+from castervoice.apps import reloader
 
 
-
-
-class GlobalRule(MergeRule):
-    pronunciation = "global"
+class GlobalAlexNonCcrRule(MergeRule):
+    pronunciation = "global alex rule"
 
     mapping = {
+        "red blue": R(Text("orange"), rdescript="red blue"),
+        "reload grammars": R(Function(reloader.reload_app_grammars)),
+        "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
+        "satch [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),
+               
+        "<dict> (Peru)": Text(''),
+        "(talk | talking) <dict>": Text(''),
+        "<dict> (Brazil)": Key('f1'),
 
-
+        
     }
     extras = [
-        Choice("click_by_voice_options", {
-            "go": "f",
-            "click": "c",
-            "push": "b",
-            "otab": "t",
-            "window": "w",
-            "hover": "h",
-            "link": "k",
-            "copy": "s",
-        }),
-        Dictation("dictation"),
+        Dictation("dict"),
         IntegerRefST("n", 1, 10),
-        IntegerRefST("m", 1, 10),
-        IntegerRefST("numbers", 1, 1000),
 
     ]
-    defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
+    defaults = {"n": 1, "dict": "nothing"}
 
 
-# ---------------------------------------------------------------------------
+#---------------------------------------------------------------------------
 
-context = AppContext(executable="chrome")
-grammar = Grammar("chrome", context=context)
 
-if settings.SETTINGS["apps"]["chrome"]:
+
+
+context = utils.MultiAppContext(relevant_apps={})
+grammar = Grammar("global_alex_non_ccr", context=context)
+
+if settings.SETTINGS["apps"]["global_alex_non_ccr"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
-        control.nexus().merger.add_global_rule(GlobalRule())
+        control.nexus().merger.add_global_rule(GlobalAlexNonCcrRule())
     else:
-        rule = GlobalRule(name="chrome") # fill this in
+        rule = GlobalAlexNonCcrRule(name="global_alex_non_ccr")
         gfilter.run_on(rule)
         grammar.add_rule(rule)
         grammar.load()

@@ -8,8 +8,7 @@ Command-module for Chrome and Firefox
 
 """
 #---------------------------------------------------------------------------
-
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice)
+from dragonfly import (Grammar, Dictation, Repeat, Choice)
 
 from castervoice.lib import control
 from castervoice.lib import settings
@@ -19,7 +18,6 @@ from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
-
 
 class ChromeRule(MergeRule):
     pronunciation = "google chrome"
@@ -31,10 +29,13 @@ class ChromeRule(MergeRule):
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "reopen tab [<n>]":             R(Key("cs-t"), rdescript="Browser: Reopen Tab") * Repeat(extra="n"),
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
-        "nab [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
-        "lab [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
+        "(nab | next tab)   [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
+        "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
+        #"<first_second_third…> tab": R(Key("c-")),
+        #"fifth tab": R(Key("c-5")),
         "second tab": R(Key("c-2")),
-        
+
+    
 
         "go back [<n>]":                R(Key("a-left/20"), rdescript="Browser: Navigate History Backward") * Repeat(extra="n"),
         "go forward [<n>]":             R(Key("a-right/20"), rdescript="Browser: Navigate History Forward") * Repeat(extra="n"),
@@ -113,6 +114,18 @@ class ChromeRule(MergeRule):
             "hover": "h",
             "link": "k",
             "copy": "s",
+        }),
+        Choice("first_second_third…", {
+            "first": "1",
+            "second": "2",
+            "third": "3",
+            "fourth": "4",
+            "fifth": "5",
+            "sixth": "6",
+            "seventh": "7",
+            "eighth": "8",
+            "ninth": "9",
+            "tenth": "10",            
         }),
         Dictation("dictation"),
         IntegerRefST("n", 1, 10),

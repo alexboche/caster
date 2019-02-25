@@ -33,7 +33,8 @@ class ChromeRule(MergeRule):
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
         "nab [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
         "lab [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
-    
+        "second tab": R(Key("c-2")),
+        
 
         "go back [<n>]":                R(Key("a-left/20"), rdescript="Browser: Navigate History Backward") * Repeat(extra="n"),
         "go forward [<n>]":             R(Key("a-right/20"), rdescript="Browser: Navigate History Forward") * Repeat(extra="n"),

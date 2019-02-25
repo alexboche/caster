@@ -9,7 +9,7 @@ Command-module for Chrome and Firefox
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice)
+from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice, Mouse)
 
 from castervoice.lib import control
 from castervoice.lib import settings
@@ -27,7 +27,7 @@ class ChromeRule(MergeRule):
     mapping = { 
  
     
-       
+       "(new tab that | nab that)": R(Mouse("right") + Key("down, enter")),
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "reopen tab [<n>]":             R(Key("cs-t"), rdescript="Browser: Reopen Tab") * Repeat(extra="n"),
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
@@ -149,4 +149,3 @@ if settings.SETTINGS["apps"]["chrome"]:
         gfilter.run_on(rule)
         grammar.add_rule(rule)
         grammar.load()
-will

@@ -54,15 +54,7 @@ class Alphabet(MergeRule):
     pronunciation = CCRMerger.CORE[0]
 
     mapping = {
-
-        "dick": Mouse("left:2"),
-        "rick": Mouse("right"),
-        "Key": R(Text('Key("")') + Key("left:2")),
-        "Text": R(Text('Text("")') + Key("left:2")),
-        "smack [<n>] [<my_words>]": R(Key("cs-left:%(n)s, del") + Text("%(my_words)s")),
-        "frack [<my_words>]": R(Key("cs-right:%(n)s, del") + Text("%(my_words)s")),
-        "salor [<n>]": R(Key("cs-left:%(n)s")),
-        "jalor [<n>]": R(Key("cs-right:%(n)s")),
+        
 
 
         "[<big>] <letter>":

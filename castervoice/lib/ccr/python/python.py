@@ -24,6 +24,7 @@ class PythonNon(MappingRule):
             R(Text("try:") + Key("enter:2/10, backspace") + Text("except Exception:") +
               Key("enter"),
               rdescript="Python: Try Catch"),
+        "init": Text("__init__()") + Key("left"),
     }
 
 

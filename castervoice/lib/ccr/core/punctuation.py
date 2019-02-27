@@ -74,7 +74,7 @@ class Punctuation(MergeRule):
             R(Text("/"), rdescript="Forward Slash"),
         "Dolly":
             R(Text("$"), rdescript="Dollar Sign"),
-        "modulo":
+        "moddy":
             R(Key("percent"), rdescript="Percent Sign"),
         'tabby [<npunc>]':
             R(Key("tab"), rdescript="Tab")*Repeat(extra="npunc"),
@@ -97,7 +97,10 @@ class Punctuation(MergeRule):
         "rangle": Key("rangle"),
         # "lefty": Key("lquote"),
         # "righty": Key("rquote"),
-        "dote": Key("dquote"),
+        "stingle": Key("squote"),
+        "doter": Key("dquote"),
+        "backtick": Key("backtick"),
+
 
     }
 

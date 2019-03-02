@@ -9,7 +9,7 @@ Command-module for Chrome and Firefox
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice, Mouse)
+from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice, Mouse, Pause)
 
 from castervoice.lib import control
 from castervoice.lib import settings
@@ -27,16 +27,21 @@ class ChromeRule(MergeRule):
     mapping = { 
  
     
-       "(new tab that | nab that)": R(Mouse("right") + Key("down, enter")),
+ #      "(new tab that | nab that)": R(Mouse("rightbar") + Key("down, enter")),
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
+        "new window": Key("c-n"),
+        "(new incognito window | incognito)": Key("cs-n"),
+        "new tab [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "reopen tab [<n>]":             R(Key("cs-t"), rdescript="Browser: Reopen Tab") * Repeat(extra="n"),
+        "close tab [<n>]":               R(Key("c-w")) * Repeat(extra='n'),
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
-        "nab [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
-        "lab [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
-         "second tab": R(Key("c-2")),
-         "first tab": R(Key("c-1")),
+        "(nab | next tab) [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
+        "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
+        "nab that": Mouse("middle") + Pause("20") + Key("c-tab"),
+        "er tab [<n>]": Key("a-q") * Repeat(extra='n'),
 
-        
+        "second tab": R(Key("c-2")),
+         "first tab": R(Key("c-1")),
         "third tab": R(Key("c-3")),
         "fourth tab": R(Key("c-4")),
         "fifth tab": R(Key("c-5")),

@@ -42,7 +42,7 @@ class Punctuation(MergeRule):
             R(Text("%(long)s" + "+" + "%(long)s"), rdescript="Plus Sign"),
         "[<long>] minus":
             R(Text("%(long)s" + "-" + "%(long)s"), rdescript="Dash"),
-        "pipe (sim | symbol)":
+        "piper":
             R(Text("|"), rdescript="Pipe Symbol"),
         'ace [<npunc>]':
             R(Key("space"), rdescript="Space")*Repeat(extra="npunc"),
@@ -50,6 +50,7 @@ class Punctuation(MergeRule):
             R(Text("!"), rdescript="Exclamation Mark"),
         "deckle":
             R(Text(":"), rdescript="Colon"),
+        "Faisal": Text(": "),
         "starling":
             R(Key("asterisk"), rdescript="Asterisk"),
         "questo":
@@ -64,7 +65,7 @@ class Punctuation(MergeRule):
             R(Text("@"), rdescript="At Sign"),
         "hash tag":
             R(Text("#"), rdescript="Hash Tag"),
-        "apostrophe":
+        "(apostrophe | apo)":
             R(Text("'"), rdescript="Apostrophe"),
         "score":
             R(Text("_"), rdescript="Underscore"),

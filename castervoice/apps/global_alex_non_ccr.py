@@ -8,12 +8,12 @@
 
 """
 #---------------------------------------------------------------------------
-from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError)
+from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError, Playback, Mimic, Pause, WaitWindow)
 
 
 from castervoice.lib import control
 from castervoice.lib import settings
-from castervoice.lib.actions import Key, Text
+from castervoice.lib.actions import Key, Text, Mouse
 from castervoice.lib.context import AppContext
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
@@ -36,16 +36,51 @@ class GlobalAlexNonCcrRule(MergeRule):
         "<dict> (Peru)": Text(''),
         "(talk | talking) <dict>": Text(''),
         "<dict> (Brazil)": Key('f1'),
+        "shesk": Key("w-d"),
+        "eck": Key("escape"),
+        #"swap": Key("win:down, f9, win:up"),
+        "snarles": Text("hAtdickbootstorew8ght973"),
+        "close": Key("a-f4"),
+        "task manager": Key("cs-escape"),
+        "find [<dict>]": Key("c-f") + Text("%(dict)s"),
+        "(display | change display)": Key("w-d/10") + Mouse("[0.9, 0.5], right") + Key("up:2, enter/30, tab:2"),
+        "troppy": Key("tab, a-down"), # this tas to and then drops down a drop-down list
+        "droppy": Key("a-down"), # drops down a drop-down list
+        #"clicker <m> [<wait_time>]": Mouse("left:%(m)s/%(wait_time)s"),
+        "clicker": Mouse("left") * Repeat(count=8),
+
+        "vocab": Playback([(["start", "vocabulary", "editor"], 0.03)]) * Repeat(extra="n"),
+        "mimic recognition <dict> [<n> times]":
+                    Mimic(extra="dict") * Repeat(extra="n"),
+        "bocker": Mimic("dictation", "box"),
+        
+        "next group [<n>]": Key("w-backtick") * Repeat(extra='n'), # for groupy
+
+        "save": Key("c-s"),
+        "open": Key("c-o"),
+        "print": Key("c-p"),
+        "max": Key("a-space/15, x")
+        
+
+        
+
+        # duplicate/extend display
+        # click repetition command
+        # google that
+        # duck duck oh that
 
         
     }
     extras = [
         Dictation("dict"),
-        IntegerRefST("n", 1, 10),
+        IntegerRefST("n", 1, 100),
+        IntegerRefST("m", 1, 100),
+        IntegerRefST("wait_time", 1, 1000),
+
 
     ]
-    defaults = {"n": 1, "dict": "nothing"}
 
+    defaults = {"n": 1, "m": 1, "dict": "nothing"}
 
 #---------------------------------------------------------------------------
 

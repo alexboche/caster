@@ -1,4 +1,4 @@
-from dragonfly import (Grammar, Playback, Key, Dictation, Function)
+from dragonfly import (Grammar, Playback, Key, Dictation, Function, Choice, Mimic, WaitWindow)
 
 from castervoice.lib import control
 from castervoice.lib import utilities, settings
@@ -58,13 +58,35 @@ class DragonRule(MergeRule):
         "center point":
             R(Playback([(["MouseGrid"], 0.1), (["click"], 0.0)]),
               rdescript="Mouse: Center Point"),
+        "windows": Mimic("list", "all", "windows"),
+        "cory <dict>": Mimic("correct", extra="dict") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
+        "cory that": Mimic("correct", "that") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
+        
+        # the following commands should be context specific to the Dragon spelling window
+        #"<first_second_third> word": 
+            #Key("home", "c-right:%(first_second_third)d", "cs-right"), #this command is not working
+        "last [word]": Key("right, cs-left"),
+        "second last word": Key("right, c-left:1, cs-left"),
+        "<number>": Mimic("choose", extra="number"),
     }
     extras = [
         Dictation("text"),
+        Dictation("dict"),
         Dictation("mim"),
         IntegerRefST("n", 1, 1000),
+        IntegerRefST("number", 1, 10),
+        Choice("first_second_third", {
+            "first": 0,
+            "second": 1,
+            "third": 2,
+            "fourth": 3,
+            "fifth": 4,
+            "six": 5,
+            "seventh": 6
+        }),
+        
     ]
-    defaults = {"n": 1, "mim": ""}
+    defaults = {"n": 1, "mim": "", "text": "", "dict": ""}
 
 
 #---------------------------------------------------------------------------

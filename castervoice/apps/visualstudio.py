@@ -1,13 +1,18 @@
-from dragonfly import (Grammar, Dictation, Repeat)
+from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError, Playback, Mimic, Pause, WaitWindow)
+
 
 from castervoice.lib import control
 from castervoice.lib import settings
+from castervoice.lib.actions import Key, Text, Mouse
+from castervoice.lib.context import AppContext
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
-from castervoice.lib.context import AppContext
-from castervoice.lib.actions import (Key, Text)
+from castervoice.apps import utils
+from castervoice.apps import reloader
+from castervoice.apps import reloader
+
 
 
 class VisualStudioRule(MergeRule):
@@ -86,6 +91,10 @@ class VisualStudioRule(MergeRule):
             R(Key("a-m, g"), rdescript="Visual Studio: Open Work Item"),
         "[add] [new] linked work item":
             R(Key("sa-l"), rdescript="Visual Studio: New Linked Work Item"),
+        "(line | liner) <n>":
+            R(Key("c-g") + Text("%(n)d") + Key("enter")),       
+        "black":
+            R(Key("sa-f")),   
     }
     extras = [
         Dictation("text"),

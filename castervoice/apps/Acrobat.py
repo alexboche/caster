@@ -9,14 +9,16 @@ Command-module for word
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat)
+from dragonfly import (Grammar, Dictation, Repeat, Choice)
 
-from caster.lib import control
-from caster.lib import settings
-from caster.lib.dfplus.additions import IntegerRefST
-from caster.lib.dfplus.merge import gfilter
-from caster.lib.dfplus.merge.mergerule import MergeRule
-from caster.lib.dfplus.state.short import R
+from castervoice.lib import control
+from castervoice.lib import settings
+from castervoice.lib.actions import Key, Text
+from castervoice.lib.context import AppContext
+from castervoice.lib.dfplus.additions import IntegerRefST
+from castervoice.lib.dfplus.merge import gfilter
+from castervoice.lib.dfplus.merge.mergerule import MergeRule
+from castervoice.lib.dfplus.state.short import R
 
 
 
@@ -26,14 +28,16 @@ class AcrobatRule(MergeRule):
     mapping = {
 
         "benjamin [<n>]": R(Key('a/20')) * Repeat(extra='n'),
-        #"go to pager [<n>]": R(Key("a-v, an, g/50")+nNotNull(""), rdescript="go to page acrobat)"),
+        "pager [<n>]": R(Key("a-v, n, g/15") + Text("%(n)s") + Key("enter"),
+            rdescript="go to page acrobat)"),
         "open": R(Key("c-o")),
         "nindow":R(Key("a-w,n/40,ws-left")),
         "enable scrolling": R(Key("a-v, p, c")),
+        
     }
     extras = [
         Dictation("dict"),
-        IntegerRefST("n", 1, 100),
+        IntegerRefST("n", 1, 1000),
     ]
     defaults = {"n": 1, "dict": "nothing"}
 

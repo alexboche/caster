@@ -4,7 +4,7 @@
 # Licensed under the LGPL, see <http://www.gnu.org/licenses/>
 #
 """
-Command-module for Chrome and Firefox
+
 
 """
 #---------------------------------------------------------------------------

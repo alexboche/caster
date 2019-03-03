@@ -1,5 +1,5 @@
-from dragonfly import (Grammar, Playback, Key, Dictation, Function, Choice, Mimic, WaitWindow)
-
+# from dragonfly import (Grammar, Playback, Key, Dictation, Function, Choice, Mimic, WaitWindow, Pause, Repeat)
+from dragonfly import *
 from castervoice.lib import control
 from castervoice.lib import utilities, settings
 from castervoice.lib.dfplus.additions import IntegerRefST
@@ -61,10 +61,25 @@ class DragonRule(MergeRule):
         "windows": Mimic("list", "all", "windows"),
         "cory <dict>": Mimic("correct", extra="dict") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
         "cory that": Mimic("correct", "that") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
+        "make that <dict>": Mimic("scratch", "that") + Mimic(extra="dict"), # should be CCR
+        'strike [<n>]': Playback([(["scratch", "that"], 0.03)]) * Repeat(extra="n"),
+
+
+        "recognition history": 
+            Playback([(["view", "recognition", "history"], 0.03)]),
+        "peak [recognition] history": 
+            Playback([(["view", "recognition", "history"], 0.03)])
+                + Pause("200") + Key("escape"),
+        "[dictation] sources": Mimic("manage", "dictation", "sources"),
         
+        "<dict> (Peru)": Text(''),
+        "(talk | talking) <dict>": Text(''),
+        "<dict> (Brazil)": Key('f1'),
+        # "<dict> (Brazil)": Mimic("go", "to", "sleep"),
+
         # the following commands should be context specific to the Dragon spelling window
-        #"<first_second_third> word": 
-            #Key("home", "c-right:%(first_second_third)d", "cs-right"), #this command is not working
+        "<first_second_third> word": 
+            Key("home, c-right:%(first_second_third)d, cs-right"), 
         "last [word]": Key("right, cs-left"),
         "second last word": Key("right, c-left:1, cs-left"),
         "<number>": Mimic("choose", extra="number"),

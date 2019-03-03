@@ -76,11 +76,11 @@ class DragonRule(MergeRule):
         "peak [recognition] history": 
             Playback([(["view", "recognition", "history"], 0.03)])
                 + Pause("200") + Key("escape"), # views the dragon recognition history then closes it after two seconds
-        "[dictation] sources": Mimic("manage", "dictation", "sources"),
+        "[dictation] sources": Mimic("manage", "dictation", "sources"), #emulates the dragon native command
         
-        "<dict> (Peru)": Text(''),
-        "(talk | talking) <dict>": Text(''),
-        "<dict> (Brazil)": Mimic("go", "to", "sleep"),
+        "<dict> (Peru)": Text(''), # ignores what you say if you say peru after it
+        "(talk | talking) <dict>": Text(''), # ignores what you say if you begin with talk or talking
+        "<dict> (Brazil)": Mimic("go", "to", "sleep"), # Ignores what you say then turned off the microphone if you say Brazil
 
         # the following commands should probably be context specific to the Dragon spelling window
         "<first_second_third> word": 

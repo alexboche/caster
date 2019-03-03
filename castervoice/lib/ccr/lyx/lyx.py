@@ -58,8 +58,8 @@ class LyxNonCcrRule(MergeRule):
 
 class LyxCcrRule(MergeRule):
     # pronunciation =
-    mwith = CCRMerger.CORE
-    non = LyxNonCcrRule
+   # mwith = CCRMerger.CORE
+   # non = LyxNonCcrRule
 
     mapping = {  
         
@@ -266,17 +266,21 @@ grammar = Grammar("lyx", context=context)
 
 
 # Initialise the rule.
-rule = LyxCcrRule()
+ccr_rule = LyxCcrRule()
+non_ccr_rule = LyxNonCcrRule()
 
 # Run caster's filter on it.
-gfilter.run_on(rule)
+gfilter.run_on(ccr_rule)
+gfilter.run_on(non_ccr_rule)
+
 
 # Add the rule as a caster app rule.
 control.nexus().merger.add_app_rule(rule, context)
 
+
 # Add each rule to a grammar and load it.
 grammar = Grammar(rule.pronunciation, context=context)
-grammar.add_rule(rule)
-grammar.add_rule(rule.non())
+grammar.add_rule(ccr_rule)
+grammar.add_rule(non_ccr_rule)
 grammar.load()
 

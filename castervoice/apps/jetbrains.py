@@ -9,7 +9,6 @@ from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 
-
 class JetbrainsRule(MergeRule):
     pronunciation = "jet brains"
 

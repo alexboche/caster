@@ -10,6 +10,7 @@ from castervoice.lib import control, context, utilities, settings
 from castervoice.lib.actions import Text, Key
 from castervoice.lib.dfplus.merge.selfmodrule import SelfModifyingRule
 from castervoice.lib.dfplus.state.short import R
+from castervoice.apps import utils
 
 CONFIG = utilities.load_toml_file(settings.SETTINGS["paths"]["BRINGME_PATH"])
 if not CONFIG:
@@ -104,30 +105,38 @@ class BringRule(SelfModifyingRule):
     mapping = {
         "bring me <desired_item>":
             R(Function(bring_it), rdescript="Launch preconfigured program, folder or website"),
-         #"<launch> to bring me as <key>":
-          #   R(Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
-          "<launch> to bring me as <key>":
-              R(Key("c-l/1000") + Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
+
+        # this command is to be used with folders and websites only. it aids the automation by selecting the address bar.
+         "<launch> to bring me as <key>":
+            R(Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
+        # this command is to be used with files and programs.
+        "<launch> fast bring me as <key>":
+                R(Key("c-l/1000") + Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
+
+        # "<launch> to bring me as <key>":
+        #     R(utils.PositionalTexter(bring_add, extra=["launch", "key"]), rdescript="Add program, folder or website to the bring me list"),
+        #   "<launch> to bring me as <key>":
+        #       R(Key("c-l/1000") + Function(bring_add, extra={"launch", "key"}), rdescript="Add program, folder or website to the bring me list"),
        "remove <key> from bring me":
             R(Function(bring_remove, extra="key"), rdescript="Remove program, folder or website from the bring me list"),
-       "restore bring me defaults":
-            R(Function(bring_restore), rdescript="Delete bring me list and put defaults in its place"),
+    #    "restore bring me defaults":
+    #         R(Function(bring_restore), rdescript="Delete bring me list and put defaults in its place"),
     }
     
     extras = [
         Choice("desired_item", _rebuild_items()),
         
-        # Choice("launch", {
-        #     "[current] program": "program",
-        #     "file": "file",
-        #     "website": "website",
-        #     "folder": "folder",            
-        # }),
-
         Choice("launch", {
+            "[current] program": "program",
+            "file": "file",
             "website": "website",
             "folder": "folder",            
         }),
+
+        #Choice("launch", {
+        #     "website": "website",
+        #     "folder": "folder",            
+        # }),
         Dictation("key"),
     ]
 

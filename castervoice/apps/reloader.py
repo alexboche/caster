@@ -9,7 +9,7 @@ import weakref
 
 import toml
 
-from caster.lib import settings
+from castervoice.lib import settings
 
 
 

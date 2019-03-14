@@ -87,18 +87,16 @@ class Punctuation(MergeRule):
             R(Key("tilde"), rdescript="Tilde"),
         "absolute": R(Text("||") + Key("left")),
         
-
-        "laz": Key("lparen"),
-        "raz": Key("rparen"),
+        
+        "lazer": Key("lparen"),
+        "razer": Key("rparen"),
         "lapper": Key("lbrace"),
         "rapper": Key("rbrace"),
-        "lack": Key("lbracket"),
-        "rack": Key("rbracket"),
+        "lacky": Key("lbracket"),
+        "racky": Key("rbracket"),
         "langle": Key("langle"),
         "rangle": Key("rangle"),
-        # "lefty": Key("lquote"),
-        # "righty": Key("rquote"),
-        "stingle": Key("squote"),
+              "stingle": Key("squote"),
         "doter": Key("dquote"),
         "backtick": Key("backtick"),
 

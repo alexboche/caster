@@ -27,7 +27,7 @@ class ChromeRule(MergeRule):
     mapping = { 
  
     
- #      "(new tab that | nab that)": R(Mouse("rightbar") + Key("down, enter")),
+ 
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "new window": Key("c-n"),
         "(new incognito window | incognito)": Key("cs-n"),
@@ -37,7 +37,9 @@ class ChromeRule(MergeRule):
         "close all tabs":               R(Key("cs-w"), rdescript="Browser: Close All Tabs"),
         "(nab | next tab) [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
         "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
-        "nab that": Mouse("middle") + Pause("20") + Key("c-tab"),
+        "(new tab | nab) that": 
+            R(Mouse("middle") + Pause("20") + Key("c-tab"), 
+                rdescript="Browser: when the mouse is hovering over a link open that link in a new tab and then go to that new tab "),
         "er tab [<n>]": Key("a-q") * Repeat(extra='n'),
 
         "second tab": R(Key("c-2")),
@@ -49,6 +51,8 @@ class ChromeRule(MergeRule):
         "seventh tab": R(Key("c-7")),
         "eighth tab": R(Key("c-8")),
         "ninth tab": R(Key("c-9")),
+        "last tab": R(Key("c-1, cs-tab")),
+        "second last tab": R(Key("c-1, cs-tab:2")),
         
         
 
@@ -90,16 +94,14 @@ class ChromeRule(MergeRule):
 
         "IRC identify":                 R(Text("/msg NickServ identify PASSWORD"), rdescript="IRC Chat Channel Identify"),
 
-        "google that": R(Key("c-t, c-v, enter"), rdescript="googles highlighted text"),
+        "google that": R(Key("c-c, c-t, c-v, enter"), rdescript="googles highlighted text"),
         "duplicate tab":R(Key("a-d,a-c,c-t/15,c-v/15, enter")),
         "duplicate window":R(Key("a-d,a-c,c-n/15,c-v/15, enter")),
         "extensions": R(Key("a-f/20, l, e/15, enter")),
-        
-        #Todo (actually these two should be global commands)
-        # google <dictation> 
-        # duck go <dictation> # duck go allows you to go to navigate the result links using the arrow keys
-            # thus you can make a command to do the following: search dictation in duck duck go and then press down enter
-            #  to select the first link. very useful in my experience using this in other utilities (I don't know how to make it here)
+        "three dots": R(Key("a-f")),
+        "settings": R(Key("a-f/5, s")),
+        "downloads": R(Key("c-j")),
+
 
 
 # click by voice chrome extension commands
@@ -136,7 +138,7 @@ class ChromeRule(MergeRule):
         Dictation("dictation"),
         IntegerRefST("n", 1, 10),
         IntegerRefST("m", 1, 10),
-        IntegerRefST("numbers", 1, 1000),
+        IntegerRefST("numbers", 0, 1000),
     ]
     defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
 

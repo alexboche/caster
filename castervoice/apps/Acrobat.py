@@ -9,7 +9,7 @@ Command-module for word
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Dictation, Repeat, Choice)
+from dragonfly import (Grammar, Dictation, Repeat, Choice, Mouse)
 
 from castervoice.lib import control
 from castervoice.lib import settings
@@ -27,13 +27,16 @@ class AcrobatRule(MergeRule):
 
     mapping = {
 
-        "benjamin [<n>]": R(Key('a/20')) * Repeat(extra='n'),
-        "pager [<n>]": R(Key("a-v, n, g/15") + Text("%(n)s") + Key("enter"),
+        "(close|hide) bookmarks [pane]": Key("a-v/15, down:7, right, n, b"),
+        "pager <n>": R(Key("a-v, n, g/15") + Text("%(n)s") + Key("enter"),
             rdescript="go to page acrobat)"),
         "open": R(Key("c-o")),
         "nindow":R(Key("a-w,n/40,ws-left")),
         "enable scrolling": R(Key("a-v, p, c")),
-        
+        "(nab | next tab) [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
+        "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
+        "(home button|homer)": Mouse("[43, 101], left"),
+        "back": Key("a-left"),
     }
     extras = [
         Dictation("dict"),

@@ -42,13 +42,8 @@ HMC_SEPARATOR = "[hmc]"
 
 WSR = False
 
-<<<<<<< HEAD:caster/lib/settings.py
-USER_SETTINGS_PATH = os.path.join(BASE_PATH, 'user_settings.toml')
-
-=======
 def get_filename():
     return _SETTINGS_PATH
->>>>>>> upstream/develop:castervoice/lib/settings.py
 
 def _validate_engine_path():
     '''
@@ -175,7 +170,6 @@ _DEFAULT_SETTINGS = {
 
     # Apps Section
     "apps": {
-        "anyapp": True,
         "atom": True,
         "chrome": True,
         "cmd": True,
@@ -199,7 +193,6 @@ _DEFAULT_SETTINGS = {
         "ssms": True,
         "jetbrains": True,
         "msvc": True,
-        "multi":True,
         "totalcmd": True,
         "notepadplusplus": True,
         "sqldeveloper": True,

@@ -1,3 +1,4 @@
+
 # from dragonfly import (Grammar, Playback, Key, Dictation, Function, Choice, Mimic, WaitWindow, Pause, Repeat)
 from dragonfly import *
 from castervoice.lib import control
@@ -18,11 +19,22 @@ def fix_dragon_double(nexus):
     except Exception:
         utilities.simple_log(False)
 
+def cap_dictation(dictation):
+    input_list = str(dictation).split(" ")
+    output_list = []
+    for i in range(len(input_list)):
+        if input_list[i] == "cap":
+            input_list[i+1] = input_list[i+1].title()
+        else:
+            output_list.append(input_list[i])
+    Text(" ".join(output_list)).execute()
+
 
 class DragonRule(MergeRule):
     pronunciation = "dragon"
 
     mapping = {
+        "format <dictation>": Function(cap_dictation, extra={"dictation"}),
         '(lock Dragon | deactivate)':
             R(Playback([(["go", "to", "sleep"], 0.0)]), rdescript="Dragon: Go To Sleep"),
         '(number|numbers) mode':
@@ -58,12 +70,21 @@ class DragonRule(MergeRule):
         "center point":
             R(Playback([(["MouseGrid"], 0.1), (["click"], 0.0)]),
               rdescript="Mouse: Center Point"),
-        "windows": Mimic("list", "all", "windows"),
-        "cory <dict>": Mimic("correct", extra="dict") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
-        "cory that": Mimic("correct", "that") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
-        "make that <dict>": Mimic("scratch", "that") + Mimic(extra="dict"), # should be CCR
-        'strike [<n>]': Playback([(["scratch", "that"], 0.03)]) * Repeat(extra="n"),
 
+        # new commands from Alex      
+        "windows": Mimic("list", "all", "windows"), # this emulates a useful native dragon command
+        "cory <dict>": 
+            R(Mimic("correxct", extra="dict") + WaitWindow(title="spelling window") + Mimic("choose", "one"),
+                rdescript="brings up the correction menu for the phrase spoken in the command and chooses the 1st choice"),
+        "cory that": 
+            R(Mimic("correct", "that") + WaitWindow(title="spelling window") + Mimic("choose", "one"), 
+                rdescript="brings up the correction menu for the previously spoken phrase"),
+
+        "make that <dict>": Mimic("scratch", "that") + Mimic(extra="dict"), 
+        'strike [<n>]': Playback([(["scratch", "that"], 0.03)]) * Repeat(extra="n"),
+        "train word": Mimic("train", "that") + Key("a-r/200, s"),
+        "(trad | add train)": Key("a-a/2, enter/300, a-s"),
+        # create an awesome add word command
 
         "recognition history": 
             Playback([(["view", "recognition", "history"], 0.03)]),
@@ -74,19 +95,19 @@ class DragonRule(MergeRule):
         
         "<dict> (Peru)": Text(''),
         "(talk | talking) <dict>": Text(''),
-        "<dict> (Brazil)": Key('f1'),
-        # "<dict> (Brazil)": Mimic("go", "to", "sleep"),
+        "<dict> (Brazil)": Mimic("go", "to", "sleep"),
 
         # the following commands should be context specific to the Dragon spelling window
         "<first_second_third> word": 
             Key("home, c-right:%(first_second_third)d, cs-right"), 
         "last [word]": Key("right, cs-left"),
         "second last word": Key("right, c-left:1, cs-left"),
-        "<number>": Mimic("choose", extra="number"),
+        "<number>": Mimic("choose", extra="number"), # instead of having to say e.g. choose one you can just say one
     }
     extras = [
         Dictation("text"),
         Dictation("dict"),
+        Dictation("dictation"),
         Dictation("mim"),
         IntegerRefST("n", 1, 1000),
         IntegerRefST("number", 1, 10),
@@ -101,7 +122,7 @@ class DragonRule(MergeRule):
         }),
         
     ]
-    defaults = {"n": 1, "mim": "", "text": "", "dict": ""}
+    defaults = {"n": 1, "mim": "", "text": "", "dict": "", "dictation": ""}
 
 
 #---------------------------------------------------------------------------

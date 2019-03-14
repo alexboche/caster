@@ -1,8 +1,8 @@
 import toml
 import io
 from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
-                       Function, Choice, Mouse)
-from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils
+                       Function, Choice, Mouse, MappingRule)
+from castervoice.lib import navigation, alphanumeric, textformat, text_utils
 from castervoice.lib import control 
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
@@ -53,13 +53,14 @@ for spec in braces_math_vocab:
 
 class LyxNonCcrRule(MergeRule):
     mapping    = {
-        "testing Lyx": Key("abc"),
+        # mwith = i don't know what to put on the right-hand side
+        "testing Lyx": Key("a, b"),
     }
 
 class LyxCcrRule(MergeRule):
-    # pronunciation =
-   # mwith = CCRMerger.CORE
-   # non = LyxNonCcrRule
+    pronunciation = "Lix"
+    mwith = CCRMerger.CORE
+    # non = LyxNonCcrRule
 
     mapping = {  
         
@@ -94,12 +95,12 @@ class LyxCcrRule(MergeRule):
         "number that": R(Key("a-m, n")),
         "<mode> [<my_words>]": R(Key("a-p, %(mode)s") + Text("%(my_words)s")),
         "numbered <mode> [<my_words>]": R(Key("a-p, s-asterisk, %(mode)s") + Text("%(my_words)s")),
-        "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s")) + Key("enter"),
+        "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s") + Key("enter")),
         "delim <delimiter>": R(Key("a-x") + Text("math-delim %(delimiter)s") + Key("enter")),
         
         "toter": R(Key("right, caret")),
-        "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s"))
-            + Key("c-v, down"),
+        "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s") +
+                                  Key("c-v, down")),
         "inverse": R(Text("^-1") + Key("right")),
         "squared": R(Text("^2") + Key("right")),
         "cubed": R(Text("^3") + Key("right")),
@@ -270,17 +271,22 @@ ccr_rule = LyxCcrRule()
 non_ccr_rule = LyxNonCcrRule()
 
 # Run caster's filter on it.
-gfilter.run_on(ccr_rule)
-gfilter.run_on(non_ccr_rule)
+# gfilter.run_on(ccr_rule)
+# gfilter.run_on(non_ccr_rule)
 
 
 # Add the rule as a caster app rule.
-control.nexus().merger.add_app_rule(rule, context)
+control.nexus().merger.add_app_rule(ccr_rule, context)
+#control.nexus().merger.add_app_rule(non_ccr_rule, context)
 
-
-# Add each rule to a grammar and load it.
-grammar = Grammar(rule.pronunciation, context=context)
-grammar.add_rule(ccr_rule)
-grammar.add_rule(non_ccr_rule)
+context = AppContext(executable="lyx")
+grammar = Grammar("lyx", context=context)
+rule = LyxNonCcrRule()
+grammar.add_rule(rule)
 grammar.load()
 
+# Add each rule to a grammar and load it.
+# grammar = Grammar(ccr_rule.pronunciation, context=context)
+# grammar.add_rule(ccr_rule)
+# grammar.add_rule(non_ccr_rule)
+# grammar.load()

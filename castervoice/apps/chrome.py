@@ -40,7 +40,8 @@ class ChromeRule(MergeRule):
         "(new tab | nab) that": 
             R(Mouse("middle") + Pause("20") + Key("c-tab"), 
                 rdescript="Browser: when the mouse is hovering over a link open that link in a new tab and then go to that new tab "),
-        "er tab [<n>]": Key("a-q") * Repeat(extra='n'),
+        # "er tab [<n>]": Key("a-q") * Repeat(extra='n'),
+        "er tab [<n>]": Mouse("[1817, 84], left:%(n)s"),
 
         "second tab": R(Key("c-2")),
          "first tab": R(Key("c-1")),
@@ -76,7 +77,7 @@ class ChromeRule(MergeRule):
         "[add] bookmark":               R(Key("c-d"), rdescript="Browser: Add Bookmark"),
         "bookmark all tabs":            R(Key("cs-d"), rdescript="Browser: Bookmark All Tabs"),
         "[toggle] bookmark bar":        R(Key("cs-b"), rdescript="Browser: Toggle Bookmark Bar"),
-        "show bookmarks":               R(Key("cs-o"), rdescript="Browser: Show Bookmarks"),
+        "[show] bookmarks":               R(Key("cs-o"), rdescript="Browser: Show Bookmarks"),
         "switch user":                  R(Key("cs-m"), rdescript="Browser: Switch User"),
         "chrome task manager":          R(Key("s-escape"), rdescript="Browser: Chrome Task Manager"),
         "[toggle] full-screen":         R(Key("f11"), rdescript="Browser: Toggle Fullscreen Mode"),
@@ -98,9 +99,14 @@ class ChromeRule(MergeRule):
         "duplicate tab":R(Key("a-d,a-c,c-t/15,c-v/15, enter")),
         "duplicate window":R(Key("a-d,a-c,c-n/15,c-v/15, enter")),
         "extensions": R(Key("a-f/20, l, e/15, enter")),
-        "three dots": R(Key("a-f")),
+        "(menu | three dots)": R(Key("a-f")),
         "settings": R(Key("a-f/5, s")),
         "downloads": R(Key("c-j")),
+        "chrome task manager": R(Key("s-escape"), rdescript="chrome task manager"),
+        "clear browsing data": R(Key("cs-del"), rdescript="clear browsing data"),
+        "developer tools": R(Key("cs-i"), rdescript="developer tools"),
+            "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
+        "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
 
 
 

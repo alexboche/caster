@@ -300,7 +300,7 @@ class Navigation(MergeRule):
             "fly": "c",
         }),
         Choice("extreme", {
-            "Wally": "way",
+            "bust": "way",
         }),
         Choice("big", {
             "big": True,

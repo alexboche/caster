@@ -4,7 +4,7 @@
 # Licensed under the LGPL, see <http://www.gnu.org/licenses/>
 #
 """
-Command-module for word
+Command-module for Adobe Acrobat
 
 """
 #---------------------------------------------------------------------------
@@ -33,10 +33,12 @@ class AcrobatRule(MergeRule):
         "open": R(Key("c-o")),
         "nindow":R(Key("a-w,n/40,ws-left")),
         "enable scrolling": R(Key("a-v, p, c")),
+        "disable scrolling": R(Key("a-v, p, s")),
         "(nab | next tab) [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
         "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
         "(home button|homer)": Mouse("[43, 101], left"),
         "back": Key("a-left"),
+        "fast save": Key("c-s/10, enter/10, enter/10, left, enter"),
     }
     extras = [
         Dictation("dict"),

@@ -10,22 +10,6 @@ from castervoice.lib.ccr.standard import SymbolSpecs
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 
-class PositionalTexter(object):
-
-    def __init__(self, func, extra=()):
-        self.func = func
-        self.extra = extra
-        self._str = func.__name__ 
-
-    def execute(self, data):
-        # argument = (data[self.extra[0]], data[self.extra[1]])
-        arguments = [data[argument_name] for argument_name in self.extra]
-        if not arguments:
-            return
-        result = self.func(*arguments)
-        Text(str(result)).execute()
-
-
 
 
 def split_dictation(text):
@@ -151,8 +135,8 @@ class DragonflyDevCommandsRule(MergeRule):
 
 
         # snippets for emulating recognition.
-        "[dev] Mimic [<text>]": R(Function(type_mimic), rdescript="snippet for mimic"),
-        "[dev] playback [<text>]": R(Function(type_playback), 
+        "dev Mimic [<text>]": R(Function(type_mimic), rdescript="snippet for mimic"),
+        "dev playback [<text>]": R(Function(type_playback), 
             rdescript="snippet for playback"), # this 1 has been inconsistent. maybe because it's automatically putting in two of each parable character e.g. brackets
         "[dev] split dictation [<text>]": R(Function(type_split_dictation), 
             rdescript="puts quotes around each word and separated by commas"),

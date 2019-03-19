@@ -11,6 +11,7 @@ from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
+from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 
 
 
@@ -26,41 +27,25 @@ def findNthToken(text, n, direction):
     Key('escape').execute()
 
 
-class VisualStudioCodeRule(MergeRule):
-    pronunciation = "visual studio code"
+class VisualStudioCodeCcrRule(MergeRule):
+    pronunciation = "visual studio code continuous"
+    mwith = CCRMerger.CORE
 
     mapping = {
-        
-        # could be made CCR
-################################################
+       # note: if you get the bad grammar grammar too complex error, move some of these commands into the non-CCR rule
         # cursor/line navigation
-        "indent [<n>]":
-            R(Key("tab"), rdescript="Visual Studio Code: Indent")*Repeat(extra="n"),
         
-        "hard delete [<n>]": R(Key("s-del"), 
-            rdescript="eliminates line not just the text on it") * Repeat(extra='n'),
-        "copy line up [<n>]": R(Key("sa-up"), 
-            rdescript="duplicate line above") * Repeat(extra='n'),
-        "copy line up [<n>]": R(Key("sa-down"), 
-            rdescript="duplicate line below") * Repeat(extra='n'),
-
-        "switch line down [<n>]": R(Key("a-down"),
-            rdescript="switch line with the one below it") * Repeat(extra='n'),
-        "switch line down [<n>]": R(Key("a-up"), 
-            rdescript="switch line with the one above it") * Repeat(extra='n'),
-        "(matcho | match bracket)": R(Key("cs-backslash"),
-            rdescript="jump to matching bracket"),
-
         
-        "scroll [line] up [<n>]": R(Key("c-up"),
+        
+        "scroll up [<n>]": R(Key("c-up"),
             rdescript="scroll up one line at a time") * Repeat(extra='n'),
-        "scroll [line] down [<n>]": R(Key("c-down"),
+        "scroll down [<n>]": R(Key("c-down"),
             rdescript="scroll down one line at a time") * Repeat(extra='n'),
         "scroll page up [<n>]": R(Key("a-pgup"),
             rdescript="scroll up one page up at a time") * Repeat(extra='n'),
         "scroll page down [<n>]": R(Key("a-pgdown"),
             rdescript="scroll down one page down at a time") * Repeat(extra='n'),
-        "(Unindent | outdent) [<n>]":
+        "Unindent [<n>]":
             R(Key("s-tab"), rdescript="Visual Studio Code: Unindent")*Repeat(extra="n"),
         "Comment":
             R(Key("c-slash"), rdescript="Visual Studio Code: Line Comment"),
@@ -79,28 +64,134 @@ class VisualStudioCodeRule(MergeRule):
                     # but I don't really understand how this works 
         "tall cursor up": R(Key("csa-pgup"), rdescript="add cursors all the way up"),
         "tall cursor down": R(Key("csa-pgdown"), rdescript="add cursors all the way down"),
-        "expand selection": R(Key("sa-right"), rdescript="highlight current word(s)"),
-        "shrink selection": R(Key("sa-left"), 
-            rdescript="shrink the previous highlighting range or unhighlight"),
-        "[select all occurrences of] current selection": Key("c-l"),
-        "[select all occurrences of] current word": Key("c-f2"),
-        "(select next occurrence of current word | surfy) [<n>]": R(Key("c-f3"),
+        "expand  [<n>]": R(Key("sa-right"), 
+            rdescript="highlight current word(s)") * Repeat(extra='n'),
+        "shrink  [<n>]": R(Key("sa-left"), 
+            rdescript="shrink the previous highlighting range or unhighlight") * Repeat(extra='n'),
+        # command below requires "quick and simple text selection" extension for VS code
+        "<parable_character> [<n>]": R(Key("c-k, %(parable_character)s"), 
+            rdescript="select between parable character possibly inclusive using 'quick and simple text selection' extension")
+                * Repeat(extra='n'),
+        # command below requires "brackets select" extension for VS code
+        "expo [<n>]": R(Key("ca-a"), 
+            rdescript="select in between parable punctuation inclusive using 'brackets select' extension")
+                * Repeat(extra='n'),
+      
+        
+
+
+        "all current selection": R(Key("c-l"), rdescript="select all occurrences of current selection"),
+        "all current word": R(Key("c-f2"), rdescript="select all occurrences of current word"),
+        "surfy [<n>]": R(Key("c-f3"),
             rdescript="select next occurrence of current word") * Repeat(extra='n'),
-        "(next occurrence of current word | nerdy) [<n>]": R(Key("sa-right/2, c-f3, c-left/2"), # might want to put escape afterwards to close the find box
+        "nerdy [<n>]": R(Key("sa-right/2, c-f3, c-left/2, escape"), 
             rdescript="go to next occurrence of current word") * Repeat(extra='n'),
-                # might want to put escape afterwards to close the find box
+                # may or may not want the escape afterwards to close the find box
                 # note the above command might sometimes be off by one so you have to say one higher 
                 # than what you mean e.g. if the cursor is at the beginning of the word rather 
                 # than in the middle or end, you will have to say "next word two" to get to the next word
-        "(select prior occurrence of current word | sperdy) [<n>]": R(Key("cs-f3"),
+        "sperdy [<n>]": R(Key("cs-f3"),
             rdescript="select next occurrence of current word") * Repeat(extra='n'),
-        "(prior occurrence of current word [<n>] | lerdy)": R(Key("sa-right/2, c-f3, c-left/2"),
+        "lerdy [<n>]": R(Key("sa-right/2, cs-f3, c-left/2, escape"),
             rdescript="go to next occurrence of current word") * Repeat(extra='n'),
-            # might want to put escape afterwards to close the find box
+                # may or may not want the escape afterwards to close the find box
+            
         "cursor all": R(Key("cs-l"), rdescript="add cursor to all occurrences of current selection"),
         "next cursor [<n>]": R(Key("c-d"), 
             rdescript="add cursor to next occurrence of current selection") * Repeat(extra='n'),
+       
         
+        
+    }
+    extras = [
+        Dictation("text"),
+        Dictation("mim"),
+        IntegerRefST("n", 1, 1000),
+        Choice("parable_character", {
+            "sarens": "lparen", # parentheses noninclusive
+            "eyesar": "rparen", # parentheses inclusive
+            "swingle": "squote", # single quotes
+            "dwingle": "dquote", # double quotes
+            "swacket": "lbracket", # square brackets inclusive
+            "swirly": "lbrace", # curly braces inclusive
+            "sangy": "langle", # angle brackets inclusive 
+        }),
+
+                ]
+        
+    defaults = {"n": 1, "mim": "", "text": ""}
+
+class VisualStudioCodeCcrRule_2(MergeRule):
+    mwith = CCRMerger.CORE
+    mapping = {
+        "indent [<n>]":
+            R(Key("tab"), rdescript="Visual Studio Code: Indent")*Repeat(extra="n"),
+        "hard delete [<n>]": R(Key("s-del"), 
+            rdescript="eliminates line not just the text on it") * Repeat(extra='n'),
+        "copy line up [<n>]": R(Key("sa-up"), 
+            rdescript="duplicate line above") * Repeat(extra='n'),
+        "copy line up [<n>]": R(Key("sa-down"), 
+            rdescript="duplicate line below") * Repeat(extra='n'),
+
+        "switch line down [<n>]": R(Key("a-down"),
+            rdescript="switch line with the one below it") * Repeat(extra='n'),
+        "switch line up [<n>]": R(Key("a-up"), 
+            rdescript="switch line with the one above it") * Repeat(extra='n'),
+        "match bracket": R(Key("cs-backslash"),
+            rdescript="jump to matching bracket"),
+        "liner <n>":
+            R(Key("c-g") + Text("%(n)d") + Key("enter"),
+              rdescript="Go to Line"),
+
+        
+    }
+    extras = [
+        Dictation("text"),
+        Dictation("mim"),
+        IntegerRefST("n", 1, 1000),
+        Choice("parable_character", {
+            "sarens": "lparen", # parentheses noninclusive
+            "eyesar": "rparen", # parentheses inclusive
+            "swingle": "squote", # single quotes
+            "dwingle": "dquote", # double quotes
+            "swacket": "lbracket", # square brackets inclusive
+            "swirly": "lbrace", # curly braces inclusive
+            "sangy": "langle", # angle brackets inclusive 
+        }),
+        ]
+    defaults = {"n": 1, "mim": "", "text": ""}
+
+class VisualStudioCodeNonCcrRule(MergeRule):
+    pronunciation = "Visual Studio code non-continuous"
+    mapping = {
+        # Non-Ccr
+################################################
+       # things that should be in CCR but but couldn't fit because grammar complexity
+        
+        
+        # "sarens [<n>]": R(Key("c-k, lparen"), 
+        #     rdescript="select between parentheses") * Repeat(extra='n'),
+        # "eye sarens [<n>]": R(Key("c-k, rparen"), 
+        #     rdescript="select between parentheses inclusive") * Repeat(extra='n'),
+        # "swingle [<n>]": R(Key("c-k, squote"), 
+        #     rdescript="select between single quotes") * Repeat(extra='n'),
+        # "dwingle [<n>]": R(Key("c-k, dquote"), 
+        #     rdescript="select between double quotes") * Repeat(extra='n'),
+        # "swacket [<n>]": R(Key("c-k, lbracket"), 
+        #     rdescript="select between square brackets inclusive") * Repeat(extra='n'),
+        # "swirly [<n>]": R(Key("c-k, lbrace"), 
+        #     rdescript="select between curly braces inclusive") * Repeat(extra='n'),
+        # "sangy [<n>]": R(Key("c-k, langle"), 
+        #     rdescript="select between curly braces inclusive") * Repeat(extra='n'),
+
+
+
+
+        
+
+       
+
+     #  [(he)]        
         # moving around a file
         "[(go to | jump | jump to)] line <n>":
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
@@ -113,16 +204,14 @@ class VisualStudioCodeRule(MergeRule):
             R(Key("end"), rdescript="Visual Studio Code: End Of Line"),
         "beol":
             R(Key("home"), rdescript="Visual Studio Code: Beginning of Line"),
-        "Go back [<n>]":
+         "Go back [<n>]":
             R(Key("a-left"), rdescript="Visual Studio Code: Go Back")*Repeat(extra="n"),
         "Go forward [<n>]":
             R(Key("a-right"), rdescript="Visual Studio Code: Go Forward")*
             Repeat(extra="n"),
-
-
-        # Non-Ccr
-################################################
         
+        
+
         # display
             # note that most of these can be turned on/off with the same command
         "[toggle] full screen":
@@ -133,12 +222,8 @@ class VisualStudioCodeRule(MergeRule):
         "sidebar": R(Key("c-b"), rdescript="sidebar"),
         "explorer": R(Key("cs-e"), rdescript="Explorer"),
         "source control": R(Key("cs-g"), rdescript="source control"),
-        # "debug": R(Key("cs-d"), rdescript="debug"), this is a command
-        # "[show] problems [panel]": Key("cs-m"), this is a command
-            # I'm just commenting these out here to avoid repetition because I put them the debug section
         "keyboard shortcuts": R(Key("c-k, c-s"), rdescript="keyboard shortcuts"),
         "key mappings": R(Key("c-k, c-s:2"), rdescript="key mappings"),
-
         "settings": R(Key("a-f, p, s"), rdescript="user/workspace settings"),
         "snippets": R(Key("a-f, p, s:2"), rdescript="user snippets"),
         "extensions": R(Key("cs-x"), rdescript="extensions"),
@@ -147,6 +232,9 @@ class VisualStudioCodeRule(MergeRule):
         "markdown preview": R(Key("cs-v"), rdescript="markdown preview"),
         "markdown preview side": R(Key("c-k, v"), rdescript="open markdown preview to the side"),
         "Zen mode": R(Key("c-k, z"), rdescript="Zen mode"), # note: use esc esc to exit
+        # "debug": R(Key("cs-d"), rdescript="debug"), this is a command
+        # "[show] problems [panel]": Key("cs-m"), this is a command
+            # I'm just commenting these out here to avoid repetition because I put them the debug section
 
         
         # File management
@@ -247,7 +335,7 @@ class VisualStudioCodeRule(MergeRule):
         "step over [<n>]":
             R(Key("f10/50")*Repeat(extra="n"), rdescript="Visual Studio Code:Step Over"),
         "step into":
-            R(Key("f11"), rdescript="Visual Studio Code:Step Into"),
+            R(Key("f11"), rdescript="Visual Studio Coade:Step Into"),
         "step out [of]":
             R(Key("s-f11"), rdescript="Visual Studio Code:Step Out"),
         "resume":
@@ -339,19 +427,38 @@ class VisualStudioCodeRule(MergeRule):
                 "fifth": "5",
                 "sixth": "6",
             }),
+        
     ]
     defaults = {"n": 1, "mim": "", "text": ""}
 
 
 #---------------------------------------------------------------------------
 
+# Initialise the rule.
+ccr_rule_1 = VisualStudioCodeCcrRule()
+ccr_rule_2 = VisualStudioCodeCcrRule_2()
+non_ccr_rule = VisualStudioCodeNonCcrRule()
+
+
+
 context = AppContext(executable="code")
-grammar = Grammar("Visual Studio Code", context=context)
-if settings.SETTINGS["apps"]["visualstudiocode"]:
-    if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
-        control.nexus().merger.add_global_rule(VisualStudioCodeRule())
-    else:
-        rule = VisualStudioCodeRule(name="visualstudiocode")
-        gfilter.run_on(rule)
-        grammar.add_rule(rule)
-        grammar.load()
+
+# Add VisualStudioCodeCcrRule as a caster Ccr app rule. (at least I think that's what this does )
+control.nexus().merger.add_app_rule(ccr_rule_1, context)
+control.nexus().merger.add_app_rule(ccr_rule_2, context)
+
+
+grammar = Grammar("code", context=context)
+
+grammar.add_rule(non_ccr_rule)
+grammar.load()
+
+# grammar = Grammar("Visual Studio Code", context=context)
+# if settings.SETTINGS["apps"]["visualstudiocode"]:
+#     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
+#         control.nexus().merger.add_global_rule(VisualStudioCodeRule())
+#     else:
+#         rule = VisualStudioCodeRule(name="visualstudiocode")
+#         gfilter.run_on(rule)
+#         grammar.add_rule(rule)
+#         grammar.load()

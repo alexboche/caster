@@ -33,6 +33,13 @@ class AlexCcrRule(MergeRule):
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),
         "lanter": Key("home"),
         "ranter": Key("end"),
+        # "fly lanter": Key("c-home"),
+        # "queue lanter": Key("cs-home"),
+        # "shin lanter": Key("s-home"),
+        # "fly ranter": Key("c-end"),
+        # "queue ranter": Key("cs-end"),
+        # "shin ranter": Key("s-end"),
+
          "jack [<n>] [<my_words>]": R(Key("cs-left:%(n)s, del") + Text("%(my_words)s")),
         "smack [<n>]": R(Key("cs-left:%(n)s, del")),
         # "mack [<n>] [<my_words>]": R(Key("cs-right:%(n)s, del") + Text("%(my_words)s")),
@@ -43,8 +50,13 @@ class AlexCcrRule(MergeRule):
          "(previous word | lor) [<n>]": Key("c-left:%(n)s"),
         #  "kalor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),
          "(next word |  ralar) [<n>]": Key("c-right:%(n)s"),
-         "back tab [<n>]": Key("s-tab%(n)s"),
-        
+         "back tab [<n>]": R(Key("s-tab"), rdescript="") * Repeat(extra='n'),
+        "caps lock": Mimic("press", "caps", "lock"),
+
+        #"trying": Key("cs-p") + Text("insert snippet") + Key("enter") + Text("try/") + Key("enter"),
+
+
+
         "runnoo [<n>]": Key("c-z") * Repeat(extra="n"), # undo
         "embed gitter": Key("backtick:3, s-enter:2, backtick:3, up"),
         "pounce <dict>": Text("%(dict)s") + Key("enter"),
@@ -59,7 +71,9 @@ class AlexCcrRule(MergeRule):
         "cutter up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end, c-x"),
         "deleter up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end, del"),
         "deleter down <n_off_one>": Key("s-down:%(n_off_one)s, s-end, del"),
-        
+    
+    
+    
         
 
 

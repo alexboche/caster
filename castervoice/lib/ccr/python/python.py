@@ -3,7 +3,7 @@ Created on Sep 1, 2015
 
 @author: synkarius
 '''
-from dragonfly import Dictation, MappingRule
+from dragonfly import Dictation, MappingRule, Choice
 
 from castervoice.lib import control
 from castervoice.lib.actions import Key, Text
@@ -72,9 +72,12 @@ class Python(MergeRule):
             R(Text("import "), rdescript="Python: Import"),
         #
         SymbolSpecs.FUNCTION:
-            R(Text("def "), rdescript="Python: Function"),
+            R(Text("def ():") + Key("left:3"), rdescript="Python: Function"),
         SymbolSpecs.CLASS:
-            R(Text("class "), rdescript="Python: Class"),
+            R(Text("class :") + Key("left"), rdescript="Python: Class"),
+        
+        
+
         #
         SymbolSpecs.COMMENT:
             R(Text("#"), rdescript="Python: Add Comment"),
@@ -115,10 +118,11 @@ class Python(MergeRule):
             R(Text("global "), rdescript="Python: Global"),
         "make assertion":
             R(Text("assert "), rdescript="Python: Assert"),
-        "list comprehension":
+        "list (comprehension | comp)":
             R(Text("[x for x in TOKEN if TOKEN]"),
               rdescript="Python: List Comprehension"),
-        "[dot] (pie | pi)":
+        # I change the.from optional to non-optional
+        "dot (pie | pi)":
             R(Text(".py"), rdescript="Python: .py"),
         "toml":
             R(Text("toml"), rdescript="Python: toml"),
@@ -128,10 +132,47 @@ class Python(MergeRule):
             R(Text(" is "), rdescript="Python: is"),
         "yield":
             R(Text("yield "), rdescript="Python: Yield"),
+        
+        # class and class methods
+        "subclass": R(Text("class ():") + Key("left:3"), rdescript="Python: subclass"),
+        "initial": R(Text("__init__(self, ):") + Key("left:2"), rdescript="Python: init method"),
+        
     }
 
     extras = [
         Dictation("text"),
+        Choice("exception", {
+            "exception": "Exception",
+            "stop iteration": "StopIteration",
+            "system exit": "SystemExit",
+            "standard error": "StandardError",
+            "arithmetic error": "ArithmeticError",
+            "overflow error": "OverflowError",
+            "floating-point error": "FloatingPointError",
+            "zero division error": "ZeroDivisionError",
+            "assertion error": "AssertionError",
+            "EOF Error": "EOFError",
+            "import error": "ImportError",
+            "keyboard interrupt": "KeyboardInterrupt",
+            "lookup error": "LookupError",
+            "index error": "IndexError",
+            "key error": "KeyError",
+            "name error": "NameError",
+            "unbound local error": "UnboundLocalError",
+            "environment error": "EnvironmentError",
+            "IO error": "IOError",
+            "OS error": "OSError",
+            "syntax error": "SyntaxError",
+            "system exit": "SystemExit",
+            "type error": "TypeError",
+            "value error": "ValueError",
+            "runtime error": "RuntimeError",
+            "not implemented error": "NotImplementedError",
+            
+
+
+
+        })
     ]
     defaults = {}
 

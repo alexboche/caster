@@ -75,22 +75,6 @@ def type_mouse_current(mouse_button):
     # back to where it was when the command was spoken.
     Text('Mouse("[%d, %d]")' % get_cursor_position()).execute()
 
-def move_mouse(left_right, horizontal_distance, up_down, vertical_distance):
-    # todo: make some of the arguments optional
-    new_mouse_position = list(get_cursor_position())
-    # horizontal axis
-    if left_right == "left":
-        new_mouse_position[0] -=  horizontal_distance
-    if left_right == "right":
-        new_mouse_position[0] +=  horizontal_distance
-    # vertical axis
-    if up_down == "down":
-        new_mouse_position[1] -= vertical_distance
-    if up_down == "up":
-        new_mouse_position[1] += vertical_distance
-    new_mouse_position = tuple(new_mouse_position)
-    Mouse("[%d, %d]" % new_mouse_position).execute()
-
 
     
 
@@ -106,9 +90,7 @@ class DragonflyDevCommandsRule(MergeRule):
         # it doesn't like this pronunciation line i don't know why.
         # pronunciation = "dragonfly dev commands"
     
-        "cursor <left_right> <distance_1> <up_down> <distance_2>":
-            R(Function(move_mouse, 
-                extra={"left_right", "distance_1", "up_down", "distance_2"})),
+        
 
         # snippets
         "Key": R(Text('Key("")') + Key("left:2"),  
@@ -221,10 +203,10 @@ class DragonflyDevCommandsRule(MergeRule):
             "up": "up",
             "down": "down",
         }),
-        IntegerRefST("distance_1", 1, 500),
-        IntegerRefST("distance_2", 1, 500),
+        
     ]
-    defaults = {"spec": "", "dict": "", "text": "", "mouse_button": ""}
+    defaults = {"spec": "", "dict": "", "text": "", "mouse_button": "left", }
+        
 
 
 control.nexus().merger.add_global_rule(DragonflyDevCommandsRule())

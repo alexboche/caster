@@ -54,6 +54,9 @@ class AlexCcrRule(MergeRule):
         "caps lock": Mimic("press", "caps", "lock"),
 
         #"trying": Key("cs-p") + Text("insert snippet") + Key("enter") + Text("try/") + Key("enter"),
+        "trying": Key("cs-p") + Text("insert snippet") + Key("enter/10") + Text("try/")
+            + Key("enter"),
+
 
 
 

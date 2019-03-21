@@ -39,6 +39,8 @@ class AcrobatRule(MergeRule):
         "(home button|homer)": Mouse("[43, 101], left"),
         "back": Key("a-left"),
         "fast save": Key("c-s/10, enter/10, enter/10, left, enter"),
+        "down it [<n>]": R(Key("pgdown:%(n)s, up:3"), rdescript=""),
+        "up it [<n>]": R(Key("pgup:%(n)s, down:3"), rdescript=""),
     }
     extras = [
         Dictation("dict"),

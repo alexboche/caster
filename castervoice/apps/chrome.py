@@ -19,6 +19,7 @@ from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
+from castervoice.apps import reloader
 
 
 class ChromeRule(MergeRule):
@@ -26,7 +27,8 @@ class ChromeRule(MergeRule):
 
     mapping = { 
  
-    
+        "triple boy": Key("c-t"),
+        "reload chrome": Function(reloader.reload_app_grammars),
  
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
         "new window": Key("c-n"),
@@ -96,21 +98,30 @@ class ChromeRule(MergeRule):
         "IRC identify":                 R(Text("/msg NickServ identify PASSWORD"), rdescript="IRC Chat Channel Identify"),
 
         "google that": R(Key("c-c, c-t, c-v, enter"), rdescript="googles highlighted text"),
-        "duplicate tab":R(Key("a-d,a-c,c-t/15,c-v/15, enter")),
-        "duplicate window":R(Key("a-d,a-c,c-n/15,c-v/15, enter")),
-        "extensions": R(Key("a-f/20, l, e/15, enter")),
-        "(menu | three dots)": R(Key("a-f")),
-        "settings": R(Key("a-f/5, s")),
-        "downloads": R(Key("c-j")),
+        "duplicate tab":R(Key("a-d,a-c,c-t/15,c-v/15, enter"),
+             rdescript="duplicate the current tab"),
+        "duplicate window":R(Key("a-d,a-c,c-n/15,c-v/15, enter"),
+             rdescript="duplicate the current tab in a new window"),
+        "extensions": R(Key("a-f/20, l, e/15, enter"),
+             rdescript="chrome extensions"),
+        "(menu | three dots)": R(Key("a-f"),
+             rdescript="go to the three dots menu at the top right of chrome"),
+        "settings": R(Key("a-f/5, s"),
+             rdescript="chrome settings"),
+        "downloads": R(Key("c-j"),
+             rdescript="show downloads"),
         "chrome task manager": R(Key("s-escape"), rdescript="chrome task manager"),
         "clear browsing data": R(Key("cs-del"), rdescript="clear browsing data"),
         "developer tools": R(Key("cs-i"), rdescript="developer tools"),
-            "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
+        "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
         "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
 
 
 
 # click by voice chrome extension commands
+# these require the click by voice Chrome extension
+# these allow you to browse Google Chrome hands-free
+#  (I haven't tried surfer keys yet, but apparently that's another good option)
         "<numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
             + Key("enter/30") + Text("%(dictation)s"), 
             rdescript="input dictation into numbered text field"),
@@ -123,9 +134,10 @@ class ChromeRule(MergeRule):
         "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")
             + Text("%(numbers)d:%(click_by_voice_options)s") + Key("enter"), 
             rdescript="click link with click by voice options"),
-        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter")),
-        "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter")),
-
+        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter"),
+             rdescript="hide click by voice hints (i.e. numbers)"),
+        "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter"),
+            rdescript="show click by voice hints (i.e. numbers)"),
 
 
         }
@@ -133,8 +145,8 @@ class ChromeRule(MergeRule):
         Choice("click_by_voice_options", {
             "go": "f",
             "click": "c",
-            "push": "b",
-            "tab": "t",
+            "push": "b", # open as new tab but don't go to it
+            "tab": "t", # open as new tab and go to it
             "window": "w",
             "hover": "h",
             "link": "k",

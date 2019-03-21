@@ -27,14 +27,13 @@ def findNthToken(text, n, direction):
     Key('escape').execute()
 
 
-class VisualStudioCodeCcrRule(MergeRule):
-    pronunciation = "visual studio code continuous"
+class VSCodeCcrRule(MergeRule):
+    #pronunciation = "visual studio code continuous"
     mwith = CCRMerger.CORE
 
     mapping = {
        # note: if you get the bad grammar grammar too complex error, move some of these commands into the non-CCR rule
         # cursor/line navigation
-        
         
         
         "scroll up [<n>]": R(Key("c-up"),
@@ -101,7 +100,6 @@ class VisualStudioCodeCcrRule(MergeRule):
             rdescript="add cursor to next occurrence of current selection") * Repeat(extra='n'),
        
         
-        
     }
     extras = [
         Dictation("text"),
@@ -121,7 +119,7 @@ class VisualStudioCodeCcrRule(MergeRule):
         
     defaults = {"n": 1, "mim": "", "text": ""}
 
-class VisualStudioCodeCcrRule_2(MergeRule):
+class VSCodeCcrRule_2(MergeRule):
     mwith = CCRMerger.CORE
     mapping = {
         "indent [<n>]":
@@ -142,56 +140,20 @@ class VisualStudioCodeCcrRule_2(MergeRule):
         "liner <n>":
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
               rdescript="Go to Line"),
-
+        
         
     }
     extras = [
         Dictation("text"),
         Dictation("mim"),
         IntegerRefST("n", 1, 1000),
-        Choice("parable_character", {
-            "sarens": "lparen", # parentheses noninclusive
-            "eyesar": "rparen", # parentheses inclusive
-            "swingle": "squote", # single quotes
-            "dwingle": "dquote", # double quotes
-            "swacket": "lbracket", # square brackets inclusive
-            "swirly": "lbrace", # curly braces inclusive
-            "sangy": "langle", # angle brackets inclusive 
-        }),
-        ]
+                ]
     defaults = {"n": 1, "mim": "", "text": ""}
 
 class VisualStudioCodeNonCcrRule(MergeRule):
     pronunciation = "Visual Studio code non-continuous"
     mapping = {
-        # Non-Ccr
-################################################
-       # things that should be in CCR but but couldn't fit because grammar complexity
         
-        
-        # "sarens [<n>]": R(Key("c-k, lparen"), 
-        #     rdescript="select between parentheses") * Repeat(extra='n'),
-        # "eye sarens [<n>]": R(Key("c-k, rparen"), 
-        #     rdescript="select between parentheses inclusive") * Repeat(extra='n'),
-        # "swingle [<n>]": R(Key("c-k, squote"), 
-        #     rdescript="select between single quotes") * Repeat(extra='n'),
-        # "dwingle [<n>]": R(Key("c-k, dquote"), 
-        #     rdescript="select between double quotes") * Repeat(extra='n'),
-        # "swacket [<n>]": R(Key("c-k, lbracket"), 
-        #     rdescript="select between square brackets inclusive") * Repeat(extra='n'),
-        # "swirly [<n>]": R(Key("c-k, lbrace"), 
-        #     rdescript="select between curly braces inclusive") * Repeat(extra='n'),
-        # "sangy [<n>]": R(Key("c-k, langle"), 
-        #     rdescript="select between curly braces inclusive") * Repeat(extra='n'),
-
-
-
-
-        
-
-       
-
-     #  [(he)]        
         # moving around a file
         "[(go to | jump | jump to)] line <n>":
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
@@ -232,8 +194,8 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         "markdown preview": R(Key("cs-v"), rdescript="markdown preview"),
         "markdown preview side": R(Key("c-k, v"), rdescript="open markdown preview to the side"),
         "Zen mode": R(Key("c-k, z"), rdescript="Zen mode"), # note: use esc esc to exit
-        # "debug": R(Key("cs-d"), rdescript="debug"), this is a command
-        # "[show] problems [panel]": Key("cs-m"), this is a command
+        # "debug": R(Key("cs-d"), rdescript="debug"), this is a command below
+        # "[show] problems [panel]": Key("cs-m"), this is a command below
             # I'm just commenting these out here to avoid repetition because I put them the debug section
 
         
@@ -435,8 +397,8 @@ class VisualStudioCodeNonCcrRule(MergeRule):
 #---------------------------------------------------------------------------
 
 # Initialise the rule.
-ccr_rule_1 = VisualStudioCodeCcrRule()
-ccr_rule_2 = VisualStudioCodeCcrRule_2()
+ccr_rule_1 = VSCodeCcrRule()
+ccr_rule_2 = VSCodeCcrRule_2()
 non_ccr_rule = VisualStudioCodeNonCcrRule()
 
 

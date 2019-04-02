@@ -36,15 +36,32 @@ class AcrobatRule(MergeRule):
         "disable scrolling": R(Key("a-v, p, s")),
         "(nab | next tab) [<n>]":                    R(Key("c-tab")) * Repeat(extra="n"),
         "(lab | previous tab) [<n>]":                    R(Key("cs-tab")) * Repeat(extra="n"),
-        "(home button|homer)": Mouse("[43, 101], left"),
+        "(home button|homer)": Mouse("[100, 101], left"),
+
+        
+        
+        
         "back": Key("a-left"),
+        "save as": R(Key("a-f, a"), rdescript=""),
         "fast save": Key("c-s/10, enter/10, enter/10, left, enter"),
         "down it [<n>]": R(Key("pgdown:%(n)s, up:3"), rdescript=""),
         "up it [<n>]": R(Key("pgup:%(n)s, down:3"), rdescript=""),
+
+        "[navigation] tree": Key("a-v, s, n, e"),
+        
+        "rotate [<n>]": Key("c-plus") * Repeat(extra='n'),
+
+        # scrolling commands
+        "scroll <m>": Key("cs-h/2, %(m)s"),
+        "scroll": Key("cs-h/2, 5"),
+        "reverse [direction]": Key("minus"), 
+        "stop [scrolling]": Key("escape"),
+
     }
     extras = [
         Dictation("dict"),
         IntegerRefST("n", 1, 1000),
+        IntegerRefST("m", 1, 9),
     ]
     defaults = {"n": 1, "dict": "nothing"}
 

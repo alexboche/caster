@@ -112,6 +112,8 @@ class DragonRule(MergeRule):
         "(train from vocab | cab train)": R(Key("a-t/50, enter/50, a-r/250, s"), 
             rdescript="quickly train word from Vocabulary Editor"),
         
+        
+        
         "recognition history": 
             R(Playback([(["view", "recognition", "history"], 0.03)]),
              rdescript="open Dragon recognition history"),

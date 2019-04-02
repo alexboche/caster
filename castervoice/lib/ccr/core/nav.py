@@ -284,7 +284,8 @@ class Navigation(MergeRule):
         Choice("semi", {
             "dock": ";",
             "doc": ";",
-            "sink": ""
+            "sink": "",
+            "cole": ":",
         }),
         Choice("word_limit", {
             "single": 1,
@@ -300,7 +301,7 @@ class Navigation(MergeRule):
             "fly": "c",
         }),
         Choice("extreme", {
-            "bust": "way",
+            "bus": "way",
         }),
         Choice("big", {
             "big": True,

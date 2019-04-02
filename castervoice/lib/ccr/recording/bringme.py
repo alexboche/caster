@@ -103,7 +103,7 @@ class BringRule(SelfModifyingRule):
         self.reset(self.mapping)
 
     mapping = {
-        "bring me <desired_item>":
+        "bring <desired_item>":
             R(Function(bring_it), rdescript="Launch preconfigured program, folder or website"),
 
         # this command is to be used with folders and websites only. it aids the automation by selecting the address bar.

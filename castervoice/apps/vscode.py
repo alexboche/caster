@@ -99,29 +99,6 @@ class VSCodeCcrRule(MergeRule):
         "next cursor [<n>]": R(Key("c-d"), 
             rdescript="add cursor to next occurrence of current selection") * Repeat(extra='n'),
        
-        
-    }
-    extras = [
-        Dictation("text"),
-        Dictation("mim"),
-        IntegerRefST("n", 1, 1000),
-        Choice("parable_character", {
-            "sarens": "lparen", # parentheses noninclusive
-            "eyesar": "rparen", # parentheses inclusive
-            "swingle": "squote", # single quotes
-            "dwingle": "dquote", # double quotes
-            "swacket": "lbracket", # square brackets inclusive
-            "swirly": "lbrace", # curly braces inclusive
-            "sangy": "langle", # angle brackets inclusive 
-        }),
-
-                ]
-        
-    defaults = {"n": 1, "mim": "", "text": ""}
-
-class VSCodeCcrRule_2(MergeRule):
-    mwith = CCRMerger.CORE
-    mapping = {
         "indent [<n>]":
             R(Key("tab"), rdescript="Visual Studio Code: Indent")*Repeat(extra="n"),
         "hard delete [<n>]": R(Key("s-del"), 
@@ -137,17 +114,27 @@ class VSCodeCcrRule_2(MergeRule):
             rdescript="switch line with the one above it") * Repeat(extra='n'),
         "match bracket": R(Key("cs-backslash"),
             rdescript="jump to matching bracket"),
-        "liner <n>":
-            R(Key("c-g") + Text("%(n)d") + Key("enter"),
-              rdescript="Go to Line"),
-        
-        
+        # "liner <m>":
+        #     R(Key("c-g") + Text("%(m)d") + Key("enter"),
+        #       rdescript="Go to Line"),
     }
     extras = [
         Dictation("text"),
         Dictation("mim"),
-        IntegerRefST("n", 1, 1000),
+        IntegerRefST("n", 1, 100),
+        # IntegerRefST("m", 1, 1000),
+        Choice("parable_character", {
+            "sarens": "lparen", # parentheses noninclusive
+            "eyesar": "rparen", # parentheses inclusive
+            "swingle": "squote", # single quotes
+            "dwingle": "dquote", # double quotes
+            "swacket": "lbracket", # square brackets inclusive
+            "swirly": "lbrace", # curly braces inclusive
+            "sangy": "langle", # angle brackets inclusive 
+        }),
+
                 ]
+        
     defaults = {"n": 1, "mim": "", "text": ""}
 
 class VisualStudioCodeNonCcrRule(MergeRule):
@@ -353,8 +340,9 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         "toggle word wrap": R(Key("a-z"), rdescript="toggle word wrap"),
 
         # miscellaneous
-        "black formatting": R(Key("sa-f"), rdescript="apply black formatting"),           
+        "black": R(Key("sa-f"), rdescript="apply black formatting"),           
             # must install black.not sure if this hotkey is specific to my system
+        #"yap": R(Key(""), rdescript="apply yapf formatting"),
         "run this line": R(Key("csa-l"), rdescript="run this line"),
         "join line": R(Key("csa-j"), rdescript="join line"),
         
@@ -398,7 +386,7 @@ class VisualStudioCodeNonCcrRule(MergeRule):
 
 # Initialise the rule.
 ccr_rule_1 = VSCodeCcrRule()
-ccr_rule_2 = VSCodeCcrRule_2()
+
 non_ccr_rule = VisualStudioCodeNonCcrRule()
 
 
@@ -407,7 +395,7 @@ context = AppContext(executable="code")
 
 # Add VisualStudioCodeCcrRule as a caster Ccr app rule. (at least I think that's what this does )
 control.nexus().merger.add_app_rule(ccr_rule_1, context)
-control.nexus().merger.add_app_rule(ccr_rule_2, context)
+#control.nexus().merger.add_app_rule(ccr_rule_2, context)
 
 
 grammar = Grammar("code", context=context)

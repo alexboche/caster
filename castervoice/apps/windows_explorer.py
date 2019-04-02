@@ -20,24 +20,24 @@ class FileDialogueRule(MergeRule):
         "forward [<n>]":
             R(Key("a-right"), rdescript="File Dialogue: Navigate forward")*
             Repeat(extra="n"),
-        "(files | file list)":
-            R(Key("a-d, f6:3"), rdescript="File Dialogue: Files list"),
-        "navigation [pane]":
-            R(Key("a-d, f6:2"), rdescript="File Dialogue: Navigation pane"),
-        "[file] name":
-            R(Key("a-d, f6:5"), rdescript="File Dialogue: File name"),
+        # "(files | file list)":
+        #     R(Key("a-d, f6:3"), rdescript="File Dialogue: Files list"),
+        # "navigation [pane]":
+        #     R(Key("a-d, f6:2"), rdescript="File Dialogue: Navigation pane"),
+        # "[file] name":
+        #     R(Key("a-d, f6:5"), rdescript="File Dialogue: File name"),
 
         "<location>": Key("c-l, tab:%(n)s"),
-        #"layout": Key("a-v, l") + Mimic("small", "icons"),
+        "layout": Key("a-v, l") + Mimic("small", "icons"),
 
     }
 
     extras = [IntegerRefST("n", 1, 10),
         Choice("location", {
             "search": 1,
-            "left pane": 3,
-            "center pane": 4,
-            "namer": 6,
+            "left pane": 2,
+            "center pane": 3,
+            "namer": 4,
         }),
     ]
     defaults = {
@@ -45,17 +45,10 @@ class FileDialogueRule(MergeRule):
     }
 
 
-dialogue_names = [
-    "open",
-    "select",
-]
+context = AppContext(title="Explorer")
 
-context = AppContext(title="save")
-for name in dialogue_names:
-    context = context | AppContext(title=name)
-
-grammar = Grammar("FileDialogue", context=context)
-if settings.SETTINGS["apps"]["filedialogue"]:
+grammar = Grammar("WindowsExplorer", context=context)
+if settings.SETTINGS["apps"]["windows_explorer"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
         control.nexus().merger.add_global_rule(FileDialogueRule())
     else:

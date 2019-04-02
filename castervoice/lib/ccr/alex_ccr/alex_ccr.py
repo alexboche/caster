@@ -1,5 +1,7 @@
 from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
-                       Function, Choice, Mouse, Mimic, Playback)
+                       Function, Choice, Mouse, Mimic, Playback)                       
+from dragonfly.actions.action_mouse import get_cursor_position
+
 from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils
 from castervoice.lib import control 
 from castervoice.lib.dfplus.additions import IntegerRefST
@@ -8,7 +10,6 @@ from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import utils
 
-from dragonfly.actions.action_mouse import get_cursor_position
 
 _NEXUS = control.nexus()
     
@@ -23,14 +24,19 @@ class AlexCcrRule(MergeRule):
           "dick": Mouse("left:2"),
           "rick": Mouse("right"),
         "middle click": Mouse("middle"),
-        "say <dict>": Text("%(dict)s"),        
+        "salor <dict>": Text("%(dict)s"),        
         "center click": Mouse("[0.5, 0.5], left"),
         "squat":
             R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
         "bench":
             R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
-
+        "soller": Key("a-tab"),
+        "Roper": Key("end, enter"),
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),
+        "rocking": Key("right, comma, enter"),
+        "rocker": Key("right, comma, enter, dquote:2, left"),
+
+
         "lanter": Key("home"),
         "ranter": Key("end"),
         # "fly lanter": Key("c-home"),
@@ -39,18 +45,18 @@ class AlexCcrRule(MergeRule):
         # "fly ranter": Key("c-end"),
         # "queue ranter": Key("cs-end"),
         # "shin ranter": Key("s-end"),
-
-         "jack [<n>] [<my_words>]": R(Key("cs-left:%(n)s, del") + Text("%(my_words)s")),
+        "win search": Mouse("[80, 60], left"),
+         
         "smack [<n>]": R(Key("cs-left:%(n)s, del")),
-        # "mack [<n>] [<my_words>]": R(Key("cs-right:%(n)s, del") + Text("%(my_words)s")),
+        
         "frack [<n>]": R(Key("cs-right:%(n)s, del")),
         #  "salor [<n>]": R(Key("cs-left:%(n)s")),
         #  "jalor [<n>]": R(Key("cs-right:%(n)s")),
-        #  "palor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),
-         "(previous word | lor) [<n>]": Key("c-left:%(n)s"),
-        #  "kalor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),
-         "(next word |  ralar) [<n>]": Key("c-right:%(n)s"),
-         "back tab [<n>]": R(Key("s-tab"), rdescript="") * Repeat(extra='n'),
+        # "palor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),
+        "lor [<n>]": Key("c-left:%(n)s"),
+        # "kalor [<n>] [<my_words>]": Key("c-right:%(n)s") + Text("%(my_words)s"),
+        "ralar [<n>]": Key("c-right:%(n)s"),
+        "back tab [<n>]": R(Key("s-tab"), rdescript="") * Repeat(extra='n'),
         "caps lock": Mimic("press", "caps", "lock"),
 
         #"trying": Key("cs-p") + Text("insert snippet") + Key("enter") + Text("try/") + Key("enter"),

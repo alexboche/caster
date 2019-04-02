@@ -76,8 +76,8 @@ class LyxCcrRule(MergeRule):
               rdescript="Number"),
 
         # main math command
-         #"[<big>] <symbol_1>":
-            #R(utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"])),
+        "[<big>] <symbol_1>":
+            R(utils.PositionalTexter(cap_symbol_letters, extra=["big", "symbol_1"])),
         
         "dollz": R(Text("$$") + Key("left")),
         "doubledill":R(Text("$$$$") + Key("left:2")), 
@@ -98,6 +98,7 @@ class LyxCcrRule(MergeRule):
         "matrix <m> by <n>": R(Key("a-x") + Text("math-matrix %(m)s %(n)s") + Key("enter")),
         "delim <delimiter>": R(Key("a-x") + Text("math-delim %(delimiter)s") + Key("enter")),
         
+        #"to the <symbol_1>" Key("caret") + Text("s"),
         "toter": R(Key("right, caret")),
         "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s") +
                                   Key("c-v, down")),

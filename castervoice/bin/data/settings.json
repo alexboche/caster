@@ -46,7 +46,7 @@
         "max_ccr_repetitions": 16, 
         "print_rdescripts": false, 
         "rdp_mode": false, 
-        "sikuli_enabled": false
+        "sikuli_enabled": true
     }, 
     "nodes": {}, 
     "one time warnings": {}, 
@@ -71,10 +71,10 @@
         "REMOTE_DEBUGGER_PATH": "", 
         "SAVED_CLIPBOARD_PATH": "C:/NatLink/NatLink/MacroSystem/castervoice/bin/data/clipboard.json", 
         "SETTINGS_WINDOW_PATH": "C:/NatLink/NatLink/MacroSystem/castervoice/asynch/settingswindow.py", 
-        "SIKULI_COMPATIBLE_JAVA_EXE_PATH": "", 
-        "SIKULI_IDE_JAR_PATH": "", 
+        "SIKULI_COMPATIBLE_JAVA_EXE_PATH": "C:\Program Files\Java\jdk-11.0.2\bin\java.exe", 
+        "SIKULI_IDE_JAR_PATH": "",
         "SIKULI_SCRIPTS_FOLDER_PATH": "C:/NatLink/NatLink/MacroSystem/castervoice/asynch/sikuli/scripts", 
-        "SIKULI_SCRIPTS_JAR_PATH": "", 
+        "SIKULI_SCRIPTS_JAR_PATH": "C:\Sikuli\sikulix.jar", 
         "SIKULI_SERVER_PATH": "C:/NatLink/NatLink/MacroSystem/castervoice/asynch/sikuli/scripts/xmlrpc_server.sikuli", 
         "WSR_PATH": "C:/Windows/Speech/Common/sapisvr.exe", 
         "WXPYTHON_PATH": "C:/Python27/Lib/site-packages/wx-3.0-msw"

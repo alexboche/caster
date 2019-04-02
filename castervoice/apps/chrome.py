@@ -9,8 +9,7 @@ Command-module for Chrome and Firefox
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice, Mouse, Pause)
-
+from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat, Function, Choice, Mouse, Pause) 
 from castervoice.lib import control
 from castervoice.lib import settings
 from castervoice.lib.actions import Key, Text
@@ -21,13 +20,27 @@ from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import reloader
 
+newTabPressB = Key("c-t") + Text("B")
+def test_function(action): 
+    action.execute()
+    #newTabPressB.execute()
+
+# # Alex's experiment
+# class vocolaStyleFunction(ActionBase):
+#     def __init__(self, action):
+#         ActionBase.__init__(self):
+#         action.execute()
+
 
 class ChromeRule(MergeRule):
     pronunciation = "google chrome"
 
     mapping = { 
- 
-        "triple boy": Key("c-t"),
+        # "test command one": Function(lambda: newTabPressB.execute()) + Key("c"),
+        "test command one": newTabPressB + Key("c"),
+
+        # "test command": Function(test_function) + Key("c"),
+        # "test command": vocolaStyleFunction(newTabPressB) + Key("c"),
         "reload chrome": Function(reloader.reload_app_grammars),
  
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
@@ -58,7 +71,8 @@ class ChromeRule(MergeRule):
         "second last tab": R(Key("c-1, cs-tab:2")),
         
         
-
+        "<extension_buttons>": Key("as-t, tab:%(extension_button)s, enter"),
+        
     
 
         "go back [<n>]":                R(Key("a-left/20"), rdescript="Browser: Navigate History Backward") * Repeat(extra="n"),
@@ -152,7 +166,10 @@ class ChromeRule(MergeRule):
             "link": "k",
             "copy": "s",
         }),
-        
+        Choice("extension_buttons", {
+            "send from Gmail": 7,
+            "lass pass" : 8,
+        }),
         Dictation("dictation"),
         IntegerRefST("n", 1, 10),
         IntegerRefST("m", 1, 10),

@@ -9,7 +9,7 @@ import weakref
 
 import toml
 
-from castervoice.lib import settings
+# from castervoice.lib import settings
 
 
 
@@ -167,10 +167,14 @@ def reload_grammar(module_path, *args, **kwargs):
     cached_module.grammar.load()
 
 
-def reload_app_grammars(*args, **kwargs):
-    with io.open(settings.USER_SETTINGS_PATH) as f:
+# def reload_app_grammars(*args, **kwargs):
+def reload_app_grammars():
+    # with io.open(settings.USER_SETTINGS_PATH) as f:
+    USER_SETTINGS_PATH = r"C:\Users\alex\.caster\data\settings.toml"
+    with io.open(USER_SETTINGS_PATH) as f:
         data = toml.load(f)
-    
+    # I think the ideas that data['reload_grammar_modules'] is supposed
+    # to be a list of the file paths of the files to be reloaded  
     for path in data['reload_grammar_modules']:
         try:
             reload_grammar(path)    

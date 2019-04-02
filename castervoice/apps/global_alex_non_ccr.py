@@ -10,6 +10,61 @@
 """
 #---------------------------------------------------------------------------
 # from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError, Playback, Mimic, Pause, WaitWindow)
+# eyeX mouse stuff
+#!python
+# -*- coding: utf-8 -*-
+from dragonfly import (Grammar, MappingRule)
+from dragonfly.actions.action_mouse import get_cursor_position
+
+import subprocess
+import pyperclip
+
+
+
+eyemouse_handle = None
+
+def create_hidden_window(arguments):
+    si = subprocess.STARTUPINFO()
+    si.dwFlags = subprocess.STARTF_USESHOWWINDOW
+    si.wShowWindow = subprocess.SW_HIDE
+    return subprocess.Popen(
+        arguments,
+        close_fds=True,
+        startupinfo=si,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+
+
+def eyemouse_launcher(kill=False):
+    global eyemouse_handle
+    if kill:
+        if eyemouse_handle:
+            eyemouse_handle.terminate()
+            eyemouse_handle = None
+        else:
+            create_hidden_window(["taskkill", "/im", "C:\Users\alex\Desktop\EyeXMouse\compiled\x64\EyeXMouse.exe", "/f"])
+    elif not eyemouse_handle:
+        eyemouse_handle = create_hidden_window(
+            r"C:\Users\alex\Desktop\EyeXMouse\compiled\x64\EyeXMouse.exe")
+
+
+def move_mouse(left_right, horizontal_distance, up_down, vertical_distance):
+    # todo: make some of the arguments optional
+    new_mouse_position = list(get_cursor_position())
+    # horizontal axis
+    if left_right == "left":
+        new_mouse_position[0] -=  (horizontal_distance)
+    if left_right == "right":
+        new_mouse_position[0] += (horizontal_distance)
+    # vertical axis: it seems to be inverted
+    if up_down == "down":
+        new_mouse_position[1] += vertical_distance
+    if up_down == "up":
+        new_mouse_position[1] -= vertical_distance
+    new_mouse_position = tuple(new_mouse_position)
+    Mouse("[%d, %d]" % new_mouse_position).execute()
+
+
+
 from dragonfly import *
 
 from castervoice.lib import control
@@ -47,6 +102,20 @@ class GlobalAlexNonCcrRule(MergeRule):
         "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
         "(satch | sosh) [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),
         
+
+        # eye X mouse
+        "Eye Mouse":
+            Function(eyemouse_launcher, kill=False),
+        "stop mouse":
+            Function(eyemouse_launcher, kill=True),
+
+        # discrete mouse-movement command
+        "cursor [<left_right>] [<horizontal_distance>] [<up_down>] [<vertical_distance>]":
+            R(Function(move_mouse,
+                extra={"left_right", "horizontal_distance", "up_down", "vertical_distance"})),
+        
+        
+
         # "(say | sailing) <dictation>": Function(cap_dictation, extra={"dictation"}),        
             # why is the above command not working and breaking this whole file?
         "smart nav": Key("cs-f9"),
@@ -62,15 +131,40 @@ class GlobalAlexNonCcrRule(MergeRule):
         "drop list": Key("a-down"), # drops down a drop-down list
         
         # windows eye control commands (with the control bar on the bottom rather than the top)
-        "micky": Mouse("[0.5, .87], left:40") + Mouse("[0.29, 0.87], left"),
-        "ricky": Mouse("[0.5, .87], left:40") + Mouse("[0.32, 0.87], left"),
-        "cursy": Mouse("[0.5, .87], left:40") + Mouse("[0.37, 0.87], left"),
+        "micky": Mouse("[0.5, .87], left:40") + Mouse("[0.29, 0.87]") + Pause("25") + Mouse("left"),
+        "ricky": Mouse("[0.5, .87], left:40") + Mouse("[0.32, 0.87]") + Pause("25") + Mouse("left"),
+        "cursy": Mouse("[0.5, .87], left:40") + Mouse("[0.37, 0.87]") + Pause("25") + Mouse("left"),
         "cursor":  Mouse("[0.37, 0.87], left"),
         "lefty":  Mouse("[0.29, 0.87], left"),
+        "lerfy":  Mouse("[0.29, 0.1], left"),
+        
         "righty":  Mouse("[0.32, 0.87], left"),
         "hideout":  Mouse("[0.78, 0.87], left"),
         "bring down":  Mouse("[0.23, 0.1], left"),
         "bring up":  Mouse("[0.23, 0.87], left"),
+        
+
+        # terminal
+        "caster one": Text("cd C:\Users\\alex\Desktop\caster-1") + Key("enter"),
+
+
+        # git
+        "git add": R(Text("git add "), rdescript=""),
+        "git commit": R(Text('git commit -m ""') + Key("left"), rdescript=""),
+        "git push": R(Text("git push "), rdescript=""),
+        "git clone": R(Text("git clone "), rdescript=""),
+        "git checkout": R(Text("git checkout "), rdescript=""),
+        "git check out": R(Text("git fetch "), rdescript=""),
+        "git branch": R(Text("git branch "), rdescript=""),
+        "git status": R(Text("git status ") + Key("enter"), rdescript=""),
+        "git diff": R(Text("git diff ") + Key("enter"), rdescript=""),
+        "git remote": R(Text("git remote ") + Key("enter"), rdescript=""),
+        "git push set upstream orgin": Text("git push --set-upstream origin "),
+        "git graph": Text("git log --oneline --all --graph "),
+        "git fetch": R(Text("git fetch ")),        
+
+
+
 
         "vocab": Playback([(["start", "vocabulary", "editor"], 0.03)]) * Repeat(extra="n"),
         "mimic recognition <dict> [<n> times]":
@@ -93,7 +187,7 @@ class GlobalAlexNonCcrRule(MergeRule):
         "(outlook | mail)": BringApp(r"C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE"),
         "ackro": BringApp(r"C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe"),
             
-        # "<application>": BringApp(r"%(application)s"),
+        # "<application>": BringApp("%(application)s"),
         
             
         "Google <dict>": BringApp(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe") 
@@ -125,14 +219,26 @@ class GlobalAlexNonCcrRule(MergeRule):
             }),
         Choice("application", {
 
-            "chrome": "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-            "coding": "C:\Users\alex\AppData\Local\Programs\Microsoft VS Code\Code.exe",
-            "(outlook | mail)": "C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE",
-        })
-        
+            "chrome": r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+            "coding": r"C:\Users\alex\AppData\Local\Programs\Microsoft VS Code\Code.exe",
+            "(outlook | mail)": r"C:\Program Files (x86)\Microsoft Office\root\Office16\OUTLOOK.EXE",
+            "powershell": r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+        }),
+         Choice("left_right", {
+            "left": "left",
+            "right": "right",
+        }),
+        Choice("up_down", {
+            "up": "up",
+            "down": "down",
+        }),
+        IntegerRefST("horizontal_distance", 0, 500),
+        IntegerRefST("vertical_distance", 0, 500),
     ]
+    defaults = {"n": 1, "m": 1, "spec": "", "dict": "", "text": "", "mouse_button": "", "left_right": "left", 
+        "up_down": "up", "horizontal_distance": 0, "vertical_distance": 0}
 
-    defaults = {"n": 1, "m": 1, "dict": "nothing"}
+        
 
 #---------------------------------------------------------------------------
 

@@ -19,6 +19,7 @@ from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import reloader
+from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 
 newTabPressB = Key("c-t") + Text("B")
 def test_function(action): 
@@ -129,6 +130,7 @@ class ChromeRule(MergeRule):
         "developer tools": R(Key("cs-i"), rdescript="developer tools"),
         "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
         "more tools": R(Key("a-f/5, l"), rdescript="more tools"),
+        
 
 
 
@@ -177,11 +179,22 @@ class ChromeRule(MergeRule):
     ]
     defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
 
+class ChromeCcrRule(MergeRule):
+    mwith = CCRMerger.CORE
+    mapping = {
+        "bar": Key("a-d"),
+    }
 
 #---------------------------------------------------------------------------
-
+ccr_rule = ChromeCcrRule()
+# non_ccr_rule = ChromeRule()
 context = AppContext(executable="chrome")
+
+# control.nexus().merger.add_app_rule(ccr_rule, context)
+
 grammar = Grammar("chrome", context=context)
+# grammar.add_rule(non_ccr_rule)
+# grammar.load()
 
 if settings.SETTINGS["apps"]["chrome"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:

@@ -26,19 +26,19 @@ class AlexCcrRule(MergeRule):
         "middle click": Mouse("middle"),
         "salor <dict>": Text("%(dict)s"),        
         "center click": Mouse("[0.5, 0.5], left"),
-        "squat":
-            R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
-        "bench":
-            R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
-        "soller": Key("a-tab"),
+        # "squat":
+        #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
+        # "bench":
+        #     R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
+        # "taller": Key("a-tab"),
         "Roper": Key("end, enter"),
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),
         "rocking": Key("right, comma, enter"),
         "rocker": Key("right, comma, enter, dquote:2, left"),
+        "ecker": Key("escape"),
 
-
-        "lanter": Key("home"),
-        "ranter": Key("end"),
+        "lanter [<n>]": Key("home:%(n)s"),
+        "ranter [<n>]": Key("end:%(n)s"),
         # "fly lanter": Key("c-home"),
         # "queue lanter": Key("cs-home"),
         # "shin lanter": Key("s-home"),

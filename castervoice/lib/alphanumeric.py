@@ -14,7 +14,7 @@ def get_alphabet_choice(spec):
             "echo": "e",
             "fail": "f",
             "goof": "g",
-            "hotel": "h",
+            "(hotel|hiss)": "h",
             "sit": "i",
             "(julie|jick)": "j",
             "kilo": "k",

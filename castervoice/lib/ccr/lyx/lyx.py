@@ -100,6 +100,8 @@ class LyxCcrRule(MergeRule):
         
         #"to the <symbol_1>" Key("caret") + Text("s"),
         "toter": R(Key("right, caret")),
+        "sub <symbol_1>": Key("underscore") + Text("%(symbol_1)s") + Key("right"),
+        "to the <symbol_1>": Key("caret") + Text("%(symbol_1)s") + Key("right"),
         "<fraction_type> that": R(Key("c-x") + Text("%(fraction_type)s") +
                                   Key("c-v, down")),
         "inverse": R(Text("^-1") + Key("right")),

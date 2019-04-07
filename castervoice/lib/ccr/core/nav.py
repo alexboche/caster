@@ -17,6 +17,51 @@ from castervoice.lib.dfplus.state.short import L, S, R
 from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
 
+from inspect           import getargspec
+from dragonfly.actions.action_base import ActionBase, ActionError
+import pyperclip
+
+class RemapArgsFunction(ActionBase):
+    # def __init__(self, function, remap_data=None, **defaults):
+    def __init__(self, function, defaults=None, remap_data=None):
+    
+        ActionBase.__init__(self)
+        self._function = function
+        self._defaults = defaults or {}
+        self._remap_data = remap_data or {}
+        self._str = function.__name__
+
+        # TODO Use inspect.signature instead; getargspec is deprecated.
+        (args, varargs, varkw, defaults) = getargspec(self._function)
+        if varkw:  self._filter_keywords = False
+        else:      self._filter_keywords = True
+        self._valid_keywords = set(args)
+
+    def _execute(self, data=None):
+        arguments = dict(self._defaults)
+        if isinstance(data, dict):
+            arguments.update(data)
+
+        # Remap specified names.
+        if arguments and self._remap_data:
+            for old_name, new_name in self._remap_data.items():
+                if old_name in data:
+                    arguments[new_name] = arguments.pop(old_name)
+
+        if self._filter_keywords:
+            invalid_keywords = set(arguments.keys()) - self._valid_keywords
+            for key in invalid_keywords:
+                del arguments[key]
+
+        try:
+            self._function(**arguments)
+        except Exception as e:
+            self._log.exception("Exception from function %s:"
+                                % self._function.__name__)
+            raise ActionError("%s: %s" % (self, e))
+
+
+
 _NEXUS = control.nexus()
 
 
@@ -52,18 +97,7 @@ class NavigationNon(MappingRule):
         #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
         # "bench":
         #     R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
-        "kick":
-            R(Function(navigation.left_click, nexus=_NEXUS),
-              rdescript="Mouse: Left Click"),
-        "kick mid":
-            R(Function(navigation.middle_click, nexus=_NEXUS),
-              rdescript="Mouse: Middle Click"),
-        "psychic":
-            R(Function(navigation.right_click, nexus=_NEXUS),
-              rdescript="Mouse: Right Click"),
-        "(kick double|double kick)":
-            R(Function(navigation.left_click, nexus=_NEXUS)*Repeat(2),
-              rdescript="Mouse: Double Click"),
+        
         "shift right click":
             R(Key("shift:down") + Mouse("right") + Key("shift:up"),
               rdescript="Mouse: Shift + Right Click"),
@@ -161,6 +195,41 @@ class NavigationNon(MappingRule):
     }
 
 
+
+
+
+
+def copypaste_delete_until_character_sequence(left_right, character_sequence):
+        if left_right == "left":
+            Key("s-home, c-c/2").execute()
+        if left_right == "right":
+            Key("s-end, c-c/2").execute()
+        character_sequence = str(character_sequence)    
+        text = text = pyperclip.paste()
+        new_text = delete_until_character_sequence(text, character_sequence, left_right)
+        offset = len(new_text)
+        pyperclip.copy(new_text)
+        Key("c-v/2").execute()
+        # move cursor back into the right spot. only necessary for left_right = "right"
+        if left_right == "right":
+            Key("left:%d" %offset).execute()
+        
+
+def delete_until_character_sequence(text, character_sequence, left_right):
+    if left_right == "left":
+
+        character_sequence_start_position = text.rfind(character_sequence)
+        new_text_start_position = character_sequence_start_position 
+        new_text = text[:new_text_start_position]
+        return new_text
+    if left_right == "right":
+        
+        character_sequence_start_position = text.find(character_sequence)
+        new_text_start_position = character_sequence_start_position + len(character_sequence)
+        new_text = text[new_text_start_position:]
+        return new_text
+     
+
 class Navigation(MergeRule):
     non = NavigationNon
     pronunciation = CCRMerger.CORE[1]
@@ -246,6 +315,37 @@ class Navigation(MergeRule):
             R(Function(text_utils.enclose_selected), rdescript="Enclose text "),
         "dredge":
             R(Key("a-tab"), rdescript="Alt-Tab"),
+        "squat":
+            R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Core-Mouse: Left Down"),
+        "bench":
+            R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Core-Mouse: Left Up"),
+        "kick":
+            R(Function(navigation.left_click, nexus=_NEXUS),
+              rdescript="Core-Mouse: Left Click"),
+        "kick mid":
+            R(Function(navigation.middle_click, nexus=_NEXUS),
+              rdescript="Core-Mouse: Middle Click"),
+        "psychic":
+            R(Function(navigation.right_click, nexus=_NEXUS),
+              rdescript="Core-Mouse: Right Click"),
+        "(kick double|double kick)":
+            R(Function(navigation.left_click, nexus=_NEXUS)*Repeat(2),
+              rdescript="Core-Mouse: Double Click"),
+        "shin tabby": Key("s-tab"),
+        
+        #    "rosser <right_character>": 
+        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="right"), dict(right_character='character_sequence')),
+        # "rosser <dictation>": 
+        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="right"), dict(dictation='character_sequence')),
+        
+        
+        # "leeser <left_character>": 
+        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="left"), dict(left_character="character_sequence")),
+        # "leeser <dictation>": 
+        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="left"), dict(dictation='character_sequence')),
+        
+     
+
 
     }
 
@@ -254,6 +354,32 @@ class Navigation(MergeRule):
         IntegerRefST("nnavi50", 1, 50),
         IntegerRefST("nnavi500", 1, 500),
         Dictation("textnv"),
+        Dictation("dictation"),
+        Choice("left_character", {
+            "prekris": "(",
+            "brax": "[",
+            "angle": "<",
+            "curly": "{",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
+        Choice("right_character", {
+            "prekris": ")",
+            "brax": "]",
+            "angle": ">",
+            "curly": "}",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
+ 
         Choice(
             "enclosure", {
                 "prekris": "(~)",

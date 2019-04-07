@@ -27,7 +27,8 @@ class Punctuation(MergeRule):
         "[is] less [than] [or] equal [to]":
             R(Key("langle, equals"), rdescript="<= Comparison"),
         "[is] equal to":
-            R(Key("equals,equals"), rdescript="Equality"),
+            R(Key("equals, equals"), rdescript="Equality"),
+        "double": Key("space, equals, equals, space"),
         "prekris":
             R(Key("lparen, rparen, left"), rdescript="Parentheses"),
         "brax":

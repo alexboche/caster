@@ -1,3 +1,54 @@
+# import _RemapArgsFunction
+# from dragonfly.actions.action_function import RemapArgsFunction
+
+from inspect           import getargspec
+# from action_base      import ActionBase, ActionError
+from dragonfly.actions.action_base import ActionBase, ActionError
+
+
+
+
+class RemapArgsFunction(ActionBase):
+    # def __init__(self, function, remap_data=None, **defaults):
+    def __init__(self, function, defaults=None, remap_data=None):
+    
+        ActionBase.__init__(self)
+        self._function = function
+        self._defaults = defaults or {}
+        self._remap_data = remap_data or {}
+        self._str = function.__name__
+
+        # TODO Use inspect.signature instead; getargspec is deprecated.
+        (args, varargs, varkw, defaults) = getargspec(self._function)
+        if varkw:  self._filter_keywords = False
+        else:      self._filter_keywords = True
+        self._valid_keywords = set(args)
+
+    def _execute(self, data=None):
+        arguments = dict(self._defaults)
+        if isinstance(data, dict):
+            arguments.update(data)
+
+        # Remap specified names.
+        if arguments and self._remap_data:
+            for old_name, new_name in self._remap_data.items():
+                if old_name in data:
+                    arguments[new_name] = arguments.pop(old_name)
+
+        if self._filter_keywords:
+            invalid_keywords = set(arguments.keys()) - self._valid_keywords
+            for key in invalid_keywords:
+                del arguments[key]
+
+        try:
+            self._function(**arguments)
+        except Exception as e:
+            self._log.exception("Exception from function %s:"
+                                % self._function.__name__)
+            raise ActionError("%s: %s" % (self, e))
+#---------------------------------------------------------------------------
+
+
 
 #
 # This file is a command-module for Dragonfly.
@@ -8,17 +59,19 @@
 
 
 """
-#---------------------------------------------------------------------------
+#-------------------------------
 # from dragonfly import (Grammar, AppContext, Dictation, Key, Text, Repeat, Choice, Function, ActionBase, ActionError, Playback, Mimic, Pause, WaitWindow)
 # eyeX mouse stuff
 #!python
 # -*- coding: utf-8 -*-
-from dragonfly import (Grammar, MappingRule)
+# from dragonfly import (Grammar, MappingRule, Function)
+# from dragonfly import *
 from dragonfly.actions.action_mouse import get_cursor_position
 
 import subprocess
 import pyperclip
-
+import io
+# from castervoice.alex_text_manipulation.copypaste import package/module
 
 
 eyemouse_handle = None
@@ -65,6 +118,18 @@ def move_mouse(left_right, horizontal_distance, up_down, vertical_distance):
 
 
 
+
+def cap_dictation(dictation):
+    input_list = str(dictation).split(" ")
+    output_list = []
+    for i in range(len(input_list)):
+        if input_list[i] == "cap":
+            input_list[i+1] = input_list[i+1].title()
+        else:
+            output_list.append(input_list[i])
+    Text(" ".join(output_list)).execute()
+
+
 from dragonfly import *
 
 from castervoice.lib import control
@@ -79,25 +144,146 @@ from castervoice.apps import utils
 from castervoice.apps import reloader
 from castervoice.apps import reloader
 
-def cap_dictation(dictation):
-    input_list = str(dictation).split(" ")
-    output_list = []
-    for i in range(len(input_list)):
-        if input_list[i] == "cap":
-            input_list[i+1] = input_list[i+1].title()
+# storage file
+file_name = r"C:\NatLink\NatLink\MacroSystem\castervoice\alex_text_manipulation\storage.txt"
+    
+
+def save_clipboard_to_file():
+    s = pyperclip.paste()
+    file_name = r"C:\NatLink\NatLink\MacroSystem\castervoice\alex_text_manipulation\storage.txt"
+    with io.open(file_name, 'w') as f:
+        f.write(s)
+
+def delete_current_sentence(left_string, right_string):
+    # cursor_position  = len(left_string)
+    previous_period_location = left_string.rfind(".")
+    next_period_location = right_string.find(".")
+
+    # new_left_string includes the period
+    new_left_string = left_string[:previous_period_location + 1]
+
+    # new_right_string includes the space after the period.
+    new_right_string = right_string[next_period_location + 1:]
+
+    # full_string = new_left_string + new_right_string
+
+    return (new_left_string, new_right_string)
+
+def deleter():
+    file_name = r"C:\NatLink\NatLink\MacroSystem\castervoice\alex_text_manipulation\storage.txt"
+    left_string = ""
+    with io.open(file_name, 'r') as f:
+        left_string = f.read()
+    right_string = pyperclip.paste()
+    new_left_string, new_right_string = delete_current_sentence(left_string, right_string)
+    # new_right_string = delete_current_sentence(left_string, right_string)[1]
+    pyperclip.copy(new_right_string)
+    Key("c-a/2, c-v/2, cs-home/2, left/2").execute() 
+    pyperclip.copy(new_left_string)
+    Key("c-v/2").execute()
+
+
+
+def move_until_character_sequence(left_right, character_sequence):
+    if left_right == "left":
+        Key("s-home, c-c/2").execute()
+        Key("right").execute()
+    if left_right == "right":
+        Key("s-end, c-c/2").execute()
+        Key("left").execute()
+
+    character_sequence = str(character_sequence).lower()
+    text = pyperclip.paste()    
+    # don't distinguish between upper and lowercase
+    text = text.lower()
+    if left_right == "left":
+        if text.rfind(character_sequence) == -1:
+            raise IndexError("character_sequence not found")
         else:
-            output_list.append(input_list[i])
-    Text(" ".join(output_list)).execute()
+            character_sequence_start_position = text.rfind(character_sequence) + len(character_sequence)
+            offset = len(text) - character_sequence_start_position 
+            Key("left:%d" %offset).execute()
+    if left_right == "right":
+        if text.find(character_sequence) == -1:
+            raise IndexError("character_sequence not found")
+        else:
+            character_sequence_start_position = text.find(character_sequence) 
+            offset = character_sequence_start_position 
+            Key("right:%d" %offset).execute()
+        
 
 
+def copypaste_delete_until_character_sequence(left_right, character_sequence):
+        if left_right == "left":
+            Key("s-home, c-c/2").execute()
+        if left_right == "right":
+            Key("s-end, c-c/2").execute()
+        character_sequence = str(character_sequence).lower()
+        text = pyperclip.paste()
+        # don't distinguish between upper and lowercase
+        text = text.lower()
+        new_text = delete_until_character_sequence(text, character_sequence, left_right)
+        offset = len(new_text)
+        pyperclip.copy(new_text)
+        Key("c-v/2").execute()
+        # move cursor back into the right spot. only necessary for left_right = "right"
+        if left_right == "right":
+            Key("left:%d" %offset).execute()
+        
+
+def delete_until_character_sequence(text, character_sequence, left_right):
+    if left_right == "left":
+        if text.rfind(character_sequence) == -1:
+            raise IndexError("character_sequence not found")
+        else:
+            character_sequence_start_position = text.rfind(character_sequence)
+            new_text_start_position = character_sequence_start_position 
+            new_text = text[:new_text_start_position]
+            return new_text
+    if left_right == "right":
+        if text.find(character_sequence) == -1:
+            raise IndexError("character_sequence not found")
+        else:
+            character_sequence_start_position = text.find(character_sequence)
+            new_text_start_position = character_sequence_start_position + len(character_sequence)
+            new_text = text[new_text_start_position:]
+            return new_text
+
+        
+
+def add(x, y, z, w):
+    sum = x+y+z+w
+    print(sum)
+
+
+# Function.remap(y='q').build(f, x=1)
+# Function(f, x=1).remap(y='q')
+
+# Function(f, remap_data=dict(a='d'), defaults=dict(x=1))
+# Function.simple(f, x=1)
+
+storeLeftString = Key("cs-home, c-c/2") + Function(save_clipboard_to_file)
 class GlobalAlexNonCcrRule(MergeRule):
     pronunciation = "global alex rule"
 
 
-
-
     mapping = {
-        "red blue": R(Text("orange"), rdescript="red blue"),
+        "red blue": R(Text("gr"), rdescript="red blue"), 
+        # "add <n> <m> plus five plus six": RemapArgsFunction(add, dict(n='x', m='y'),  z=5, w=6),
+        "add <n> <m>": Function(lambda n,m: add(n, m, 5, 6)),
+        # "add <ints>": _otherfunction.OtherFunction(add, dict(z=5, w=6), dict(ints='x', n='y')),
+
+        #"delete current sentence": storeLeftString + Key("cs-end, c-c/2, c-a") + Function(deleter) + Key("c-v"),
+        "delete current sentence": storeLeftString + Key("cs-end, c-c/2, c-a") + Function(deleter),
+        # "delete <left_right> <character_sequence>": 
+        #     Function(copypaste_delete_until_character_sequence, extra={"left_right", "character_sequence"}),
+        #     Function(copypaste_delete_until_character_sequence, left_right="left"),
+        "leeser <left_character>": RemapArgsFunction(move_until_character_sequence, dict(left_right = "left"), dict(left_character="character_sequence")),
+        "rosser <right_character>": RemapArgsFunction(move_until_character_sequence, dict(left_right = "right"), dict(right_character="character_sequence")),
+        "leeser <dictation>": RemapArgsFunction(move_until_character_sequence, dict(left_right = "left"), dict(dictation="character_sequence")),
+        "rosser <dictation>": RemapArgsFunction(move_until_character_sequence, dict(left_right = "right"), dict(dictation="character_sequence")),
+
+
         "reload grammars": R(Function(reloader.reload_app_grammars)), 
         "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
         "(satch | sosh) [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),
@@ -110,9 +296,9 @@ class GlobalAlexNonCcrRule(MergeRule):
             Function(eyemouse_launcher, kill=True),
 
         # discrete mouse-movement command
-        "cursor [<left_right>] [<horizontal_distance>] [<up_down>] [<vertical_distance>]":
-            R(Function(move_mouse,
-                extra={"left_right", "horizontal_distance", "up_down", "vertical_distance"})),
+        # "cursor [<left_right>] [<horizontal_distance>] [<up_down>] [<vertical_distance>]":
+        #     R(Function(move_mouse,
+        #         extra={"left_right", "horizontal_distance", "up_down", "vertical_distance"})),
         
         
 
@@ -208,9 +394,38 @@ class GlobalAlexNonCcrRule(MergeRule):
     }
     extras = [
         Dictation("dict"),
+        Dictation("dictation"),
+        Dictation("text"),
         IntegerRefST("n", 1, 100),
         IntegerRefST("m", 1, 100),
         IntegerRefST("wait_time", 1, 1000),
+        Choice("character_sequence", {
+            "comma": ",",
+        }),
+        Choice("left_character", {
+            "prekris": "(",
+            "brax": "[",
+            "angle": "<",
+            "curly": "{",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
+        Choice("right_character", {
+            "prekris": ")",
+            "brax": "]",
+            "angle": ">",
+            "curly": "}",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
         Choice("search_engine", {
             "(wikipedia | wiki)": "wikipedia.org",
             "amazon": "Amazon.com",
@@ -232,11 +447,16 @@ class GlobalAlexNonCcrRule(MergeRule):
             "up": "up",
             "down": "down",
         }),
+        Choice("ints", {
+            "one": "1",
+            "two": "2",
+            "three": "3",
+        }),
         IntegerRefST("horizontal_distance", 0, 500),
         IntegerRefST("vertical_distance", 0, 500),
     ]
-    defaults = {"n": 1, "m": 1, "spec": "", "dict": "", "text": "", "mouse_button": "", "left_right": "left", 
-        "up_down": "up", "horizontal_distance": 0, "vertical_distance": 0}
+    defaults = {"n": 1, "m": 1, "spec": "", "dict": "", "text": "", "mouse_button": "", 
+        "horizontal_distance": 0, "vertical_distance": 0}
 
         
 

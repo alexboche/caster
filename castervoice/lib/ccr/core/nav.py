@@ -322,7 +322,6 @@ class Navigation(MergeRule):
             RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(dictation="phrase"), left_right="right"),
 
 
-        # "Erin sailor": Function(context.Alex_function),
         "go lease <left_character>":
             RemapArgsFunction(navigation.move_until_character_sequence, dict(left_character="character_sequence"), left_right="left"),
         "go lease <dictation>":

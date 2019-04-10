@@ -65,14 +65,19 @@ def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, le
     if left_right == "right":
         Key("s-end").execute()
         # Key("s-end, c-c/2").execute()
-    selected_text = context.read_selected_without_altering_clipboard()[1]
-    # selected_text = pyperclip.paste()
+    err, selected_text = context.read_selected_without_altering_clipboard()
+        # selected_text = pyperclip.paste()
+    if err != 0:
+        # I'm not discriminating between err = 1 and err = 2
+        print("failed to copy text")
+        return
+
     text = str(selected_text).lower()
     replaced_phrase = str(replaced_phrase).lower()
     replacement_phrase = str(replacement_phrase).lower()
     new_text = replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_right)
     if not context.paste_string_without_altering_clipboard(new_text):
-                print("failed to paste {}".format(new_text))
+        print("failed to paste {}".format(new_text))
     # pyperclip.copy(output)
     # Key("c-v").execute()
     if left_right == "right":
@@ -103,8 +108,13 @@ def copypaste_remove_phrase_from_text(phrase, left_right):
     if left_right == "right":
         Key("s-end").execute()
         # Key("s-end, c-c/2").execute()
-    selected_text = context.read_selected_without_altering_clipboard()[1]
-    # selected_text = pyperclip.paste()
+    err, selected_text = context.read_selected_without_altering_clipboard()
+        # selected_text = pyperclip.paste()
+    if err != 0:
+        # I'm not discriminating between err = 1 and err = 2
+        print("failed to copy text")
+        return
+
     text = str(selected_text).lower()
         # don't distinguish between uppercase and lowercase
     phrase = str(phrase).lower()
@@ -128,8 +138,13 @@ def move_until_character_sequence(left_right, character_sequence):
     if left_right == "right":
         Key("s-end").execute()
         # Key("s-end, c-c/2").execute()
-    selected_text = context.read_selected_without_altering_clipboard()[1]
-    # selected_text = pyperclip.paste()
+    err, selected_text = context.read_selected_without_altering_clipboard()
+        # selected_text = pyperclip.paste()
+    if err != 0:
+        # I'm not discriminating between err = 1 and err = 2
+        print("failed to copy text")
+        return
+    
     text = str(selected_text).lower()
         # don't distinguish between upper and lowercase
     character_sequence = str(character_sequence).lower()
@@ -160,7 +175,7 @@ def delete_until_character_sequence(text, character_sequence, left_right):
             character_sequence_start_position = text.rfind(character_sequence)
             # if character sequence goes to the end of the line
             if character_sequence_start_position == 0:
-                Key("c-v").execute()
+                Key("del").execute()
             else:
                 new_text_start_position = character_sequence_start_position 
                 new_text = text[:new_text_start_position]
@@ -172,7 +187,7 @@ def delete_until_character_sequence(text, character_sequence, left_right):
             character_sequence_start_position = text.find(character_sequence)
             # if character sequence goes to the end of the line
             if character_sequence_start_position + len(character_sequence) == len(text):
-                Key("c-v").execute()
+                Key("del").execute()
             else:
                 new_text_start_position = character_sequence_start_position + len(character_sequence)
                 new_text = text[new_text_start_position:]
@@ -192,21 +207,22 @@ def copypaste_delete_until_character_sequence(left_right, character_sequence):
         if err != 0:
             # I'm not discriminating between err = 1 and err = 2
             print("failed to copy text")
-        else:        
-            text = str(selected_text).lower()      
-                # don't distinguish between upper and lowercase
-            character_sequence = str(character_sequence).lower()
-            text = text.lower()
-            new_text = delete_until_character_sequence(text, character_sequence, left_right)
-            offset = len(new_text)
-            if not context.paste_string_without_altering_clipboard(new_text):
-                print("failed to paste {}".format(new_text))
+            return
+    
+        text = str(selected_text).lower()      
+            # don't distinguish between upper and lowercase
+        character_sequence = str(character_sequence).lower()
+        text = text.lower()
+        new_text = delete_until_character_sequence(text, character_sequence, left_right)
+        offset = len(new_text)
+        if not context.paste_string_without_altering_clipboard(new_text):
+            print("failed to paste {}".format(new_text))
 
-            # pyperclip.copy(new_text)
-            # Key("c-v/2").execute()
-            # move cursor back into the right spot. only necessary for left_right = "right"
-            if left_right == "right":
-                Key("left:%d" %offset).execute()
+        # pyperclip.copy(new_text)
+        # Key("c-v/2").execute()
+        # move cursor back into the right spot. only necessary for left_right = "right"
+        if left_right == "right":
+            Key("left:%d" %offset).execute()
 
 
 

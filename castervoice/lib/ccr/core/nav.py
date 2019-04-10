@@ -16,49 +16,10 @@ from castervoice.lib.dfplus.state.actions2 import UntilCancelled
 from castervoice.lib.dfplus.state.short import L, S, R
 from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
+from castervoice.lib.remap_args_function_action import RemapArgsFunction
 
-from inspect           import getargspec
-from dragonfly.actions.action_base import ActionBase, ActionError
-import pyperclip
 
-class RemapArgsFunction(ActionBase):
-    # def __init__(self, function, remap_data=None, **defaults):
-    def __init__(self, function, defaults=None, remap_data=None):
-    
-        ActionBase.__init__(self)
-        self._function = function
-        self._defaults = defaults or {}
-        self._remap_data = remap_data or {}
-        self._str = function.__name__
 
-        # TODO Use inspect.signature instead; getargspec is deprecated.
-        (args, varargs, varkw, defaults) = getargspec(self._function)
-        if varkw:  self._filter_keywords = False
-        else:      self._filter_keywords = True
-        self._valid_keywords = set(args)
-
-    def _execute(self, data=None):
-        arguments = dict(self._defaults)
-        if isinstance(data, dict):
-            arguments.update(data)
-
-        # Remap specified names.
-        if arguments and self._remap_data:
-            for old_name, new_name in self._remap_data.items():
-                if old_name in data:
-                    arguments[new_name] = arguments.pop(old_name)
-
-        if self._filter_keywords:
-            invalid_keywords = set(arguments.keys()) - self._valid_keywords
-            for key in invalid_keywords:
-                del arguments[key]
-
-        try:
-            self._function(**arguments)
-        except Exception as e:
-            self._log.exception("Exception from function %s:"
-                                % self._function.__name__)
-            raise ActionError("%s: %s" % (self, e))
 
 
 
@@ -344,7 +305,43 @@ class Navigation(MergeRule):
         # "leeser <dictation>": 
         #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="left"), dict(dictation='character_sequence')),
         
-     
+        # the following text manipulation commands must be used on text on the same line as the cursor
+        
+        "change lease <dictation> to <dictation2>":
+            RemapArgsFunction(navigation.copypaste_replace_phrase_with_phrase, dict(dictation="replaced_phrase", dictation2="replacement_phrase"), left_right="left"),
+        "change ross <dictation> to <dictation2>":
+            RemapArgsFunction(navigation.copypaste_replace_phrase_with_phrase, dict(dictation="replaced_phrase", dictation2="replacement_phrase"), left_right="right"),
+        
+        "remove lease <dictation>":
+            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(dictation="phrase"), left_right="left"),
+        "remove lease <left_character>":
+            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(left_character="phrase"), left_right="left"),
+        "remove ross <right_character>":
+            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(right_character="phrase"), left_right="right"),
+        "remove ross <dictation>":
+            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(dictation="phrase"), left_right="right"),
+
+
+        # "Erin sailor": Function(context.Alex_function),
+        "go lease <left_character>":
+            RemapArgsFunction(navigation.move_until_character_sequence, dict(left_character="character_sequence"), left_right="left"),
+        "go lease <dictation>":
+            RemapArgsFunction(navigation.move_until_character_sequence, dict(dictation="character_sequence"), left_right="left"),
+        "go ross <right_character>":
+            RemapArgsFunction(navigation.move_until_character_sequence, dict(right_character="character_sequence"), left_right="right"),
+        "go ross <dictation>":
+            RemapArgsFunction(navigation.move_until_character_sequence, dict(dictation="character_sequence"), left_right="right"),
+        
+        "kill lease <left_character>":
+            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(left_character="character_sequence"), left_right="left"),
+        "kill lease <dictation>":
+            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(dictation="character_sequence"), left_right="left"),
+        "kill ross <right_character>":
+            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(right_character="character_sequence"), left_right="right"),
+        "kill ross <dictation>":
+            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(dictation="character_sequence"), left_right="right"),
+
+    
 
 
     }
@@ -355,6 +352,7 @@ class Navigation(MergeRule):
         IntegerRefST("nnavi500", 1, 500),
         Dictation("textnv"),
         Dictation("dictation"),
+        Dictation("dictation2"),
         Choice("left_character", {
             "prekris": "(",
             "brax": "[",

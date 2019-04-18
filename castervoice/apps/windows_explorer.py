@@ -13,39 +13,37 @@ class FileDialogueRule(MergeRule):
     pronunciation = "file dialogue"
 
     mapping = {
-        "up [<n>]":
+        "[go] up [<n>]":
             R(Key("a-up"), rdescript="File Dialogue: Navigate up")*Repeat(extra="n"),
-        "back [<n>]":
+        "[go] back [<n>]":
             R(Key("a-left"), rdescript="File Dialogue: Navigate back")*Repeat(extra="n"),
         "forward [<n>]":
             R(Key("a-right"), rdescript="File Dialogue: Navigate forward")*
             Repeat(extra="n"),
-        # "(files | file list)":
-        #     R(Key("a-d, f6:3"), rdescript="File Dialogue: Files list"),
-        # "navigation [pane]":
-        #     R(Key("a-d, f6:2"), rdescript="File Dialogue: Navigation pane"),
-        # "[file] name":
-        #     R(Key("a-d, f6:5"), rdescript="File Dialogue: File name"),
-
-        "<location>": Key("c-l, tab:%(n)s"),
-        "layout": Key("a-v, l") + Mimic("small", "icons"),
-
+        
+        "<location>": Key("c-l/10, tab:%(location)s"),
+        
+        "purple": Text("Alex"),
     }
 
     extras = [IntegerRefST("n", 1, 10),
         Choice("location", {
+            
             "search": 1,
-            "left pane": 2,
-            "center pane": 3,
-            "namer": 4,
+            "organize": 2,
+            "left pane": 3,
+            "center pane": 4,
+            "sort [headings]": 5,
+            "file name": 6,
+            "file type": 7,
         }),
     ]
     defaults = {
         "n": 1,
     }
 
-
-context = AppContext(title="Explorer")
+# this is the simplest way to set the context in Windows Explorer child Windows (also known as file dialogbox)
+context = AppContext(title="open")
 
 grammar = Grammar("WindowsExplorer", context=context)
 if settings.SETTINGS["apps"]["windows_explorer"]:

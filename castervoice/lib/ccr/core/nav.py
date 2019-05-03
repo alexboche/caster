@@ -6,7 +6,7 @@ Created on Sep 1, 2015
 from dragonfly import Repeat, Function, Dictation, Choice, MappingRule
 
 from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils
-from castervoice.lib import control
+from castervoice.lib import control, utilities
 from castervoice.lib.actions import Key, Mouse
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
@@ -16,12 +16,6 @@ from castervoice.lib.dfplus.state.actions2 import UntilCancelled
 from castervoice.lib.dfplus.state.short import L, S, R
 from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
-from castervoice.lib.remap_args_function_action import RemapArgsFunction
-
-
-
-
-
 
 _NEXUS = control.nexus()
 
@@ -35,90 +29,105 @@ class NavigationNon(MappingRule):
                 blocking=False),
         "erase multi clipboard":
             R(Function(navigation.erase_multi_clipboard, nexus=_NEXUS),
-              rdescript="Erase Multi Clipboard"),
+              rdescript="Core: Erase Multi Clipboard"),
         "find":
-            R(Key("c-f"), rdescript="Find"),
+            R(Key("c-f"), rdescript="Core: Find"),
         "find next [<n>]":
-            R(Key("f3"), rdescript="Find Next")*Repeat(extra="n"),
+            R(Key("f3"), rdescript="Core: Find Next")*Repeat(extra="n"),
         "find prior [<n>]":
-            R(Key("s-f3"), rdescript="Find Prior")*Repeat(extra="n"),
+            R(Key("s-f3"), rdescript="Core: Find Prior")*Repeat(extra="n"),
         "find everywhere":
-            R(Key("cs-f"), rdescript="Find Everywhere"),
+            R(Key("cs-f"), rdescript="Core: Find Everywhere"),
         "replace":
-            R(Key("c-h"), rdescript="Replace"),
+            R(Key("c-h"), rdescript="Core: Replace"),
         "(F to | F2)":
-            R(Key("f2"), rdescript="Key: F2"),
+            R(Key("f2"), rdescript="Core: Key: F2"),
         "(F six | F6)":
-            R(Key("f6"), rdescript="Key: F6"),
+            R(Key("f6"), rdescript="Core: Key: F6"),
         "(F nine | F9)":
-            R(Key("f9"), rdescript="Key: F9"),
+            R(Key("f9"), rdescript="Core: Key: F9"),
         "[show] context menu":
-            R(Key("s-f10"), rdescript="Context Menu"),
-        # "squat":
-        #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
-        # "bench":
-        #     R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
+            R(Key("s-f10"), rdescript="Core: Context Menu"),
         
         "shift right click":
             R(Key("shift:down") + Mouse("right") + Key("shift:up"),
-              rdescript="Mouse: Shift + Right Click"),
+              rdescript="Core-Mouse: Shift + Right Click"),
         "curse <direction> [<direction2>] [<nnavi500>] [<dokick>]":
-            R(Function(navigation.curse), rdescript="Curse"),
+            R(Function(navigation.curse), rdescript="Core: Curse"),
         "scree <direction> [<nnavi500>]":
-            R(Function(navigation.wheel_scroll), rdescript="Wheel Scroll"),
+            R(Function(navigation.wheel_scroll), rdescript="Core: Wheel Scroll"),
         "colic":
             R(Key("control:down") + Mouse("left") + Key("control:up"),
-              rdescript="Mouse: Ctrl + Left Click"),
+              rdescript="Core-Mouse: Ctrl + Left Click"),
         "garb [<nnavi500>]":
             R(Mouse("left") + Mouse("left") + Function(
                 navigation.stoosh_keep_clipboard,
                 nexus=_NEXUS),
-              rdescript="Highlight @ Mouse + Copy"),
+              rdescript="Core: Highlight @ Mouse + Copy"),
         "drop [<nnavi500>]":
             R(Mouse("left") + Mouse("left") + Function(
                 navigation.drop_keep_clipboard,
                 nexus=_NEXUS,
                 capitalization=0,
                 spacing=0),
-              rdescript="Highlight @ Mouse + Paste"),
+              rdescript="Core: Highlight @ Mouse + Paste"),
         "sure stoosh":
-            R(Key("c-c"), rdescript="Simple Copy"),
+            R(Key("c-c"), rdescript="Core: Simple Copy"),
         "sure cut":
-            R(Key("c-x"), rdescript="Simple Cut"),
+            R(Key("c-x"), rdescript="Core: Simple Cut"),
         "sure spark":
-            R(Key("c-v"), rdescript="Simple Paste"),
-        "undo [<n>]":
-            R(Key("c-z"), rdescript="Undo")*Repeat(extra="n"),
-        "redo [<n>]":
-            R(Key("c-y"), rdescript="Redo")*Repeat(extra="n"),
+            R(Key("c-v"), rdescript="Core: Simple Paste"),
         "refresh":
-            R(Key("c-r"), rdescript="Refresh"),
+            R(Key("c-r"), rdescript="Core: Refresh"),
         "maxiwin":
-            R(Key("w-up"), rdescript="Maximize Window"),
+            R(Key("w-up"), rdescript="Core: Maximize Window"),
         "move window":
-            R(Key("a-space, r, a-space, m"), rdescript="Move Window"),
+            R(Key("a-space, r, a-space, m"), rdescript="Core: Move Window"),
         "window (left | lease) [<n>]":
-            R(Key("w-left"), rdescript="Window Left")*Repeat(extra="n"),
+            R(Key("w-left"), rdescript="Core: Window Left")*Repeat(extra="n"),
         "window (right | ross) [<n>]":
-            R(Key("w-right"), rdescript="Window Right")*Repeat(extra="n"),
-        "swight": R(Key("ws-right"), rdescript="Window Right"),
-        "lite": R(Key("ws-left"), rdescript="Window Right"),
+            R(Key("w-right"), rdescript="Core: Window Right")*Repeat(extra="n"),
         "monitor (left | lease) [<n>]":
-            R(Key("sw-left"), rdescript="Monitor Left")*Repeat(extra="n"),
+            R(Key("sw-left"), rdescript="Core: Monitor Left")*Repeat(extra="n"),
         "monitor (right | ross) [<n>]":
-            R(Key("sw-right"), rdescript="Monitor Right")*Repeat(extra="n"),
+            R(Key("sw-right"), rdescript="Core: Monitor Right")*Repeat(extra="n"),
         "(next | prior) window":
-            R(Key("ca-tab, enter"), rdescript="Next Window"),
+            R(Key("ca-tab, enter"), rdescript="Core: Next Window"),
         "switch (window | windows)":
-            R(Key("ca-tab"), rdescript="Switch Window")*Repeat(extra="n"),
+            R(Key("ca-tab"), rdescript="Core: Switch Window")*Repeat(extra="n"),
         "next tab [<n>]":
-            R(Key("c-pgdown"), rdescript="Next Tab")*Repeat(extra="n"),
+            R(Key("c-pgdown"), rdescript="Core: Next Tab")*Repeat(extra="n"),
         "prior tab [<n>]":
-            R(Key("c-pgup"), rdescript="Previous Tab")*Repeat(extra="n"),
+            R(Key("c-pgup"), rdescript="Core: Previous Tab")*Repeat(extra="n"),
         "close tab [<n>]":
-            R(Key("c-w/20"), rdescript="Close Tab")*Repeat(extra="n"),
+            R(Key("c-w/20"), rdescript="Core: Close Tab")*Repeat(extra="n"),
         "elite translation <text>":
-            R(Function(alphanumeric.elite_text), rdescript="1337 Text"),
+            R(Function(alphanumeric.elite_text), rdescript="Core: 1337 Text"),
+
+        # Workspace management
+        # "show work [spaces]":
+        #     R(Key("w-tab"), rdescript="Core: Show Workspaces"),
+        # "(create | new) work [space]":
+        #     R(Key("wc-d"), rdescript="Core: Create Workspace"),
+        # "close work [space]":
+        #     R(Key("wc-f4"), rdescript="Core: Close Workspace"),
+        # "close all work [spaces]":
+        #     R(Function(utilities.close_all_workspaces),
+        #         rdescript="Core: Close All Work Spaces"),
+        # "next work [space] [<n>]":
+        #     R(Key("wc-right"), rdescript="Core: Next Workspace")*Repeat(extra="n"),
+        # "(previous | prior) work [space] [<n>]":
+        #     R(Key("wc-left"), rdescript="Core: Prior Workspace")*Repeat(extra="n"),
+
+        # "go work [space] <n>":
+        #     R(Function(lambda n: utilities.go_to_desktop_number(n)),
+        #         rdescript="Core: Go to Workspace N"),
+        # "send work [space] <n>":
+        #     R(Function(lambda n: utilities.move_current_window_to_desktop(n)),
+        #         rdescript="Core: Send Current Window to Workspace N"),
+        # "move work [space] <n>":
+        #     R(Function(lambda n: utilities.move_current_window_to_desktop(n, True)),
+        #         rdescript="Core: Move Current Window to Workspace N"),
     }
 
     extras = [
@@ -156,41 +165,6 @@ class NavigationNon(MappingRule):
     }
 
 
-
-
-
-
-def copypaste_delete_until_character_sequence(left_right, character_sequence):
-        if left_right == "left":
-            Key("s-home, c-c/2").execute()
-        if left_right == "right":
-            Key("s-end, c-c/2").execute()
-        character_sequence = str(character_sequence)    
-        text = text = pyperclip.paste()
-        new_text = delete_until_character_sequence(text, character_sequence, left_right)
-        offset = len(new_text)
-        pyperclip.copy(new_text)
-        Key("c-v/2").execute()
-        # move cursor back into the right spot. only necessary for left_right = "right"
-        if left_right == "right":
-            Key("left:%d" %offset).execute()
-        
-
-def delete_until_character_sequence(text, character_sequence, left_right):
-    if left_right == "left":
-
-        character_sequence_start_position = text.rfind(character_sequence)
-        new_text_start_position = character_sequence_start_position 
-        new_text = text[:new_text_start_position]
-        return new_text
-    if left_right == "right":
-        
-        character_sequence_start_position = text.find(character_sequence)
-        new_text_start_position = character_sequence_start_position + len(character_sequence)
-        new_text = text[new_text_start_position:]
-        return new_text
-     
-
 class Navigation(MergeRule):
     non = NavigationNon
     pronunciation = CCRMerger.CORE[1]
@@ -205,77 +179,34 @@ class Navigation(MergeRule):
         "fill <target>":
             R(Key("escape, escape, end"), show=False) +
             AsynchronousAction([L(S(["cancel"], Function(context.fill_within_line, nexus=_NEXUS)))],
-            time_in_seconds=0.2, repetitions=50, rdescript="Fill" ),
+            time_in_seconds=0.2, repetitions=50, rdescript="Core: Fill" ),
         "jump in":
             AsynchronousAction([L(S(["cancel"], context.nav, ["right", "(~[~{~<"]))],
-            time_in_seconds=0.1, repetitions=50, rdescript="Jump: In"),
+            time_in_seconds=0.1, repetitions=50, rdescript="Core: Jump: In"),
         "jump out":
             AsynchronousAction([L(S(["cancel"], context.nav, ["right", ")~]~}~>"]))],
-            time_in_seconds=0.1, repetitions=50, rdescript="Jump: Out"),
+            time_in_seconds=0.1, repetitions=50, rdescript="Core: Jump: Out"),
         "jump back":
             AsynchronousAction([L(S(["cancel"], context.nav, ["left", "(~[~{~<"]))],
-            time_in_seconds=0.1, repetitions=50, rdescript="Jump: Back"),
+            time_in_seconds=0.1, repetitions=50, rdescript="Core: Jump: Back"),
         "jump back in":
             AsynchronousAction([L(S(["cancel"], context.nav, ["left", "(~[~{~<"]))],
-            finisher=Key("right"), time_in_seconds=0.1, repetitions=50, rdescript="Jump: Back In" ),
+            finisher=Key("right"), time_in_seconds=0.1, repetitions=50, rdescript="Core: Jump: Back In" ),
 
     # keyboard shortcuts
         'save':
-            R(Key("c-s"), rspec="save", rdescript="Save"),
+            R(Key("c-s"), rspec="save", rdescript="Core: Save"),
         'shock [<nnavi50>]':
-            R(Key("enter"), rspec="shock", rdescript="Enter")* Repeat(extra="nnavi50"),
+            R(Key("enter"), rspec="shock", rdescript="Core: Enter")* Repeat(extra="nnavi50"),
 
         "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
-            R(Function(text_utils.master_text_nav), rdescript="Keyboard Text Navigation"),
+            R(Function(text_utils.master_text_nav), rdescript="Core: Keyboard Text Navigation"),
 
-        "shift click":
-            R(Key("shift:down") + Mouse("left") + Key("shift:up"),
-              rdescript="Mouse: Shift Click"),
-
-        "stoosh [<nnavi500>]":
-            R(Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS), rspec="stoosh", rdescript="Copy"),
-        "cut [<nnavi500>]":
-            R(Function(navigation.cut_keep_clipboard, nexus=_NEXUS), rspec="cut", rdescript="Cut"),
-        "spark [<nnavi500>] [(<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel)]":
-            R(Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="spark", rdescript="Paste"),
-
-        "splat [<splatdir>] [<nnavi10>]":
-            R(Key("c-%(splatdir)s"), rspec="splat", rdescript="Splat") * Repeat(extra="nnavi10"),
-        "deli [<nnavi50>]":
-            R(Key("del/5"), rspec="deli", rdescript="Delete") * Repeat(extra="nnavi50"),
-        "clear [<nnavi50>]":
-            R(Key("backspace/5:%(nnavi50)d"), rspec="clear", rdescript="Backspace"),
-        SymbolSpecs.CANCEL:
-            R(Key("escape"), rspec="cancel", rdescript="Cancel Action"),
-
-
-        "shackle":
-            R(Key("home/5, s-end"), rspec="shackle", rdescript="Select Line"),
-        "(tell | tau) <semi>":
-            R(Function(navigation.next_line), rspec="tell dock", rdescript="Complete Line"),
-        "duple [<nnavi50>]":
-            R(Function(navigation.duple_keep_clipboard), rspec="duple", rdescript="Duplicate Line"),
-        "Kraken":
-            R(Key("c-space"), rspec="Kraken", rdescript="Control Space"),
-
-    # text formatting
-        "set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel)":
-            R(Function(textformat.set_text_format), rdescript="Set Text Format"),
-        "clear castervoice [<big>] formatting":
-            R(Function(textformat.clear_text_format), rdescript="Clear Caster Formatting"),
-        "peek [<big>] format":
-            R(Function(textformat.peek_text_format), rdescript="Peek Format"),
-        "(<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel) <textnv> [brunt]":
-            R(Function(textformat.master_format_text), rdescript="Text Format"),
-        "[<big>] format <textnv>":
-            R(Function(textformat.prior_text_format), rdescript="Last Text Format"),
-        "<word_limit> [<big>] format <textnv>":
-            R(Function(textformat.partial_format_text), rdescript="Partial Text Format"),
-
-        "hug <enclosure>":
-            R(Function(text_utils.enclose_selected), rdescript="Enclose text "),
-        "dredge":
-            R(Key("a-tab"), rdescript="Alt-Tab"),
+         
+        "undo [<nnavi50>]":
+            R(Key("c-z"), rdescript="Core: Undo")*Repeat(extra="n"),
+        "redo [<nnavi50>]":
+            R(Key("c-y"), rdescript="Core: Redo")*Repeat(extra="n"),
         "squat":
             R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Core-Mouse: Left Down"),
         "bench":
@@ -292,56 +223,50 @@ class Navigation(MergeRule):
         "(kick double|double kick)":
             R(Function(navigation.left_click, nexus=_NEXUS)*Repeat(2),
               rdescript="Core-Mouse: Double Click"),
-        "shin tabby": Key("s-tab"),
-        
-        #    "rosser <right_character>": 
-        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="right"), dict(right_character='character_sequence')),
-        # "rosser <dictation>": 
-        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="right"), dict(dictation='character_sequence')),
-        
-        
-        # "leeser <left_character>": 
-        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="left"), dict(left_character="character_sequence")),
-        # "leeser <dictation>": 
-        #     RemapArgsFunction(copypaste_delete_until_character_sequence, dict(left_right="left"), dict(dictation='character_sequence')),
-        
-        # the following text manipulation commands must be used on text on the same line as the cursor
-        
-        "change lease <dictation> to <dictation2>":
-            RemapArgsFunction(navigation.copypaste_replace_phrase_with_phrase, dict(dictation="replaced_phrase", dictation2="replacement_phrase"), left_right="left"),
-        "change ross <dictation> to <dictation2>":
-            RemapArgsFunction(navigation.copypaste_replace_phrase_with_phrase, dict(dictation="replaced_phrase", dictation2="replacement_phrase"), left_right="right"),
-        
-        "remove lease <dictation>":
-            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(dictation="phrase"), left_right="left"),
-        "remove lease <left_character>":
-            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(left_character="phrase"), left_right="left"),
-        "remove ross <right_character>":
-            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(right_character="phrase"), left_right="right"),
-        "remove ross <dictation>":
-            RemapArgsFunction(navigation.copypaste_remove_phrase_from_text, dict(dictation="phrase"), left_right="right"),
 
+        "stoosh [<nnavi500>]":
+            R(Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS), rspec="stoosh", rdescript="Core: Copy"),
+        "cut [<nnavi500>]":
+            R(Function(navigation.cut_keep_clipboard, nexus=_NEXUS), rspec="cut", rdescript="Core: Cut"),
+        "spark [<nnavi500>] [(<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel)]":
+            R(Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="spark", rdescript="Core: Paste"),
 
-        "go lease <left_character>":
-            RemapArgsFunction(navigation.move_until_character_sequence, dict(left_character="character_sequence"), left_right="left"),
-        "go lease <dictation>":
-            RemapArgsFunction(navigation.move_until_character_sequence, dict(dictation="character_sequence"), left_right="left"),
-        "go ross <right_character>":
-            RemapArgsFunction(navigation.move_until_character_sequence, dict(right_character="character_sequence"), left_right="right"),
-        "go ross <dictation>":
-            RemapArgsFunction(navigation.move_until_character_sequence, dict(dictation="character_sequence"), left_right="right"),
-        
-        "kill lease <left_character>":
-            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(left_character="character_sequence"), left_right="left"),
-        "kill lease <dictation>":
-            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(dictation="character_sequence"), left_right="left"),
-        "kill ross <right_character>":
-            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(right_character="character_sequence"), left_right="right"),
-        "kill ross <dictation>":
-            RemapArgsFunction(navigation.copypaste_delete_until_character_sequence, dict(dictation="character_sequence"), left_right="right"),
+        "splat [<splatdir>] [<nnavi10>]":
+            R(Key("c-%(splatdir)s"), rspec="splat", rdescript="Core: Splat") * Repeat(extra="nnavi10"),
+        "deli [<nnavi50>]":
+            R(Key("del/5"), rspec="deli", rdescript="Core: Delete") * Repeat(extra="nnavi50"),
+        "clear [<nnavi50>]":
+            R(Key("backspace/5:%(nnavi50)d"), rspec="clear", rdescript="Core: Backspace"),
+        SymbolSpecs.CANCEL:
+            R(Key("escape"), rspec="cancel", rdescript="Core: Cancel Action"),
 
-    
+        "shackle":
+            R(Key("home/5, s-end"), rspec="shackle", rdescript="Core: Select Line"),
+        "(tell | tau) <semi>":
+            R(Function(navigation.next_line), rspec="tell dock", rdescript="Core: Complete Line"),
+        "duple [<nnavi50>]":
+            R(Function(navigation.duple_keep_clipboard), rspec="duple", rdescript="Core: Duplicate Line"),
+        "Kraken":
+            R(Key("c-space"), rspec="Kraken", rdescript="Core: Control Space"),
 
+    # text formatting
+        "set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel)":
+            R(Function(textformat.set_text_format), rdescript="Core: Set Text Format"),
+        "clear castervoice [<big>] formatting":
+            R(Function(textformat.clear_text_format), rdescript="Core: Clear Caster Formatting"),
+        "peek [<big>] format":
+            R(Function(textformat.peek_text_format), rdescript="Core: Peek Format"),
+        "(<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel) <textnv> [brunt]":
+            R(Function(textformat.master_format_text), rdescript="Core: Text Format"),
+        "[<big>] format <textnv>":
+            R(Function(textformat.prior_text_format), rdescript="Core: Last Text Format"),
+        "<word_limit> [<big>] format <textnv>":
+            R(Function(textformat.partial_format_text), rdescript="Core: Partial Text Format"),
+
+        "hug <enclosure>":
+            R(Function(text_utils.enclose_selected), rdescript="Core: Enclose text "),
+        "dredge":
+            R(Key("a-tab"), rdescript="Core: Alt-Tab"),
 
     }
 
@@ -350,33 +275,6 @@ class Navigation(MergeRule):
         IntegerRefST("nnavi50", 1, 50),
         IntegerRefST("nnavi500", 1, 500),
         Dictation("textnv"),
-        Dictation("dictation"),
-        Dictation("dictation2"),
-        Choice("left_character", {
-            "prekris": "(",
-            "brax": "[",
-            "angle": "<",
-            "curly": "{",
-            "quotes": '"',
-            "single quote": "'",
-            "comma": ",",
-            "period": ".",
-            "questo": "?",
-            "backtick": "`",
-        }),
-        Choice("right_character", {
-            "prekris": ")",
-            "brax": "]",
-            "angle": ">",
-            "curly": "}",
-            "quotes": '"',
-            "single quote": "'",
-            "comma": ",",
-            "period": ".",
-            "questo": "?",
-            "backtick": "`",
-        }),
- 
         Choice(
             "enclosure", {
                 "prekris": "(~)",
@@ -407,8 +305,7 @@ class Navigation(MergeRule):
         Choice("semi", {
             "dock": ";",
             "doc": ";",
-            "sink": "",
-            "cole": ":",
+            "sink": ""
         }),
         Choice("word_limit", {
             "single": 1,
@@ -424,7 +321,7 @@ class Navigation(MergeRule):
             "fly": "c",
         }),
         Choice("extreme", {
-            "bus": "way",
+            "Wally": "way",
         }),
         Choice("big", {
             "big": True,

@@ -9,13 +9,13 @@ def get_alphabet_choice(spec):
         spec, {
             "arch": "a",
             "brov": "b",
-            "char": "c", 
+            "charlie": "c", 
             "dutch": "d",
             "echo": "e",
             "fail": "f",
             "goof": "g",
             "(hotel|hiss)": "h",
-            "sit": "i",
+            "(itch|sit)": "i",
             "(julie|jick)": "j",
             "kilo": "k",
             "Lima": "l",
@@ -31,7 +31,7 @@ def get_alphabet_choice(spec):
             "victor": "v",
             "whiskey": "w",
             "ex": "x",
-            "(yankee|yale)": "y",
+            "(yall | yank)": "y",
             "Zulu": "z",
         })
 

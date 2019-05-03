@@ -18,6 +18,7 @@ command_sets = {
     "javascript.javascript": ("Javascript", ),
     "latex.latex": ("LaTeX", ),
     "matlab.matlab": ("Matlab", ),
+    "markdown": ("markdown", ),
     "python.python": ("Python", ),
     "r.r": ("Rlang", ),
     "rust.rust": ("Rust", ),

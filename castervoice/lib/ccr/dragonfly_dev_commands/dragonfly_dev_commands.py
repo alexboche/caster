@@ -93,13 +93,13 @@ class DragonflyDevCommandsRule(MergeRule):
         
 
         # snippets
-        "Key": R(Text('Key("")') + Key("left:2"),  
+        "dev Key": R(Text('Key("")') + Key("left:2"),  
             rdescript="snippet for key action"),
-        "dev Key": R(Text('Key(""),') + Key("left:3"),
-            rdescript="snippet for key action"),
-        "[dev] Text": R(Text('Text("")') + Key("left:2"),
+        
+            
+        "dev Text": R(Text('Text("")') + Key("left:2"),
             rdescript="snippet for text action"),
-        "dev Pause": R(Text(' + Pause("")') + Key("left:2"),
+        "dev Pause": R(Text('Pause("")') + Key("left:2"),
             rdescript="snippet for pause action"),
         "dev Function": R(Text("Function()") + Key("left")),
         "dev Repeat": R(Text(" * Repeat(extra='n'),"), 

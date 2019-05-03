@@ -21,27 +21,16 @@ from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import reloader
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 
-newTabPressB = Key("c-t") + Text("B")
-def test_function(action): 
-    action.execute()
-    #newTabPressB.execute()
-
-# # Alex's experiment
-# class vocolaStyleFunction(ActionBase):
-#     def __init__(self, action):
-#         ActionBase.__init__(self):
-#         action.execute()
-
 
 class ChromeRule(MergeRule):
     pronunciation = "google chrome"
 
     mapping = { 
-        # "test command one": Function(lambda: newTabPressB.execute()) + Key("c"),
-        "test command one": newTabPressB + Key("c"),
+
+        
 
         # "test command": Function(test_function) + Key("c"),
-        # "test command": vocolaStyleFunction(newTabPressB) + Key("c"),
+        
         "reload chrome": Function(reloader.reload_app_grammars),
  
         "new [<n>]":                R(Key("c-t"), rdescript="Browser: New Tab") * Repeat(extra="n"),
@@ -179,15 +168,19 @@ class ChromeRule(MergeRule):
     ]
     defaults = {"n": 1, "dict": "", "click_by_voice_options": "c"}
 
-class ChromeCcrRule(MergeRule):
-    mwith = CCRMerger.CORE
-    mapping = {
-        "bar": Key("a-d"),
-    }
+# from IPython import embed
+# embed()
 
-#---------------------------------------------------------------------------
-ccr_rule = ChromeCcrRule()
-# non_ccr_rule = ChromeRule()
+
+# class ChromeCcrRule(MergeRule):
+#     mwith = CCRMerger.CORE
+#     mapping = {
+#         "bar": Key("a-d"),
+#     }
+
+# #---------------------------------------------------------------------------
+# ccr_rule = ChromeCcrRule()
+# # non_ccr_rule = ChromeRule()
 context = AppContext(executable="chrome")
 
 # control.nexus().merger.add_app_rule(ccr_rule, context)
@@ -204,3 +197,4 @@ if settings.SETTINGS["apps"]["chrome"]:
         gfilter.run_on(rule)
         grammar.add_rule(rule)
         grammar.load()
+

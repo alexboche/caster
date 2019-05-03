@@ -9,16 +9,27 @@ Command-module for git
 """
 #---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Mimic, Function)
+from dragonfly import (Grammar, Mimic, Function, Choice)
 
 from castervoice.lib import control
-from castervoice.lib import settings
+from castervoice.lib import settings, utilities
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.lib.context import AppContext
 from castervoice.lib.actions import (Key, Text)
+from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
+
+
+
+
+CONFIG = utilities.load_toml_file(settings.SETTINGS["paths"]["BRINGME_PATH"])
+if not CONFIG:
+    CONFIG = utilities.load_toml_file(settings.SETTINGS["paths"]["BRINGME_DEFAULTS_PATH"])
+if not CONFIG:
+    # logger.warn("Could not load bringme defaults")
+    print("Could not load bringme defaults")
 
 
 def _apply(n):
@@ -28,7 +39,7 @@ def _apply(n):
 
 class GitBashRule(MergeRule):
     pronunciation = "git bash"
-
+    mwith = CCRMerger.CORE
     mapping = {
         "(git|get) base":
             Text("git "),
@@ -121,27 +132,39 @@ class GitBashRule(MergeRule):
               rdescript="GREP: Search Recursive Filetype"),
         "to file":
             R(Text(" > FILENAME"), rdescript="Bash: To File"),
+        
+        # Folder path commands (not git specific)
+        "[folder] path <folder_path>": 
+            R(Text("%(folder_path)s"), rdescript="GIT: type in folder path"),
+        "(CD | go to) <folder_path>": 
+            R(Text("cd %(folder_path)s") + Key("enter"), rdescript="GIT: go to folder"),
+        
     }
     extras = [
         IntegerRefST("n", 1, 10000),
+        Choice("folder_path", CONFIG["folder"]),
     ]
     defaults = {"n": 0}
 
 
 #---------------------------------------------------------------------------
 
-context = AppContext(executable="\\sh.exe")
-context2 = AppContext(executable="\\bash.exe")
-context3 = AppContext(executable="\\cmd.exe")
-context4 = AppContext(executable="\\mintty.exe")
+context = AppContext(executable="\\sh.exe") | \
+          AppContext(executable="\\bash.exe") | \
+          AppContext(executable="\\cmd.exe") | \
+          AppContext(executable="\\powershell.exe") | \
+          AppContext(executable="\\mintty.exe")
 
-grammar = Grammar("MINGW32", context=(context | context2 | context3 | context4))
-
+grammar = Grammar("gitbash", context=context)
 if settings.SETTINGS["apps"]["gitbash"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:
         control.nexus().merger.add_global_rule(GitBashRule())
     else:
-        rule = GitBashRule(name="git bash")
+        rule = GitBashRule(name="gitbash")
         gfilter.run_on(rule)
         grammar.add_rule(rule)
         grammar.load()
+
+        # control.nexus().merger.add_app_rule(GitBashRule(), context)
+        # I made this non- CCR because the CCR line above was causing my Alex_CCR commands to 
+        # not work in power shall.

@@ -3,8 +3,9 @@ import threading
 import subprocess
 import time
 import shlex
+import pyperclip
 # import dragonfly
-from dragonfly import Choice, Function, Dictation
+from dragonfly import Choice, Function, Dictation, Pause
 
 from castervoice.lib import control, context, utilities, settings
 from castervoice.lib.actions import Text, Key
@@ -21,6 +22,21 @@ if not CONFIG:
     
 def refresh():
     bring_rule.refresh()
+
+
+def explorer_bring_it(folder_path):
+    Key("c-l/20").execute()
+    print(folder_path)
+    pyperclip.copy(folder_path)
+    Pause("5").execute()
+    Key("c-v/30").execute()
+    # Attempt to paste enclosed text without altering clipboard
+    # if not context.paste_string_without_altering_clipboard(folder_path):
+    #     print("failed to paste {}".format(folder_path))
+    Key("enter/10, tab:3").execute() 
+
+
+
 
 #module functions
 def bring_it(desired_item):
@@ -51,7 +67,8 @@ def bring_add(launch, key):
     # elif launch == 'file':
     # no way to add file via pyperclip
     else:
-        Key("a-d/5").execute()
+        if launch in ["folder, website"]:
+            Key("a-d/5").execute()
         fail, path = context.read_selected_without_altering_clipboard()
         if fail == 2:
             #FIXME
@@ -60,7 +77,7 @@ def bring_add(launch, key):
             if not path:
                 # dragonfly.get_engine().speak("nothing selected")
                 print("Selection for bring me not found ")
-        Key("escape").execute()
+        # Key("escape").execute()
     if not path:
         #logger.warn('Cannot add %s as %s to bringme: cannot get path', launch, key)
         return
@@ -103,8 +120,14 @@ class BringRule(SelfModifyingRule):
         self.reset(self.mapping)
 
     mapping = {
-        "bring <desired_item>":
+        "bring [me] <desired_item>":
             R(Function(bring_it), rdescript="Launch preconfigured program, folder or website"),
+        "explorer bring me <folder_path>":
+            R(Function(explorer_bring_it), 
+            rdescript="go to preconfigured folder within currently open Windows Explorer window or child window"),
+        "child bring me <folder_path>":
+            R(Function(explorer_bring_it) + Key("tab"), 
+            rdescript="go to preconfigured folder within currently open Windows Explorer window or child window"),
 
         # this command is to be used with folders and websites only. it aids the automation by selecting the address bar.
          "<launch> to bring me as <key>":
@@ -132,7 +155,7 @@ class BringRule(SelfModifyingRule):
             "website": "website",
             "folder": "folder",            
         }),
-
+        Choice("folder_path", CONFIG["folder"]),
         #Choice("launch", {
         #     "website": "website",
         #     "folder": "folder",            

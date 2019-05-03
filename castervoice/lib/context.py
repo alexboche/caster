@@ -1,10 +1,12 @@
 import time
 
+
 from dragonfly import AppContext
 
 from castervoice.lib import utilities, settings
 from castervoice.lib.actions import Key
 from castervoice.lib.clipboard import Clipboard
+
 
 # Override dragonfly.AppContext with aenea.ProxyAppContext if the 'use_aenea'
 # setting is set to true.
@@ -169,3 +171,4 @@ def nav(parameters):
     if result:
         Key(str(parameters[0])).execute()
     return result
+

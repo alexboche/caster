@@ -45,7 +45,7 @@ class VSCodeCcrRule(MergeRule):
         "scroll page down [<n>]": R(Key("a-pgdown"),
             rdescript="scroll down one page down at a time") * Repeat(extra='n'),
         "(Unindent|outdent) [<n>]":
-            R(Key("s-tab"), rdescript="Visual Studio Code: Unindent")*Repeat(extra="n"),
+            R(Key("home, s-tab"), rdescript="Visual Studio Code: Unindent")*Repeat(extra="n"),
         "Comment":
             R(Key("c-slash"), rdescript="Visual Studio Code: Line Comment"),
         "Block comment":
@@ -94,7 +94,7 @@ class VSCodeCcrRule(MergeRule):
             rdescript="add cursor to next occurrence of current selection") * Repeat(extra='n'),
        
         "indent [<n>]":
-            R(Key("tab"), rdescript="Visual Studio Code: Indent")*Repeat(extra="n"),
+            R(Key("home, tab"), rdescript="Visual Studio Code: Indent")*Repeat(extra="n"),
         "hard delete [<n>]": R(Key("s-del"), 
             rdescript="eliminates line not just the text on it") * Repeat(extra='n'),
         "copy line up [<n>]": R(Key("sa-up"), 
@@ -126,7 +126,7 @@ class VSCodeCcrRule(MergeRule):
             # inclusive angle doesn't seem to work
             # "[select] around angle [<n>]": R(Key("c-k, rangle"), rdescript="select between angle brackets inclusive using 'quick and simple text selection' VScode extension")* Repeat(extra='n'),
 
-        "liner <n>": 
+        "go line <n>": 
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
               rdescript="Visual Studio Code: Go to Line"),
         
@@ -176,8 +176,8 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         "source control": R(Key("cs-g"), rdescript="source control"),
         "keyboard shortcuts": R(Key("c-k, c-s"), rdescript="keyboard shortcuts"),
         "key mappings": R(Key("c-k, c-s:2"), rdescript="key mappings"),
-        "settings": R(Key("a-f, p, s"), rdescript="user/workspace settings"),
-        "snippets": R(Key("a-f, p, s:2"), rdescript="user snippets"),
+        "settings": R(Key("a-f, p, s, enter"), rdescript="user/workspace settings"),
+        "snippets": R(Key("a-f, p, s:2, enter"), rdescript="user snippets"),
         "extensions": R(Key("cs-x"), rdescript="extensions"),
         "search details": R(Key("cs-j"), rdescript="search details"),
         "output panel": R(Key("cs-u"), rdescript="output panel"),
@@ -192,8 +192,9 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         # File management
         "[open] command palette":
             R(Key("cs-p"), rdescript="Visual Studio Code: Command Palette"),
-        "(Open [file] | Go to [tab]) [<text>]":
+        "(Opener [file] | Go to [tab]) [<text>]":
             R(Key("c-p") + Text("%(text)s"), rdescript="Visual Studio Code: Go To File"),
+        "open folder": R(Key("c-k, c-o"), rdescript=""),
         "Save file":
             R(Key("c-s"), rdescript="Visual Studio Code: Save File"),
         "Save and close":
@@ -256,7 +257,7 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         "(prior | previous | un) pane": R(Key("c-k, c-right"), rdescript="move to next pane"),
         "shift group left": R(Key("c-k, left"),
             rdescript="shift current group of tabs to the left e.g. swap with pane to the left"),
-        "shift group left": R(Key("c-k, right"),
+        "shift group right": R(Key("c-k, right"),
             rdescript="shift current group of tabs to the right e.g. swap with pane to the right"),
         "<first_second_third> pane": R(Key("c-%(first_second_third)s"), rdescript="go to nth pane"),
 

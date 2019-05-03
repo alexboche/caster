@@ -81,7 +81,7 @@ class LyxCcrRule(MergeRule):
         
         "dollz": R(Text("$$") + Key("left")),
         "doubledill":R(Text("$$$$") + Key("left:2")), 
-        
+        "zero": Text("0"),       
     
         # commented out because I was getting the Natlink error for overly complex grammar.
         # "<index_operator> from <symbol_1> [<symbol_2>] to <symbol_3> [<symbol_4>]":

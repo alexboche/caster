@@ -1,15 +1,42 @@
+# import pyperclip
 from dragonfly import (Grammar, MappingRule, Dictation, IntegerRef,
-                       Repeat, Pause)
+                       Repeat, Pause, Function, Choice, AppContext)
 
-from castervoice.lib import control
+from castervoice.lib import control, utilities, settings
+from castervoice.lib.context import paste_string_without_altering_clipboard
 from castervoice.lib import settings
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
-from castervoice.lib.context import AppContext
 from castervoice.lib.actions import (Key, Text)
 
+# note that the tab structure of Windows Explorer main window is slightly different than 
+# that of Windows Explorer dialogbox (aka child window)
+# this file is only for Windows Explorer main window.
+
+
+# bring me dependencies
+CONFIG = utilities.load_toml_file(settings.SETTINGS["paths"]["BRINGME_PATH"])
+if not CONFIG:
+    CONFIG = utilities.load_toml_file(settings.SETTINGS["paths"]["BRINGME_DEFAULTS_PATH"])
+if not CONFIG:
+    # logger.warn("Could not load bringme defaults")
+    print("Could not load bringme defaults")
+    
+
+def explorer_bring_it(folder_path):
+    Key("c-l/5").execute()
+    Text("{}".format(folder_path)).execute()
+    # Alternate method: is faster but somewhat inconsistent.
+    # if not paste_string_without_altering_clipboard(folder_path):
+    #     print("failed to paste {}".format(folder_path))
+    # Pause("10").execute()
+    # Second alternate method:is fast and consistent, but alters the clipboard
+        # pyperclip.copy(folder_path)
+        # Pause("5").execute()
+        # Key("c-v/30").execute()
+    Key("enter/20, a-d/5, tab:3").execute() 
 
 class IERule(MergeRule):
     pronunciation = "explorer"
@@ -29,11 +56,32 @@ class IERule(MergeRule):
             R(Key("a-left"), rdescript="Explorer: Navigate back"),
         "get forward":
             R(Key("a-right"), rdescript="Explorer: Navigate forward"),
+        "[Explorer] bring me <folder_path>":
+            R(Function(explorer_bring_it),
+            rdescript="go to preconfigured folder within currently open Windows Explorer main window"),
+        # "<location>": Key("a-d, tab:%(location)s"),
+        "search [<text>]":
+            R(Key("a-d, tab:1") + Text("%(text)s"), rdescript="Explorer: Search"),
+        "(navigation | nav | left) pane":
+            R(Key("a-d, tab:2"), rdescript="Explorer: navigation pane"),
+        "(center pane | (file | folder) (pane | list))":
+            R(Key("a-d, tab:3"), rdescript="Explorer: Center Pane"),
+        "sort [headings]":
+            R(Key("a-d, tab:4"), rdescript="Explorer: Sort headings"),
+        
     }
     extras = [
         Dictation("text"),
         IntegerRefST("n", 1, 1000),
-    ]
+        # Choice("location", {
+        #     "search": 1,
+        #     "(navigation | left) pane": 2,
+        #     "(center pane | file list)": 3,
+        #     "[sort] headings": 4,
+        #  }),
+        Choice("folder_path", CONFIG["folder"]),
+        ]
+    
     defaults = {"n": 1}
 
 

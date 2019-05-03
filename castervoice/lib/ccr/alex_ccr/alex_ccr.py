@@ -25,7 +25,8 @@ class AlexCcrRule(MergeRule):
           "rick": Mouse("right"),
         "middle click": Mouse("middle"),
         "salor <dict>": Text("%(dict)s"),        
-        "center click": Mouse("[0.5, 0.5], left"),
+        "center": Mouse("[0.5, 0.5], left"),
+        
         # "squat":
         #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
         # "bench":
@@ -36,6 +37,7 @@ class AlexCcrRule(MergeRule):
         "rocking": Key("right, comma, enter"),
         "rocker": Key("right, comma, enter, dquote:2, left"),
         "ecker": Key("escape"),
+        "arky":Key("a-tab"),
 
         "lanter [<n>]": Key("home:%(n)s"),
         "ranter [<n>]": Key("end:%(n)s"),
@@ -46,10 +48,11 @@ class AlexCcrRule(MergeRule):
         # "queue ranter": Key("cs-end"),
         # "shin ranter": Key("s-end"),
         "win search": Mouse("[80, 60], left"),
+        "quick bar": Key("c-l"),
          
         "smack [<n>]": R(Key("cs-left:%(n)s, del")),
-        
-        "frack [<n>]": R(Key("cs-right:%(n)s, del")),
+                # "frack [<n>]": R(Key("cs-right:%(n)s, del")),
+
         #  "salor [<n>]": R(Key("cs-left:%(n)s")),
         #  "jalor [<n>]": R(Key("cs-right:%(n)s")),
         # "palor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),
@@ -66,9 +69,9 @@ class AlexCcrRule(MergeRule):
 
 
 
-        "runnoo [<n>]": Key("c-z") * Repeat(extra="n"), # undo
+        "undo [<n>]": Key("c-z") * Repeat(extra="n"), # undo
         "embed gitter": Key("backtick:3, s-enter:2, backtick:3, up"),
-        "pounce <dict>": Text("%(dict)s") + Key("enter"),
+        # "close time <dict>": Text("%(dict)s") + Key("enter"),
         "cut all": Key("c-a, c-x"),
 
 # don't seem to be working perfectly

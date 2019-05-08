@@ -44,6 +44,10 @@ TARGET_CHOICE = Choice(
         "token": "TOKEN"
     })
 
+def paper():
+    text = pyperclip.paste()
+    print(text + "z")
+
 def dragon_capitalize(phrase):
     """ take a series of words and return a series of words where 
     words preceded by 'cap' are capitalized and the 'cap' is removed """
@@ -73,6 +77,9 @@ def replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_r
 # comments show how to do it using pyperclip instead of caster's method
     # unlike pyperclip caster's method does not alter the clipboard 
 def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, left_right):
+    temp_for_previous_clipboard_item = pyperclip.paste()
+    Pause("30").execute()
+
     if left_right == "left":
         # Key("s-home").execute()
         Key("s-home, c-c/2").execute()
@@ -86,7 +93,6 @@ def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, le
         # print("failed to copy text")
         # return
     
-
     replaced_phrase = str(replaced_phrase)
     replacement_phrase = str(replacement_phrase)
     # replacement_phrase_with_capitals = dragone_capitalize(replacement_phrase)
@@ -98,6 +104,9 @@ def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, le
     if left_right == "right":
         offset = len(new_text)
         Key("left:%d" %offset).execute()
+    # put previous clipboard item back in the clipboard
+    Pause("20").execute()
+    pyperclip.copy(temp_for_previous_clipboard_item)
 
 def remove_phrase_from_text(text, phrase, left_right):
     if left_right == "left":
@@ -118,18 +127,24 @@ def remove_phrase_from_text(text, phrase, left_right):
 
 
 def copypaste_remove_phrase_from_text(phrase, left_right):
+    temp_for_previous_clipboard_item = pyperclip.paste()
+    Pause("30").execute()
+
     if left_right == "left":
-        Key("s-home").execute()
+        Key("s-home, c-c/2").execute()
         
     if left_right == "right":
-        Key("s-end").execute()
+        Key("s-end, c-c/2").execute()
         
-    err, selected_text = context.read_selected_without_altering_clipboard()
+    # err, selected_text = context.read_selected_without_altering_clipboard()
         
-    if err != 0:
+    # if err != 0:
         # I'm not discriminating between err = 1 and err = 2
-        print("failed to copy text")
-        return
+        # print("failed to copy text")
+        # return
+    
+    # get text from clipboard
+    selected_text = pyperclip.paste()
 
     phrase = str(phrase)
     new_text = remove_phrase_from_text(selected_text, phrase, left_right)

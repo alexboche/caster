@@ -13,7 +13,7 @@ def get_alphabet_choice(spec):
             "dutch": "d",
             "echo": "e",
             "fail": "f",
-            "goof": "g",
+            "(goof | golf)": "g",
             "(hotel|hiss)": "h",
             "(itch|sit)": "i",
             "(julie|jick)": "j",

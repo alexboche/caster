@@ -63,7 +63,7 @@ class Python(MergeRule):
             R(Text("print()") + Key("left"), rdescript="Python: Print"),
         SymbolSpecs.IMPORT:
             R(Text("import "), rdescript="Python: Import"),
-        SymbolSpecs.FUNCTION:
+        "funcker":
             R(Text("def ():") + Key("left:3"), rdescript="Python: Function"),
         SymbolSpecs.CLASS:
             R(Text("class :") + Key("left"), rdescript="Python: Class"),
@@ -107,16 +107,16 @@ class Python(MergeRule):
             R(Text("[x for x in TOKEN if TOKEN]"),
               rdescript="Python: List Comprehension"),
         
-        "[dot] (pie | pi)":
-            R(Text(".py"), rdescript="Python: .py"),
+        # "[dot] (pie | pi)":
+        #     R(Text(".py"), rdescript="Python: .py"),
         "toml":
             R(Text("toml"), rdescript="Python: toml"),
         "jason":
             R(Text("toml"), rdescript="Python: json"),
         "identity is":
             R(Text(" is "), rdescript="Python: is"),
-        "yield":
-            R(Text("yield "), rdescript="Python: Yield"),
+        # "yield":
+        #     R(Text("yield "), rdescript="Python: Yield"),
         
         # Essentially an improved version of the try catch command above
             # probably a better option than this is to use snippets with tab stops 
@@ -136,9 +136,9 @@ class Python(MergeRule):
         "subclass": R(Text("class ():") + Key("left:3"), rdescript="Python: Subclass"),
         "dunder": R(Text("____()") + Key("left:4"),  rdescript="Python: Special Method"),
         "initial": R(Text("__init__()"),  rdescript="Python: Init"),
-        "meth [<binary_meth>]": R(Text("def __%(binary_meth)s__(self, other):"), 
+        "meth <binary_meth>": R(Text("def __%(binary_meth)s__(self, other):"), 
             rdescript="Python: Binary Special Method"),     
-        "meth [<unary_meth>]": R(Text("def __%(unary_meth)s__(self):"), 
+        "meth <unary_meth>": R(Text("def __%(unary_meth)s__(self):"), 
             rdescript="Python: Unary Special Method"),     
 
         # Python vocabulary

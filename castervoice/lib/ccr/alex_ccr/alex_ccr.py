@@ -19,6 +19,7 @@ class AlexCcrRule(MergeRule):
     #pronunciation = CCRMerger.CORE[5]
     
     mapping = {
+        "Alex hello": Function(navigation.paper),
         "sample command": Key("b"), 
          "mick": Mouse("left:1"),
           "dick": Mouse("left:2"),
@@ -36,7 +37,7 @@ class AlexCcrRule(MergeRule):
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),
         "rocking": Key("right, comma, enter"),
         "rocker": Key("right, comma, enter, dquote:2, left"),
-        "ecker": Key("escape"),
+        # "ecker": Key("escape"),
         "arky":Key("a-tab"),
 
         "lanter [<n>]": Key("home:%(n)s"),
@@ -52,7 +53,7 @@ class AlexCcrRule(MergeRule):
          
         "smack [<n>]": R(Key("cs-left:%(n)s, del")),
                 # "frack [<n>]": R(Key("cs-right:%(n)s, del")),
-
+        "sprat [<n>]": R(Key("cs-right:%(n)s, del")),
         #  "salor [<n>]": R(Key("cs-left:%(n)s")),
         #  "jalor [<n>]": R(Key("cs-right:%(n)s")),
         # "palor [<n>] [<my_words>]": Key("c-left:%(n)s") + Text("%(my_words)s"),

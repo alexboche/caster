@@ -113,7 +113,7 @@ def read_selected_without_altering_clipboard(same_is_okay=False):
     (2, None) - indicates clipboard error
     '''
     time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/
-               1000.)  # time for previous keypress to execute
+               100.)  # time for previous keypress to execute
     cb = Clipboard(from_system=True)
     temporary = None
     prior_content = None

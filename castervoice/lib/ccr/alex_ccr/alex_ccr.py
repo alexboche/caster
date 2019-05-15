@@ -76,14 +76,14 @@ class AlexCcrRule(MergeRule):
         "cut all": Key("c-a, c-x"),
 
 # don't seem to be working perfectly
-        "select down <n_off_one>": Key("s-down:%(n_off_one)s, s-end"),         
-        "select up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end"),          
-        "copper down <n_off_one>": Key("s-down:%(n_off_one)s, s-end, c-c"),    
-        "copper up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end, c-c"),    
-        "cutter down <n_off_one>": Key("s-down:%(n_off_one)s, s-end, c-x"),
-        "cutter up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end, c-x"),
-        "deleter up <n_off_one>": Key("s-end, s-up:%(n_off_one)s, s-end, del"),
-        "deleter down <n_off_one>": Key("s-down:%(n_off_one)s, s-end, del"),
+        "select down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end"),         
+        "select up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end"),          
+        "copper down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end, c-c"),    
+        "copper up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end, c-c"),    
+        "cutter down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end, c-x"),
+        "cutter up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end, c-x"),
+        "deleter up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end, del"),
+        "deleter down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end, del"),
     
     
     

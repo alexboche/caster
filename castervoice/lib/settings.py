@@ -13,7 +13,7 @@ BASE_PATH = os.path.realpath(__file__).rsplit(os.path.sep + "lib", 1)[0].replace
 _USER_DIR = os.path.expanduser("~").replace("\\", "/") + "/.caster"
 _SETTINGS_PATH = _USER_DIR + "/data/settings.toml"
 
-for directory in ["data", "rules", "filters", "sikuli"]:
+for directory in ["data", "rules", "filters", "sikuli", "programming_vocab"]:
     d = _USER_DIR+"/"+directory
     if not os.path.exists(d):
         os.makedirs(d)
@@ -139,6 +139,7 @@ _DEFAULT_SETTINGS = {
         "RECORDED_MACROS_PATH": _USER_DIR + "/data/recorded_macros.toml",
         "SAVED_CLIPBOARD_PATH": _USER_DIR + "/data/clipboard.toml",
         "SIKULI_SCRIPTS_PATH": _USER_DIR + "/sikuli",
+        "PROGRAMMING_VOCAB_PATH": _USER_DIR + "/programming_vocab",
 
         # REMOTE_DEBUGGER_PATH is the folder in which pydevd.py can be found
         "REMOTE_DEBUGGER_PATH": "",

@@ -5,12 +5,15 @@ Created on Sep 1, 2015
 '''
 from dragonfly import Dictation, MappingRule, Choice, Pause
 
-from castervoice.lib import control
+from castervoice.lib import control, utilities, settings
 from castervoice.lib.actions import Key, Text
 from castervoice.lib.ccr.standard import SymbolSpecs
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 
+# Load the toml file
+FILENAME_TOML = "python.toml"
+VOCAB = utilities.load_toml_file(settings.SETTINGS["paths"]["PROGRAMMING_VOCAB_PATH"] + "/" + FILENAME_TOML)
 
 class PythonNon(MappingRule):
     mapping = {

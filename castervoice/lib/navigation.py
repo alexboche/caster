@@ -217,6 +217,10 @@ def move_until_phrase(left_right, phrase):
     if match:
         left_index, right_index = match
     else:
+        Key("c-v").execute()
+        if left_right == "right":
+            offset = len(selected_text)
+            Key("left:%d" %offset).execute()
         return
     left_index, right_index = get_start_end_position(selected_text, phrase, left_right)
     # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
@@ -260,6 +264,10 @@ def select_until_phrase(left_right, phrase):
     if match:
         left_index, right_index = match
     else:
+        Key("c-v").execute()
+        if left_right == "right":
+            offset = len(selected_text)
+            Key("left:%d" %offset).execute()
         return
     left_index, right_index = get_start_end_position(selected_text, phrase, left_right)
     

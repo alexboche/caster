@@ -62,7 +62,7 @@ def dragon_capitalize(phrase):
 
     
 
-punctuation_list = [".", ",", "'", "[", "]", "<", ">", "{", "}", "?", "–", "-", ";", "=", "/", "\\", "$"] # is this correct with the backslash?
+punctuation_list = [".", ",", "'", "(", ")", "[", "]", "<", ">", "{", "}", "?", "–", "-", ";", "=", "/", "\\", "$"] # is this correct with the backslash?
 
 def get_start_end_position(text, phrase, left_right):
     if left_right == "left":
@@ -200,7 +200,7 @@ def copypaste_remove_phrase_from_text(phrase, left_right):
     pyperclip.copy(temp_for_previous_clipboard_item)
 
 
-def move_until_phrase(left_right, phrase):
+def move_until_phrase(left_right, before_after, phrase):
     """ move until the close end of the phrase"""
 
     # temporarily store previous clipboard item
@@ -225,23 +225,73 @@ def move_until_phrase(left_right, phrase):
     left_index, right_index = get_start_end_position(selected_text, phrase, left_right)
     # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
     # comments below indicate the other method
-    Key("c-v").execute()
-    if left_right == "left": 
-        offset = len(selected_text) - right_index
-        Key("left:%d" %offset).execute()
-    if left_right == "right":
-        offset = len(selected_text) - left_index
-        Key("left:%d" %offset).execute()
-    
-    # Alternative method: simply unselect rather than pacing over the existing text. (a little faster) does not work texstudio
-    # if left_right == "left":
-    #     Key("right").execute() # unselect text
-    #     offset = len(selected_text) - right_index
-    #     Key("left:%d" %offset).execute()
+    # Key("c-v").execute()
+    # if left_right == "left": 
+        # if before_after == "before":
+            # offset = len(selected_text) - left_index
+        # else:
+        #     offset = len(selected_text) - right_index
     # if left_right == "right":
-    #     Key("left").execute() # unselect text
-    #     offset = left_index
-    #     Key("right:%d" %offset).execute()
+        # if before_after == "after":
+            # offset = len(selected_text) - right_index
+        # else:
+    #     offset = len(selected_text) - left_index
+#     Key("left:%d" %offset).execute()
+    
+    # Alternative method: simply unselect rather than pasting over the existing text. (a little faster) does not work texstudio
+    if left_right == "left":
+        if before_after == "before":
+            # we will move the cursor before the phrase
+            if left_index < round(len(selected_text)/2):
+                # it's faster to approach the phrase from the left
+                Key("home").execute() # unselect text and move to the end of the line
+                offset = left_index
+                Key("right:%d" %offset).execute()
+            else:
+                # it's faster to approach the phrase from the right
+                Key("right").execute() # unselect text and move to the left side of the selection
+                offset = len(selected_text) - left_index
+                Key("left:%d" %offset).execute()
+        else:
+            # before_after == "after" or before_after == None
+            if right_index < round(len(selected_text)/2):
+                # it's faster to approach the phrase from the left
+                Key("home").execute() # unselect text and move to the end of the line
+                offset = right_index
+                Key("home, right:%d" %offset).execute()
+            else:
+                # it's faster to approach the phrase from the right
+                Key("home").execute() # unselect text and move to the end of the line
+                offset = len(selected_text) - right_index
+                Key("left:%d" %offset).execute()
+                       
+    if left_right == "right":
+        
+        if before_after == "after":
+            # we will move the cursor after the phrase
+            if right_index > round(len(selected_text)/2):
+                # it's faster to approach the phrase from the right
+                Key("end").execute()
+                offset = len(selected_text) - right_index
+                Key("left:%d" %offset).execute()
+            else:
+                # it's faster to approach the phrase from the left
+                Key("left").execute() # unselect text and move to left side of selection                
+                offset = right_index
+                Key("right:%d" %offset).execute()
+            offset = right_index
+        else:
+            # before_after == "before" or before_after == None, so move the cursor before the phrase
+            if left_index > round(len(selected_text)/2):
+                # it's faster to approach the phrase from the right
+                Key("end").execute() # unselect text and move to end of line
+                offset = len(selected_text) - left_index
+                Key("left:%d" %offset).execute()
+            else:
+                # it's faster to approach the phrase from the left
+                Key("left").execute() # unselect text and move to left side of selection
+                offset = left_index
+                Key("right:%d" %offset).execute()
     
     # put previous clipboard item back in the clipboard
     Pause("20").execute()
@@ -273,33 +323,33 @@ def select_until_phrase(left_right, phrase):
     
     # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
     # comments below indicate the other method
-    Key("c-v").execute()
-    if left_right == "left":
-        offset = len(selected_text) - left_index
-        # make noninclusive if it's punctuation
-        if phrase in punctuation_list:
-            offset -= 1
-        Key("s-left:%d" %offset).execute()
-    if left_right == "right":
-        len_selected_text = len(selected_text)
-        offset = right_index
-        # make noninclusive if it's punctuation
-        if phrase in punctuation_list:
-            offset -= 1
-        Key("left:%d" %len_selected_text).execute()
-        Key("s-right:%d" %offset).execute()
-    
-    # # alternative method: simply unselects text rather than pasting over the text. a little faster but does not work in tex studio
+    # Key("c-v").execute()
     # if left_right == "left":
-    #     Key("right").execute() # unselect text
     #     offset = len(selected_text) - left_index
-    #     # make noninclusive if it's punctuation 
+    #     # make noninclusive if it's punctuation
     #     if phrase in punctuation_list:
     #         offset -= 1
     #     Key("s-left:%d" %offset).execute()
     # if left_right == "right":
-    #     Key("left").execute() # unselect text
-    #     Key("s-right:%d" %(right_index -1)).execute() # make noninclusive if it's punctuation 
+    #     len_selected_text = len(selected_text)
+    #     offset = right_index
+    #     # make noninclusive if it's punctuation
+    #     if phrase in punctuation_list:
+    #         offset -= 1
+    #     Key("left:%d" %len_selected_text).execute()
+    #     Key("s-right:%d" %offset).execute()
+    
+    # # alternative method: simply unselects text rather than pasting over the text. a little faster but does not work in tex studio
+    if left_right == "left":
+        Key("right").execute() # unselect text
+        offset = len(selected_text) - left_index
+        # make noninclusive if it's punctuation 
+        if phrase in punctuation_list:
+            offset -= 1
+        Key("s-left:%d" %offset).execute()
+    if left_right == "right":
+        Key("left").execute() # unselect text
+        Key("s-right:%d" %(right_index -1)).execute() # make noninclusive if it's punctuation 
    
     # put previous clipboard item back in the clipboard
     Pause("20").execute()

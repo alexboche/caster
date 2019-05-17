@@ -199,7 +199,7 @@ class Navigation(MergeRule):
         'shock [<nnavi50>]':
             R(Key("enter"), rspec="shock", rdescript="Core: Enter")* Repeat(extra="nnavi50"),
 
-        "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
+        "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>sleep wake up)]":
             R(Function(text_utils.master_text_nav), rdescript="Core: Keyboard Text Navigation"),
 
          
@@ -265,9 +265,9 @@ class Navigation(MergeRule):
 
         "hug <enclosure>":
             R(Function(text_utils.enclose_selected), rdescript="Core: Enclose text "),
-        "dredge":
-            R(Key("a-tab"), rdescript="Core: Alt-Tab"),
-
+        "dredge [<nnavi10>]":
+            R(Key("alt:down, tab/20:%(nnavi10)d, alt:up"), 
+               rdescript="Core: switch to most recent Windows"),
         
         # the following text manipulation commands currently only work on text
             # that is on the same line as the cursor, though this could be expanded.
@@ -276,9 +276,6 @@ class Navigation(MergeRule):
         # The alphabet should probably be added into the choice dictionaries.
         # the keypress waittime should probably be made higher for these commands.
         # the wait times in the functions could also be reduced.
-        # the functions should probably be adjusted to avoid inappropriately recognizing substrings
-        # these work in most applications not all (e.g. doesn't work in Microsoft Word),
-        # probably something to do with the wait times within paste_string_without_altering_clipboard
         
         "change [<lease_ross>] <dictation> to <dictation2>":
             R(Function(navigation.copypaste_replace_phrase_with_phrase,
@@ -299,16 +296,16 @@ class Navigation(MergeRule):
                        dict(right_character="phrase"),
                        left_right="right"),
               rdescript="remove chosen character to the right of the cursor"),
-        "go [lease] <left_character>":
+        "go [<lease_ross>] [<before_after>] <dictation>":
+            R(Function(navigation.move_until_phrase,
+                       dict(dictation="phrase", lease_ross="left_right")),
+              rdescript="move to chosen phrase to the left or right of the cursor"),
+        "go [lease] [<before_after>] <left_character>":
             R(Function(navigation.move_until_phrase,
                        dict(left_character="phrase"),
                        left_right="left"),
               rdescript="move to chosen character to the left of the cursor"),
-        "go [<lease_ross>] <dictation>":
-            R(Function(navigation.move_until_phrase,
-                       dict(dictation="phrase", lease_ross="left_right")),
-              rdescript="move to chosen phrase to the left or right of the cursor"),
-        "go ross <right_character>":
+        "go ross [<before_after>] <right_character>":
             R(Function(navigation.move_until_phrase,
                        dict(right_character="phrase"),
                        left_right="right"),
@@ -405,6 +402,10 @@ class Navigation(MergeRule):
             "lease": "left",
             "ross": "right",
         }),
+        Choice("before_after", {
+            "before": "before",
+            "after": "after",
+        }),
         Choice(
             "left_character", {
                 "[left] prekris": "(",
@@ -472,6 +473,7 @@ class Navigation(MergeRule):
         "big": False,
         "splatdir": "backspace",
         "lease_ross": "left",
+        "before_after": None
     }
 
 

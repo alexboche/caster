@@ -229,7 +229,7 @@ def move_until_phrase(left_right, before_after, phrase):
     Key("c-v").execute() # paste selected text over itself, thus unselecting the text and putting the cursor on the right side of the selection
     if left_right == "left":
         if before_after == "before":
-            # we will move the cursor before the phrase
+            # move the cursor before the phrase
             if left_index < round(len(selected_text)/2):
                 # it's faster to approach the phrase from the left
                 Key("home").execute() # unselect text and move to the end of the line
@@ -240,7 +240,7 @@ def move_until_phrase(left_right, before_after, phrase):
                 offset = len(selected_text) - left_index
                 Key("left:%d" %offset).execute()
         else:
-            # before_after == "after" or before_after == None
+            # before_after == "after" or before_after == None, so move the cursor to after the phrase
             if right_index < round(len(selected_text)/2):
                 # it's faster to approach the phrase from the left
                 Key("home").execute() # unselect text and move to the end of the line
@@ -277,7 +277,7 @@ def move_until_phrase(left_right, before_after, phrase):
     #             offset = len(selected_text) - left_index
     #             Key("left:%d" %offset).execute()
     #     else:
-    #         # before_after == "after" or before_after == None
+    #         # before_after == "after" or before_after == None, so move the cursor after the phrase
     #         if right_index < round(len(selected_text)/2):
     #             # it's faster to approach the phrase from the left
     #             Key("home").execute() # unselect text and move to the end of the line

@@ -65,8 +65,11 @@ class VSCodeCcrRule(MergeRule):
         "tall cursor down": R(Key("csa-pgdown"), rdescript="add cursors all the way down"),
         "expand  [<n>]": R(Key("sa-right"), 
             rdescript="highlight current word(s)") * Repeat(extra='n'),
+            
         "shrink  [<n>]": R(Key("sa-left"), 
             rdescript="shrink the previous highlighting range or unhighlight") * Repeat(extra='n'),
+
+            
         
         # # command below requires "brackets select" extension for VS code
         "expo [<n>]": R(Key("ca-a"), 
@@ -130,6 +133,11 @@ class VSCodeCcrRule(MergeRule):
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
               rdescript="Visual Studio Code: Go to Line"),
         
+    # These require the Paredit eextension, unfortunately they don't seem to work I don't know why 
+        # "slurp left": R(Key("ca-langle"), rdescript=""),
+        # "slurp right": R(Key("ca-period"), rdescript=""),
+        # "barf left": R(Key("ca-rangle"), rdescript=""),
+        # "barf right": R(Key("ca-comma"), rdescript=""),
     }
     extras = [
         Dictation("text"),

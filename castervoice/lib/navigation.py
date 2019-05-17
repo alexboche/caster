@@ -223,22 +223,10 @@ def move_until_phrase(left_right, before_after, phrase):
             Key("left:%d" %offset).execute()
         return
     left_index, right_index = get_start_end_position(selected_text, phrase, left_right)
-    # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
-    # comments below indicate the other method
-    # Key("c-v").execute()
-    # if left_right == "left": 
-        # if before_after == "before":
-            # offset = len(selected_text) - left_index
-        # else:
-        #     offset = len(selected_text) - right_index
-    # if left_right == "right":
-        # if before_after == "after":
-            # offset = len(selected_text) - right_index
-        # else:
-    #     offset = len(selected_text) - left_index
-#     Key("left:%d" %offset).execute()
     
-    # Alternative method: simply unselect rather than pasting over the existing text. (a little faster) does not work texstudio
+    # # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
+    # # comments below indicate the other method
+    Key("c-v").execute() # paste selected text over itself, thus unselecting the text and putting the cursor on the right side of the selection
     if left_right == "left":
         if before_after == "before":
             # we will move the cursor before the phrase
@@ -249,7 +237,6 @@ def move_until_phrase(left_right, before_after, phrase):
                 Key("right:%d" %offset).execute()
             else:
                 # it's faster to approach the phrase from the right
-                Key("right").execute() # unselect text and move to the left side of the selection
                 offset = len(selected_text) - left_index
                 Key("left:%d" %offset).execute()
         else:
@@ -261,37 +248,74 @@ def move_until_phrase(left_right, before_after, phrase):
                 Key("home, right:%d" %offset).execute()
             else:
                 # it's faster to approach the phrase from the right
-                Key("home").execute() # unselect text and move to the end of the line
                 offset = len(selected_text) - right_index
                 Key("left:%d" %offset).execute()
                        
     if left_right == "right":
-        
+        # since we are using the method of pasting the selected text over itself, we cannot use any optimization about approaching from left versus right.
         if before_after == "after":
-            # we will move the cursor after the phrase
-            if right_index > round(len(selected_text)/2):
-                # it's faster to approach the phrase from the right
-                Key("end").execute()
-                offset = len(selected_text) - right_index
-                Key("left:%d" %offset).execute()
-            else:
-                # it's faster to approach the phrase from the left
-                Key("left").execute() # unselect text and move to left side of selection                
-                offset = right_index
-                Key("right:%d" %offset).execute()
-            offset = right_index
+            offset = len(selected_text) - right_index
         else:
-            # before_after == "before" or before_after == None, so move the cursor before the phrase
-            if left_index > round(len(selected_text)/2):
-                # it's faster to approach the phrase from the right
-                Key("end").execute() # unselect text and move to end of line
-                offset = len(selected_text) - left_index
-                Key("left:%d" %offset).execute()
-            else:
-                # it's faster to approach the phrase from the left
-                Key("left").execute() # unselect text and move to left side of selection
-                offset = left_index
-                Key("right:%d" %offset).execute()
+            offset = len(selected_text) - left_index
+        Key("left:%d" %offset).execute()
+
+
+
+    
+    # Alternative method: simply unselect rather than pasting over the existing text. (a little faster) does not work texstudio
+    # if left_right == "left":
+    #     if before_after == "before":
+    #         # we will move the cursor before the phrase
+    #         if left_index < round(len(selected_text)/2):
+    #             # it's faster to approach the phrase from the left
+    #             Key("home").execute() # unselect text and move to the end of the line
+    #             offset = left_index
+    #             Key("right:%d" %offset).execute()
+    #         else:
+    #             # it's faster to approach the phrase from the right
+    #             Key("right").execute() # unselect text and move to the left side of the selection
+    #             offset = len(selected_text) - left_index
+    #             Key("left:%d" %offset).execute()
+    #     else:
+    #         # before_after == "after" or before_after == None
+    #         if right_index < round(len(selected_text)/2):
+    #             # it's faster to approach the phrase from the left
+    #             Key("home").execute() # unselect text and move to the end of the line
+    #             offset = right_index
+    #             Key("home, right:%d" %offset).execute()
+    #         else:
+    #             # it's faster to approach the phrase from the right
+    #             Key("end").execute() # unselect text and move to the end of the line
+    #             offset = len(selected_text) - right_index
+    #             Key("left:%d" %offset).execute()
+                       
+    # if left_right == "right":
+        
+    #     if before_after == "after":
+    #         # we will move the cursor after the phrase
+    #         if right_index > round(len(selected_text)/2):
+    #             # it's faster to approach the phrase from the right
+    #             Key("end").execute()
+    #             offset = len(selected_text) - right_index
+    #             Key("left:%d" %offset).execute()
+    #         else:
+    #             # it's faster to approach the phrase from the left
+    #             Key("left").execute() # unselect text and move to left side of selection                
+    #             offset = right_index
+    #             Key("right:%d" %offset).execute()
+    #         offset = right_index
+    #     else:
+    #         # before_after == "before" or before_after == None, so move the cursor before the phrase
+    #         if left_index > round(len(selected_text)/2):
+    #             # it's faster to approach the phrase from the right
+    #             Key("end").execute() # unselect text and move to end of line
+    #             offset = len(selected_text) - left_index
+    #             Key("left:%d" %offset).execute()
+    #         else:
+    #             # it's faster to approach the phrase from the left
+    #             Key("left").execute() # unselect text and move to left side of selection
+    #             offset = left_index
+    #             Key("right:%d" %offset).execute()
     
     # put previous clipboard item back in the clipboard
     Pause("20").execute()

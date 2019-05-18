@@ -1,68 +1,22 @@
-# -*- coding: utf-8 -*-
-'''
-master_text_nav shouldn't take strings as arguments - it should take ints, so it can be language-agnostic
-'''
-
-import time
-from ctypes import windll
-from subprocess import Popen
+from dragonfly import Function, Key, Text, Mouse, Pause, Dictation, Choice, Grammar 
+import subprocess
 import pyperclip
-import re
-
-import dragonfly
-from dragonfly import Choice, monitors, Pause
-from castervoice.asynch.mouse.legion import LegionScanner
-from castervoice.lib import control, settings, utilities, textformat, context
-from castervoice.lib.actions import Key, Text, Mouse
-from castervoice.lib.clipboard import Clipboard
+import re 
+import io
 
 
+from castervoice.lib import control
+from castervoice.lib import settings
+from castervoice.lib.context import AppContext
+from castervoice.lib.dfplus.additions import IntegerRefST
+from castervoice.lib.dfplus.merge import gfilter
+from castervoice.lib.dfplus.merge.mergerule import MergeRule
+from castervoice.lib.dfplus.state.short import R
+from castervoice.apps import utils
+from castervoice.apps import reloader
+from castervoice.apps import reloader
 
-DIRECTION_STANDARD = {
-    "soss [E]": "up",
-    "dunss [E]": "down",
-    "leese [E]": "left",
-    "Ross [E]": "right",
-    "back": "left"
-}
-'''
-Note: distinct token types were removed because
-A) a general purpose fill token is easier to remember than 10 of them, and
-B) the user of a programming language will know what they're supposed to get filled with
-'''
-TARGET_CHOICE = Choice(
-    "target", {
-        "comma": ",",
-        "(period | dot)": ".",
-        "(pair | parentheses)": "(~)",
-        "[square] (bracket | brackets)": "[~]",
-        "curly [brace]": "{~}",
-        "loop": "for~while",
-        "L paren": "(",
-        "are paren": ")",
-        "openers": "(~[~{",
-        "closers": "}~]~)",
-        "token": "TOKEN"
-    })
-
-def paper():
-    text = pyperclip.paste()
-    print(text + "z")
-
-def dragon_capitalize(phrase):
-    """ take a series of words and return a series of words where 
-    words preceded by 'cap' are capitalized and the 'cap' is removed """
-    word_list = phrase.split(" ")
-    word_list_copy = word_list
-    for i in range(0, len(word_list_copy)):
-        if word_list_copy[i] == "cap":
-            word_list[i+1] = word_list[i+1].title()
-            word_list.pop(i)
-    return word_list
-
-    
-
-punctuation_list = [".", ",", "'", "(", ")", "[", "]", "<", ">", "{", "}", "?", "–", "-", ";", "=", "/", "\\", "$"] # is this correct with the backslash?
+punctuation_list = []
 
 def get_start_end_position(text, phrase, left_right):
     if left_right == "left":
@@ -101,6 +55,18 @@ def get_start_end_position(text, phrase, left_right):
     return (left_index, right_index)
 
 
+def select_text_and_return_it(left_right, number_of_lines_to_search):
+    # temporarily store previous clipboard item
+    temp_for_previous_clipboard_item = pyperclip.paste()
+    Pause("30").execute()
+    if left_right == "left":
+        Key("s-home, s-up:%d, s-home, c-c" %number_of_lines_to_search).execute()
+    if left_right == "right":
+        Key("s-end, s-down:%d, s-end, c-c" %number_of_lines_to_search).execute()
+    Pause("60").execute()
+    selected_text = pyperclip.paste()
+    return (selected_text, temp_for_previous_clipboard_item)
+
 def replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_right):
     match = get_start_end_position(text, replaced_phrase, left_right)
     if match:
@@ -110,20 +76,6 @@ def replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_r
     return text[: left_index] + replacement_phrase + text[right_index:] 
     
 
-
-def select_text_and_return_it(left_right, number_of_lines_to_search):
-    # temporarily store previous clipboard item
-    temp_for_previous_clipboard_item = pyperclip.paste()
-    Pause("30").execute()
-    if left_right == "left":
-        Key("s-home, s-up:%d, s-home, c-c" %number_of_lines_to_search).execute()
-        print(left_right) 
-        # Key("s-up:%d, s-home, c-c/2" %number_of_lines_to_search).execute()
-    if left_right == "right":
-        Key("s-end, s-down:%d, s-end, c-c" %number_of_lines_to_search).execute()
-    Pause("60").execute()
-    selected_text = pyperclip.paste()
-    return (selected_text, temp_for_previous_clipboard_item)
 
 def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, left_right, number_of_lines_to_search):
     clipboard = select_text_and_return_it(left_right, number_of_lines_to_search)
@@ -382,21 +334,10 @@ def delete_until_phrase(text, phrase, left_right):
     if left_right == "right":
         return text[right_index :]
 
-def copypaste_delete_until_phrase(left_right, phrase):
-    phrase = str(phrase)
-    # temporarily store previous clipboard item
-    temp_for_previous_clipboard_item = pyperclip.paste()
-    Pause("30").execute()
-
-    if left_right == "left":
-        Key("s-home, c-c/2").execute()
-        
-    if left_right == "right":
-        Key("s-end, c-c/2").execute()
+def copypaste_delete_until_phrase(left_right, phrase, number_of_lines_to_search):
+    selected_text = select_text_and_return_it(left_right, number_of_lines_to_search)[0]
+    temp_for_previous_clipboard_item = select_text_and_return_it(left_right, number_of_lines_to_search)[1]
     
-    # get text from clipboard
-    selected_text = pyperclip.paste()
-
     phrase = str(phrase)
     new_text = delete_until_phrase(selected_text, phrase, left_right)
     if not new_text:
@@ -419,220 +360,144 @@ def copypaste_delete_until_phrase(left_right, phrase):
 
 
 
-
-def get_direction_choice(name):
-    global DIRECTION_STANDARD
-    return Choice(name, DIRECTION_STANDARD)
+class GlobalTestRule(MergeRule):
+    pronunciation = "global alex rule"
 
 
-def initialize_clipboard(nexus):
-    if len(nexus.clip) == 0:
-        nexus.clip = utilities.load_toml_file(
-            settings.SETTINGS["paths"]["SAVED_CLIPBOARD_PATH"])
+    mapping = {
+        "bathroom": R(Text("de"), rdescript="red blue"), 
+
+        
+        "change <lease_ross> [<number_of_lines_to_search>] <dictation> to <dictation2>":
+            R(Function(copypaste_replace_phrase_with_phrase,
+                       dict(dictation="replaced_phrase", dictation2="replacement_phrase", lease_ross="left_right")),
+              rdescript="Core: replace text to the left or right of the cursor"),
+        
+        "remove <lease_ross> <dictation>":
+            R(Function(copypaste_remove_phrase_from_text,
+                       dict(dictation="phrase", lease_ross="left_right")),
+              rdescript="remove chosen phrase to the left or right of the cursor"),
+        "remove lease <left_character>":
+            R(Function(copypaste_remove_phrase_from_text,
+                       dict(left_character="phrase"),
+                       left_right="left"),
+              rdescript="remove chosen character to the left of the cursor"),
+        "remove ross <right_character>":
+            R(Function(copypaste_remove_phrase_from_text,
+                       dict(right_character="phrase"),
+                       left_right="right"),
+              rdescript="remove chosen character to the right of the cursor"),
+        "go [<lease_ross>] [<before_after>] <dictation>":
+            R(Function(move_until_phrase,
+                       dict(dictation="phrase", lease_ross="left_right")),
+              rdescript="move to chosen phrase to the left or right of the cursor"),
+        "go [lease] [<before_after>] <left_character>":
+            R(Function(move_until_phrase,
+                       dict(left_character="phrase"),
+                       left_right="left"),
+              rdescript="move to chosen character to the left of the cursor"),
+        "go ross [<before_after>] <right_character>":
+            R(Function(move_until_phrase,
+                       dict(right_character="phrase"),
+                       left_right="right"),
+              rdescript="move to chosen character to the right of the cursor"),
+        "grab <lease_ross> <dictation> ":
+            R(Function(select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
+                 rdescript="select until chosen phrase (inclusive)"),
+        "grab lease <left_character>":
+            R(Function(select_until_phrase, dict(left_character="phrase"), left_right="left"),
+            rdescript="select left until chosen character"),
+        "grab ross <right_character>":
+            R(Function(select_until_phrase, dict(right_character="phrase"), left_right="right"),
+            rdescript="select right until chosen character"),
+        "wipe <lease_ross> <dictation>":
+            R(Function(copypaste_delete_until_phrase,
+                       dict(dictation="phrase", lease_ross="left_right")),
+              rdescript="delete left until chosen phrase (exclusive)"),
+        "wipe lease <left_character>":
+            R(Function(copypaste_delete_until_phrase,
+                       dict(left_character="phrase"),
+                       left_right="left"),
+              rdescript="delete left until chosen character (exclusive)"),
+        "wipe ross <right_character>":
+            R(Function(copypaste_delete_until_phrase,
+                       dict(right_character="phrase"), 
+                       left_right="right"),
+              rdescript="delete left until chosen character"),
+        
 
 
-def mouse_alternates(mode, nexus, monitor=1):
-    if nexus.dep.PIL:
-        if mode == "legion" and not utilities.window_exists(None, "legiongrid"):
-            r = monitors[int(monitor) - 1].rectangle
-            bbox = [
-                int(r.x),
-                int(r.y),
-                int(r.x) + int(r.dx) - 1,
-                int(r.y) + int(r.dy) - 1
-            ]
-            ls = LegionScanner()
-            ls.scan(bbox)
-            tscan = ls.get_update()
-            Popen([
-                settings.SETTINGS["paths"]["PYTHONW"],
-                settings.SETTINGS["paths"]["LEGION_PATH"], "-t", tscan[0], "-m",
-                str(monitor)
-            ])  # , "-d", "500_500_500_500"
-        elif mode == "rainbow" and not utilities.window_exists(None, "rainbowgrid"):
-            Popen([
-                settings.SETTINGS["paths"]["PYTHONW"],
-                settings.SETTINGS["paths"]["RAINBOW_PATH"], "-g", "r", "-m",
-                str(monitor)
-            ])
-        elif mode == "douglas" and not utilities.window_exists(None, "douglasgrid"):
-            Popen([
-                settings.SETTINGS["paths"]["PYTHONW"],
-                settings.SETTINGS["paths"]["DOUGLAS_PATH"], "-g", "d", "-m",
-                str(monitor)
-            ])
-    else:
-        utilities.availability_message(mode.title(), "PIL")
 
 
-def stoosh_keep_clipboard(nnavi500, nexus):
-    if nnavi500 == 1:
-        Key("c-c").execute()
-    else:
-        max_tries = 20
-        cb = Clipboard(from_system=True)
-        Key("c-c").execute()
-        key = str(nnavi500)
-        for i in range(0, max_tries):
-            failure = False
-            try:
-                # time for keypress to execute
-                time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-                nexus.clip[key] = Clipboard.get_system_text()
-                utilities.save_toml_file(
-                    nexus.clip, settings.SETTINGS["paths"]["SAVED_CLIPBOARD_PATH"])
-            except Exception:
-                failure = True
-                utilities.simple_log()
-            if not failure:
-                break
-        cb.copy_to_system()
+        
+        
+    }
+    extras = [
+        Dictation("dict"),
+        Dictation("dictation"),
+        Dictation("dictation2"),
+        Dictation("text"),
+        IntegerRefST("n", 1, 100),
+        IntegerRefST("m", 1, 100),
+        IntegerRefST("wait_time", 1, 1000),
+        IntegerRefST("number_of_lines_to_search", 1, 50),
+        Choice("character_sequence", {
+            "comma": ",",
+        }),
+        Choice("left_character", {
+            "prekris": "(",
+            "brax": "[",
+            "angle": "<",
+            "curly": "{",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
+        Choice("right_character", {
+            "prekris": ")",
+            "brax": "]",
+            "angle": ">",
+            "curly": "}",
+            "quotes": '"',
+            "single quote": "'",
+            "comma": ",",
+            "period": ".",
+            "questo": "?",
+            "backtick": "`",
+        }),
+        Choice("lease_ross", {
+            "lease": "left",
+            "ross": "right",
+        }),
+        Choice("before_after", {
+            "before": "before",
+            "after": "after",
+        }),
+        
+        
+    ]
+    defaults = {"n": 1, "m": 1, "spec": "", "dict": "", "text": "", "mouse_button": "", 
+        "horizontal_distance": 0, "vertical_distance": 0, 
+        "lease_ross": "left",
+        "before_after": None,
+        "number_of_lines_to_search": 5,}
+
+        
 
 
-def cut_keep_clipboard(nnavi500, nexus):
-    if nnavi500 == 1:
-        Key("c-x").execute()
-    else:
-        max_tries = 20
-        cb = Clipboard(from_system=True)
-        Key("c-x").execute()
-        key = str(nnavi500)
-        for i in range(0, max_tries):
-            failure = False
-            try:
-                # time for keypress to execute
-                time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-                nexus.clip[key] = Clipboard.get_system_text()
-                utilities.save_toml_file(
-                    nexus.clip, settings.SETTINGS["paths"]["SAVED_CLIPBOARD_PATH"])
-            except Exception:
-                failure = True
-                utilities.simple_log()
-            if not failure:
-                break
-        cb.copy_to_system()
 
 
-def drop_keep_clipboard(nnavi500, nexus, capitalization, spacing):
-    # Maintain standard spark functionality for non-strings
-    if capitalization == 0 and spacing == 0 and nnavi500 == 1:
-        Key("c-v").execute()
-        return
-    # Get clipboard text
-    if nnavi500 > 1:
-        key = str(nnavi500)
-        if key in nexus.clip:
-            text = nexus.clip[key]
-        else:
-            dragonfly.get_engine().speak("slot empty")
-            text = None
-    else:
-        text = Clipboard.get_system_text()
-    # Format if necessary, and paste
-    if text is not None:
-        cb = Clipboard(from_system=True)
-        if capitalization != 0 or spacing != 0:
-            text = textformat.TextFormat.formatted_text(capitalization, spacing, text)
-        Clipboard.set_system_text(text)
-        time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-        Key("c-v").execute()
-        time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-        # Restore the clipboard contents.
-        cb.copy_to_system()
+context = utils.MultiAppContext(relevant_apps={})
+grammar = Grammar("test_rule", context=context)
+
+rule = GlobalTestRule(name="globaltestrule")
+gfilter.run_on(rule)
+grammar.add_rule(rule)
+grammar.load()
 
 
-def duple_keep_clipboard(nnavi50):
-    cb = Clipboard(from_system=True)
-    Key("escape, home, s-end, c-c, end").execute()
-    time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-    for i in range(0, nnavi50):
-        Key("enter, c-v").execute()
-        time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
-    cb.copy_to_system()
 
 
-def erase_multi_clipboard(nexus):
-    nexus.clip = {}
-    utilities.save_toml_file(nexus.clip,
-                             settings.SETTINGS["paths"]["SAVED_CLIPBOARD_PATH"])
-
-
-def volume_control(n, volume_mode):
-    for i in range(0, int(n)):
-        Key("volume" + str(volume_mode)).execute()
-
-
-def kill_grids_and_wait(nexus):
-    window_title = utilities.get_active_window_title()
-    if (window_title == settings.RAINBOW_TITLE or window_title == settings.DOUGLAS_TITLE
-            or window_title == settings.LEGION_TITLE):
-        nexus.comm.get_com("grids").kill()
-        time.sleep(0.1)
-
-
-def left_click(nexus):
-    kill_grids_and_wait(nexus)
-    windll.user32.mouse_event(0x00000002, 0, 0, 0, 0)
-    windll.user32.mouse_event(0x00000004, 0, 0, 0, 0)
-
-
-def right_click(nexus):
-    kill_grids_and_wait(nexus)
-    windll.user32.mouse_event(0x00000008, 0, 0, 0, 0)
-    windll.user32.mouse_event(0x00000010, 0, 0, 0, 0)
-
-
-def middle_click(nexus):
-    kill_grids_and_wait(nexus)
-    windll.user32.mouse_event(0x00000020, 0, 0, 0, 0)
-    windll.user32.mouse_event(0x00000040, 0, 0, 0, 0)
-
-
-def left_down(nexus):
-    kill_grids_and_wait(nexus)
-    windll.user32.mouse_event(0x00000002, 0, 0, 0, 0)
-
-
-def left_up(nexus):
-    kill_grids_and_wait(nexus)
-    windll.user32.mouse_event(0x00000004, 0, 0, 0, 0)
-
-
-def wheel_scroll(direction, nnavi500):
-    amount = 120
-    if direction != "up":
-        amount = amount* -1
-    for i in xrange(1, abs(nnavi500) + 1):
-        windll.user32.mouse_event(0x00000800, 0, 0, amount, 0)
-        time.sleep(0.1)
-
-
-def curse(direction, direction2, nnavi500, dokick):
-    x, y = 0, 0
-    d = str(direction)
-    d2 = str(direction2)
-    if d == "up" or d2 == "up":
-        y = -nnavi500
-    if d == "down" or d2 == "down":
-        y = nnavi500
-    if d == "left" or d2 == "left":
-        x = -nnavi500
-    if d == "right" or d2 == "right":
-        x = nnavi500
-
-    Mouse("<" + str(x) + ", " + str(y) + ">").execute()
-    if int(dokick) != 0:
-        if int(dokick) == 1:
-            left_click(control.nexus())
-        elif int(dokick) == 2:
-            right_click(control.nexus())
-
-
-def next_line(semi):
-    semi = str(semi)
-    Key("escape").execute()
-    time.sleep(0.01)
-    Key("end").execute()
-    time.sleep(0.01)
-    Text(semi).execute()
-    Key("enter").execute()

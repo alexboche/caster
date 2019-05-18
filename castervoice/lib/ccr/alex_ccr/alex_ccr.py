@@ -27,6 +27,7 @@ class AlexCcrRule(MergeRule):
         "middle click": Mouse("middle"),
         "salor <dict>": Text("%(dict)s"),        
         "center": Mouse("[0.5, 0.5], left"),
+        "execute": Key("end")+Text(".execute()"),
         
         # "squat":
         #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),

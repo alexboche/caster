@@ -78,9 +78,9 @@ def replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_r
 
 
 def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, left_right, number_of_lines_to_search):
-    clipboard = select_text_and_return_it(left_right, number_of_lines_to_search)
-    selected_text = clipboard[0]
-    temp_for_previous_clipboard_item = clipboard[1]
+    clip = select_text_and_return_it(left_right, number_of_lines_to_search)
+    selected_text = clip[0]
+    temp_for_previous_clipboard_item = clip[1]
     replaced_phrase = str(replaced_phrase)
     replacement_phrase = str(replacement_phrase) 
     new_text = replace_phrase_with_phrase(selected_text, replaced_phrase, replacement_phrase, left_right)
@@ -118,9 +118,9 @@ def remove_phrase_from_text(text, phrase, left_right):
 
 
 def copypaste_remove_phrase_from_text(phrase, left_right, number_of_lines_to_search):
-    selected_text = select_text_and_return_it(left_right, number_of_lines_to_search)[0]
-    temp_for_previous_clipboard_item = select_text_and_return_it(left_right, number_of_lines_to_search)[1]
-    
+    clip = select_text_and_return_it(left_right, number_of_lines_to_search)
+    selected_text = clip[0]
+    temp_for_previous_clipboard_item = clip[1]
     phrase = str(phrase)
     new_text = remove_phrase_from_text(selected_text, phrase, left_right)
     if not new_text:
@@ -142,66 +142,38 @@ def copypaste_remove_phrase_from_text(phrase, left_right, number_of_lines_to_sea
     pyperclip.copy(temp_for_previous_clipboard_item)
 
 
-def move_until_phrase(left_right, before_after, phrase):
+def move_until_phrase(left_right, before_after, phrase, number_of_lines_to_search):
     """ move until the close end of the phrase"""
+    # set default for before_after
+    if not before_after:
+        if left_right  == "left":
+            before_after = "after"
+        if left_right == "right":
+            before_after = "before"
 
-    # temporarily store previous clipboard item
-    temp_for_previous_clipboard_item = pyperclip.paste()
     
-    if left_right == "left":
-        Key("s-home, c-c/2").execute()
-    if left_right == "right":
-        Key("s-end, c-c/2").execute()
-    selected_text = pyperclip.paste()
-    Pause("10").execute()
+    clip = select_text_and_return_it(left_right, number_of_lines_to_search)
+    selected_text = clip[0]
+    temp_for_previous_clipboard_item = clip[1]
     phrase = str(phrase)
     match = get_start_end_position(selected_text, phrase, left_right)
     if match:
         left_index, right_index = match
     else:
-        Key("c-v").execute()
+        # phrase not found
+        offset = len(selected_text)            
+        if left_right == "left":
+            Key("right:%d" %offset).execute()
         if left_right == "right":
-            offset = len(selected_text)
             Key("left:%d" %offset).execute()
         return
     left_index, right_index = get_start_end_position(selected_text, phrase, left_right)
-    
-    # # I am using the method of pasting over the existing text rather than simply unselecting because of some weird behavior in texstudio
-    # # comments below indicate the other method
-    Key("c-v").execute() # paste selected text over itself, thus unselecting the text and putting the cursor on the right side of the selection
-    if left_right == "left":
-        if before_after == "before":
-            # move the cursor before the phrase
-            if left_index < round(len(selected_text)/2):
-                # it's faster to approach the phrase from the left
-                Key("home").execute() # unselect text and move to the end of the line
-                offset = left_index
-                Key("right:%d" %offset).execute()
-            else:
-                # it's faster to approach the phrase from the right
-                offset = len(selected_text) - left_index
-                Key("left:%d" %offset).execute()
-        else:
-            # before_after == "after" or before_after == None, so move the cursor to after the phrase
-            if right_index < round(len(selected_text)/2):
-                # it's faster to approach the phrase from the left
-                Key("home").execute() # unselect text and move to the end of the line
-                offset = right_index
-                Key("home, right:%d" %offset).execute()
-            else:
-                # it's faster to approach the phrase from the right
-                offset = len(selected_text) - right_index
-                Key("left:%d" %offset).execute()
-                       
-    if left_right == "right":
-        # since we are using the method of pasting the selected text over itself, we cannot use any optimization about approaching from left versus right.
-        if before_after == "after":
-            offset = len(selected_text) - right_index
-        else:
-            offset = len(selected_text) - left_index
-        Key("left:%d" %offset).execute()
+    Key("c-v").execute()
 
-
+    if before_after  == "before":
+        offset = selected_text - left_index
+    if before_after == "after":
+        offset = selected_text - right_index
 
     
     # Alternative method: simply unselect rather than pasting over the existing text. (a little faster) does not work texstudio
@@ -323,23 +295,40 @@ def select_until_phrase(left_right, phrase):
 
 
 
-def delete_until_phrase(text, phrase, left_right):
+def delete_until_phrase(text, phrase, left_right, before_after):
     match = get_start_end_position(text, phrase, left_right)
     if match:
         left_index, right_index = match
     else:
         return
+    # the spacing below may need to be tweaked
     if left_right == "left":
-        return text[: right_index]
-    if left_right == "right":
-        return text[right_index :]
+        if before_after == "before":
+            # if text[-1] == " ":
+            #     return text[: left_index] + " "
+                return text[: left_index]
 
-def copypaste_delete_until_phrase(left_right, phrase, number_of_lines_to_search):
-    selected_text = select_text_and_return_it(left_right, number_of_lines_to_search)[0]
-    temp_for_previous_clipboard_item = select_text_and_return_it(left_right, number_of_lines_to_search)[1]
+        else: # todo: handle before-and-after defaults better
+            if text[-1] == " ":
+                return text[: right_index] + " "
+            else:
+                return text[: right_index]
+    if left_right == "right":
+        if before_after == "after":
+            return text[right_index :]
+        else:
+            if text[0] == " ":
+                return " " + text[left_index :]
+            else:
+                return text[left_index :]
+
+def copypaste_delete_until_phrase(left_right, phrase, number_of_lines_to_search, before_after):
+    clip = select_text_and_return_it(left_right, number_of_lines_to_search)
+    selected_text = clip[0]
+    temp_for_previous_clipboard_item = clip[1]
     
     phrase = str(phrase)
-    new_text = delete_until_phrase(selected_text, phrase, left_right)
+    new_text = delete_until_phrase(selected_text, phrase, left_right, before_after)
     if not new_text:
         # phrase not found
         Key("c-v").execute()
@@ -366,6 +355,7 @@ class GlobalTestRule(MergeRule):
 
     mapping = {
         "bathroom": R(Text("de"), rdescript="red blue"), 
+        "Tiger": Key("up:0"),
 
         
         "change <lease_ross> [<number_of_lines_to_search>] <dictation> to <dictation2>":
@@ -373,53 +363,53 @@ class GlobalTestRule(MergeRule):
                        dict(dictation="replaced_phrase", dictation2="replacement_phrase", lease_ross="left_right")),
               rdescript="Core: replace text to the left or right of the cursor"),
         
-        "remove <lease_ross> <dictation>":
+        "remove <lease_ross> [<number_of_lines_to_search>] <dictation>":
             R(Function(copypaste_remove_phrase_from_text,
                        dict(dictation="phrase", lease_ross="left_right")),
               rdescript="remove chosen phrase to the left or right of the cursor"),
-        "remove lease <left_character>":
+        "remove lease [<number_of_lines_to_search>] <left_character>":
             R(Function(copypaste_remove_phrase_from_text,
                        dict(left_character="phrase"),
                        left_right="left"),
               rdescript="remove chosen character to the left of the cursor"),
-        "remove ross <right_character>":
+        "remove ross [<number_of_lines_to_search>] <right_character>":
             R(Function(copypaste_remove_phrase_from_text,
                        dict(right_character="phrase"),
                        left_right="right"),
               rdescript="remove chosen character to the right of the cursor"),
-        "go [<lease_ross>] [<before_after>] <dictation>":
+        "go [<lease_ross>] [<number_of_lines_to_search>] [<before_after>] <dictation>":
             R(Function(move_until_phrase,
                        dict(dictation="phrase", lease_ross="left_right")),
               rdescript="move to chosen phrase to the left or right of the cursor"),
-        "go [lease] [<before_after>] <left_character>":
+        "go [lease] [<before_after>] [<number_of_lines_to_search>] <left_character>":
             R(Function(move_until_phrase,
                        dict(left_character="phrase"),
                        left_right="left"),
               rdescript="move to chosen character to the left of the cursor"),
-        "go ross [<before_after>] <right_character>":
+        "go ross [<before_after>] [<number_of_lines_to_search>] <right_character>":
             R(Function(move_until_phrase,
                        dict(right_character="phrase"),
                        left_right="right"),
               rdescript="move to chosen character to the right of the cursor"),
-        "grab <lease_ross> <dictation> ":
+        "grab <lease_ross> [<number_of_lines_to_search>] <dictation> ":
             R(Function(select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
                  rdescript="select until chosen phrase (inclusive)"),
-        "grab lease <left_character>":
+        "grab lease [<number_of_lines_to_search>] <left_character>":
             R(Function(select_until_phrase, dict(left_character="phrase"), left_right="left"),
             rdescript="select left until chosen character"),
-        "grab ross <right_character>":
+        "grab ross [<number_of_lines_to_search>] <right_character>":
             R(Function(select_until_phrase, dict(right_character="phrase"), left_right="right"),
             rdescript="select right until chosen character"),
-        "wipe <lease_ross> <dictation>":
+        "wipe <lease_ross> [<number_of_lines_to_search>] [<before_after>] <dictation>":
             R(Function(copypaste_delete_until_phrase,
                        dict(dictation="phrase", lease_ross="left_right")),
               rdescript="delete left until chosen phrase (exclusive)"),
-        "wipe lease <left_character>":
+        "wipe lease [<number_of_lines_to_search>] [<before_after>] <left_character>":
             R(Function(copypaste_delete_until_phrase,
                        dict(left_character="phrase"),
                        left_right="left"),
               rdescript="delete left until chosen character (exclusive)"),
-        "wipe ross <right_character>":
+        "wipe ross [<number_of_lines_to_search>] [<before_after>] <right_character>":
             R(Function(copypaste_delete_until_phrase,
                        dict(right_character="phrase"), 
                        left_right="right"),
@@ -483,11 +473,7 @@ class GlobalTestRule(MergeRule):
         "horizontal_distance": 0, "vertical_distance": 0, 
         "lease_ross": "left",
         "before_after": None,
-        "number_of_lines_to_search": 5,}
-
-        
-
-
+        "number_of_lines_to_search": 0,}
 
 
 context = utils.MultiAppContext(relevant_apps={})

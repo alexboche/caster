@@ -1,59 +1,55 @@
-from dragonfly import Function, Key, Text, Mouse, Pause, Dictation, Choice, Grammar 
-import subprocess
+from dragonfly import Key, Pause
 import pyperclip
 import re 
-import io
 
 
-from castervoice.lib import control
-from castervoice.lib import settings
-from castervoice.lib.context import AppContext
-from castervoice.lib.dfplus.additions import IntegerRefST
-from castervoice.lib.dfplus.merge import gfilter
-from castervoice.lib.dfplus.merge.mergerule import MergeRule
-from castervoice.lib.dfplus.state.short import R
-from castervoice.apps import utils
-from castervoice.apps import reloader
-from castervoice.apps import reloader
-
-punctuation_list = []
-
+character_list = [".", ",", "'", "(", ")", "[", "]", "<", ">", "{", "}", "?", "-", ";", "=", "/", 
+"\\", "$", "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", 
+    "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"] 
 
 def get_start_end_position(text, phrase, left_right):
     if left_right == "left":
-        if phrase in punctuation_list:
+        if phrase in character_list:
             pattern = re.escape(phrase)
         else:
-            # the \b avoids e.g. matching 'and' in 'land' but seems to allow e.g. matching 'and' in 'hello.and'
+            # avoid e.g. matching 'and' in 'land' but allow e.g. matching 'and' in 'hello.and'
             # for matching purposes use lowercase
 
-            pattern = r"\b" + re.escape(phrase.lower()) + r"\b"            
-        
+            pattern = '(?:[^A-Za-z]|\A)({})(?:[^A-Za-z]|\Z)'.format(phrase.lower()) # must get group 1
+
         if not re.search(pattern, text.lower()):
             # replaced phase not found
             print("'{}' not found".format(phrase))
             return
         
         match_iter = re.finditer(pattern, text.lower())
-        match_list = [(m.start(), m.end()) for m in match_iter]
+        if phrase in character_list: # consider changing this to if len(phrase) == 1 or something
+            match_list = [(m.start(), m.end()) for m in match_iter] 
+        else:
+            match_list = [(m.start(1), m.end(1)) for m in match_iter] # first group
         last_match = match_list[-1]
         left_index, right_index = last_match
 
 
     if left_right == "right":
         # if replaced phrase is punctuation, don't require a word boundary for match
-        if phrase in punctuation_list:
+        if phrase in character_list:
             pattern = re.escape(phrase.lower())
         # phrase contains a word
         else:
-            pattern = r"\b" + re.escape(phrase.lower()) + r"\b"
+            pattern = '(?:[^A-Za-z]|\A)({})(?:[^A-Za-z]|\Z)'.format(phrase.lower()) # must get group 1
+
         match = re.search(pattern, text.lower())
         if not match:
             print("'{}' not found".format(phrase))
             return
         else:
-            left_index, right_index = match.span()
+            if phrase in character_list:
+                left_index, right_index = match.span()
+            else:
+                left_index, right_index = match.span(1) # Group 1
     return (left_index, right_index)
+
 
 
 def select_text_and_return_it(left_right, number_of_lines_to_search):
@@ -121,7 +117,7 @@ def remove_phrase_from_text(text, phrase, left_right):
         return
         
     # if the "phrase" is punctuation, just remove it, but otherwise remove an extra space adjacent to the phrase
-    if phrase in punctuation_list:
+    if phrase in character_list:
         return text[: left_index] + text[right_index:] 
     else:
         return text[: left_index - 1] + text[right_index:] 
@@ -163,13 +159,12 @@ def copypaste_remove_phrase_from_text(phrase, left_right, number_of_lines_to_sea
 def move_until_phrase(left_right, before_after, phrase, number_of_lines_to_search):
     """ move until the close end of the phrase"""
     # set default for before_after
+    print(number_of_lines_to_search)
     if before_after == None:
-        print("hello")
         if left_right  == "left":
             before_after = "after"
         if left_right == "right":
             before_after = "before"
-    # print(before_after)
 
     clip = select_text_and_return_it(left_right, number_of_lines_to_search)
     selected_text = clip[0]
@@ -246,6 +241,7 @@ def select_phrase(phrase, left_right, number_of_lines_to_search):
     if match:
         left_index, right_index = match
     else:
+        # phrase not found
         Key("c-v").execute()
         if left_right == "right":
             print("right")
@@ -319,6 +315,7 @@ def select_until_phrase(left_right, phrase, before_after, number_of_lines_to_sea
     if match:
         left_index, right_index = match
     else:
+        # phrase not found
         Key("c-v").execute()
         if left_right == "right":
             print("right")
@@ -452,156 +449,4 @@ def copypaste_delete_until_phrase(left_right, phrase, number_of_lines_to_search,
     # put previous clipboard item back in the clipboard
     Pause("20").execute()
     pyperclip.copy(temp_for_previous_clipboard_item)
-
-
-
-class GlobalTestRule(MergeRule):
-    pronunciation = "global alex rule"
-
-
-    mapping = {
-        "bathroom": R(Text("de"), rdescript="red blue"), 
-        "Tiger": Key("up:0"),
-
-        
-        # "(replace|to) <lease_ross> [<number_of_lines_to_search>] <dictation> (with|to) <dictation2>":
-        #     R(Function(copypaste_replace_phrase_with_phrase,
-        #                dict(dictation="replaced_phrase", dictation2="replacement_phrase", lease_ross="left_right")),
-        #       rdescript="Core: replace text to the left or right of the cursor"),
-        
-        # "remove <lease_ross> [<number_of_lines_to_search>] <dictation>":
-        #     R(Function(copypaste_remove_phrase_from_text,
-        #                dict(dictation="phrase", lease_ross="left_right")),
-        #       rdescript="remove chosen phrase to the left or right of the cursor"),
-        # "remove lease [<number_of_lines_to_search>] <left_character>":
-        #     R(Function(copypaste_remove_phrase_from_text,
-        #                dict(left_character="phrase"),
-        #                left_right="left"),
-        #       rdescript="remove chosen character to the left of the cursor"),
-        # "remove ross [<number_of_lines_to_search>] <right_character>":
-        #     R(Function(copypaste_remove_phrase_from_text,
-        #                dict(right_character="phrase"),
-        #                left_right="right"),
-        #       rdescript="remove chosen character to the right of the cursor"),
-
-        # problem: sometimes Dragon thinks the before-and-after variable is part of dictation.      
-        # "move <lease_ross> [<number_of_lines_to_search>] [<before_after>] <dictation>":
-        #     R(Function(move_until_phrase,
-        #                dict(dictation="phrase", lease_ross="left_right")),
-        #       rdescript="move to chosen phrase to the left or right of the cursor"),
-        # "move lease [<before_after>] [<number_of_lines_to_search>] <left_character>":
-        #     R(Function(move_until_phrase,
-        #                dict(left_character="phrase"),
-        #                left_right="left"),
-        #       rdescript="move to chosen character to the left of the cursor"),
-        # "move ross [<before_after>] [<number_of_lines_to_search>] <right_character>":
-        #     R(Function(move_until_phrase,
-        #                dict(right_character="phrase"),
-        #                left_right="right"),
-        #       rdescript="move to chosen character to the right of the cursor"),
-        # "grab <lease_ross> [<number_of_lines_to_search>] <dictation> ":
-        #     R(Function(select_phrase, dict(dictation="phrase", lease_ross="left_right")),
-        #          rdescript="select chosen phrase"),
-        # "grab lease [<number_of_lines_to_search>] <left_character>":
-        #     R(Function(select_phrase, dict(left_character="phrase"), left_right="left"),
-        #     rdescript="select chosen character to the left"),
-        # "grab ross [<number_of_lines_to_search>] <right_character>":
-        #     R(Function(select_phrase, dict(right_character="phrase"), left_right="right"),
-        #     rdescript="select chosen character to the right"),
-        
-        # "grab <lease_ross> [<number_of_lines_to_search>] until <dictation> ":
-        #     R(Function(select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
-        #          rdescript="select until chosen phrase (inclusive)"),
-        # "grab lease [<number_of_lines_to_search>] until <left_character>":
-        #     R(Function(select_until_phrase, dict(left_character="phrase"), left_right="left"),
-        #     rdescript="select left until chosen character"),
-        # "grab ross [<number_of_lines_to_search>] until  <right_character>":
-        #     R(Function(select_until_phrase, dict(right_character="phrase"), left_right="right"),
-        #     rdescript="select right until chosen character"),
-        # "wipe <lease_ross> [<number_of_lines_to_search>] [<before_after>] <dictation>":
-        #     R(Function(copypaste_delete_until_phrase,
-        #                dict(dictation="phrase", lease_ross="left_right")),
-        #       rdescript="delete left until chosen phrase (exclusive)"),
-        # "wipe lease [<number_of_lines_to_search>] [<before_after>] <left_character>":
-        #     R(Function(copypaste_delete_until_phrase,
-        #                dict(left_character="phrase"),
-        #                left_right="left"),
-        #       rdescript="delete left until chosen character (exclusive)"),
-        # "wipe ross [<number_of_lines_to_search>] [<before_after>] <right_character>":
-        #     R(Function(copypaste_delete_until_phrase,
-        #                dict(right_character="phrase"), 
-        #                left_right="right"),
-        #       rdescript="delete left until chosen character"),
-        
-
-
-
-
-        
-        
-    }
-    extras = [
-        Dictation("dict"),
-        Dictation("dictation"),
-        Dictation("dictation2"),
-        Dictation("text"),
-        IntegerRefST("n", 1, 100),
-        IntegerRefST("m", 1, 100),
-        IntegerRefST("wait_time", 1, 1000),
-        IntegerRefST("number_of_lines_to_search", 1, 50),
-        Choice("character_sequence", {
-            "comma": ",",
-        }),
-        Choice("left_character", {
-            "prekris": "(",
-            "brax": "[",
-            "angle": "<",
-            "curly": "{",
-            "quotes": '"',
-            "single quote": "'",
-            "comma": ",",
-            "period": ".",
-            "questo": "?",
-            "backtick": "`",
-        }),
-        Choice("right_character", {
-            "prekris": ")",
-            "brax": "]",
-            "angle": ">",
-            "curly": "}",
-            "quotes": '"',
-            "single quote": "'",
-            "comma": ",",
-            "period": ".",
-            "questo": "?",
-            "backtick": "`",
-        }),
-        Choice("lease_ross", {
-            "lease": "left",
-            "ross": "right",
-        }),
-        Choice("before_after", {
-            "before": "before",
-            "after": "after",
-        }),
-        
-        
-    ]
-    defaults = {"n": 1, "m": 1, "spec": "", "dict": "", "text": "", "mouse_button": "", 
-        "horizontal_distance": 0, "vertical_distance": 0, 
-        "lease_ross": "left",
-        "before_after": None,
-        "number_of_lines_to_search": 0,}
-
-
-# context = utils.MultiAppContext(relevant_apps={})
-# grammar = Grammar("test_rule", context=context)
-
-# rule = GlobalTestRule(name="globaltestrule")
-# gfilter.run_on(rule)
-# grammar.add_rule(rule)
-# grammar.load()
-
-
-
 

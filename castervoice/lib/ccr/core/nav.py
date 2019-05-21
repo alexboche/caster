@@ -260,12 +260,10 @@ class Navigation(MergeRule):
 
         
         
-        # the following text manipulation commands currently only work on text
-            # that is on the same line as the cursor, though this could be expanded.
         # requires the latest version of dragonfly because of her recent modification of the Function action
             # I think dragonfly2-0.13.0
         # The alphabet should probably be added into the choice dictionaries.
-        # the keypress waittime should probably be made higher for these commands.
+        # the keypress waittime should probably shortened for these commands.
         # the wait times in the functions could also be reduced.
         # the functions should probably be adjusted to avoid inappropriately recognizing substrings
         # these work in most applications not all (e.g. sometimes doesn't work in Microsoft Word),
@@ -274,61 +272,72 @@ class Navigation(MergeRule):
         # The solution is to add a longer pause after pressing control see in the supporting functions in navigation.py
         # For some applications this pause ( and other pauses in the functions for that matter ) is not necessary
         # and may be removed by the user if they wish to speed up the execution of these commands
-        
-        # "change <lease_ross> [<number_of_lines_to_search>] <dictation> to <dictation2>":
-        #     R(Function(navigation.copypaste_replace_phrase_with_phrase,
+                  # that is on the same line as the cursor, though this could be expanded.
+        # "(replace|change) <lease_ross> [<number_of_lines_to_search>] <dictation> (with|to) <dictation2>":
+        #     R(Function(copypaste_replace_phrase_with_phrase,
         #                dict(dictation="replaced_phrase", dictation2="replacement_phrase", lease_ross="left_right")),
         #       rdescript="Core: replace text to the left or right of the cursor"),
         
-        
-        # "remove <lease_ross> <dictation>":
-        #     R(Function(navigation.copypaste_remove_phrase_from_text,
+        # "remove <lease_ross> [<number_of_lines_to_search>] <dictation>":
+        #     R(Function(copypaste_remove_phrase_from_text,
         #                dict(dictation="phrase", lease_ross="left_right")),
         #       rdescript="remove chosen phrase to the left or right of the cursor"),
-        # "remove lease <left_character>":
-        #     R(Function(navigation.copypaste_remove_phrase_from_text,
+        # "remove lease [<number_of_lines_to_search>] <left_character>":
+        #     R(Function(copypaste_remove_phrase_from_text,
         #                dict(left_character="phrase"),
         #                left_right="left"),
         #       rdescript="remove chosen character to the left of the cursor"),
-        # "remove ross <right_character>":
-        #     R(Function(navigation.copypaste_remove_phrase_from_text,
+        # "remove ross [<number_of_lines_to_search>] <right_character>":
+        #     R(Function(copypaste_remove_phrase_from_text,
         #                dict(right_character="phrase"),
         #                left_right="right"),
         #       rdescript="remove chosen character to the right of the cursor"),
-        # "go [<lease_ross>] [<before_after>] <dictation>":
-        #     R(Function(navigation.move_until_phrase,
+
+        # # problem: sometimes Dragon thinks the before-and-after variable is part of dictation.      
+        # "move <lease_ross> [<number_of_lines_to_search>] [<before_after>] <dictation>":
+        #     R(Function(move_until_phrase,
         #                dict(dictation="phrase", lease_ross="left_right")),
         #       rdescript="move to chosen phrase to the left or right of the cursor"),
-        # "go [lease] [<before_after>] <left_character>":
-        #     R(Function(navigation.move_until_phrase,
+        # "move lease [<before_after>] [<number_of_lines_to_search>] <left_character>":
+        #     R(Function(move_until_phrase,
         #                dict(left_character="phrase"),
         #                left_right="left"),
         #       rdescript="move to chosen character to the left of the cursor"),
-        # "go ross [<before_after>] <right_character>":
-        #     R(Function(navigation.move_until_phrase,
+        # "move ross [<before_after>] [<number_of_lines_to_search>] <right_character>":
+        #     R(Function(move_until_phrase,
         #                dict(right_character="phrase"),
         #                left_right="right"),
         #       rdescript="move to chosen character to the right of the cursor"),
-        # "grab <lease_ross> <dictation> ":
-        #     R(Function(navigation.select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
+        # "grab <lease_ross> [<number_of_lines_to_search>] <dictation> ":
+        #     R(Function(select_phrase, dict(dictation="phrase", lease_ross="left_right")),
+        #          rdescript="select chosen phrase"),
+        # "grab lease [<number_of_lines_to_search>] <left_character>":
+        #     R(Function(select_phrase, dict(left_character="phrase"), left_right="left"),
+        #     rdescript="select chosen character to the left"),
+        # "grab ross [<number_of_lines_to_search>] <right_character>":
+        #     R(Function(select_phrase, dict(right_character="phrase"), left_right="right"),
+        #     rdescript="select chosen character to the right"),
+        
+        # "grab <lease_ross> [<number_of_lines_to_search>] until <dictation> ":
+        #     R(Function(select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
         #          rdescript="select until chosen phrase (inclusive)"),
-        # "grab lease <left_character>":
-        #     R(Function(navigation.select_until_phrase, dict(left_character="phrase"), left_right="left"),
+        # "grab lease [<number_of_lines_to_search>] until <left_character>":
+        #     R(Function(select_until_phrase, dict(left_character="phrase"), left_right="left"),
         #     rdescript="select left until chosen character"),
-        # "grab ross <right_character>":
-        #     R(Function(navigation.select_until_phrase, dict(right_character="phrase"), left_right="right"),
+        # "grab ross [<number_of_lines_to_search>] until  <right_character>":
+        #     R(Function(select_until_phrase, dict(right_character="phrase"), left_right="right"),
         #     rdescript="select right until chosen character"),
-        # "wipe <lease_ross> <dictation>":
-        #     R(Function(navigation.copypaste_delete_until_phrase,
+        # "wipe <lease_ross> [<number_of_lines_to_search>] [<before_after>] <dictation>":
+        #     R(Function(copypaste_delete_until_phrase,
         #                dict(dictation="phrase", lease_ross="left_right")),
         #       rdescript="delete left until chosen phrase (exclusive)"),
-        # "wipe lease <left_character>":
-        #     R(Function(navigation.copypaste_delete_until_phrase,
+        # "wipe lease [<number_of_lines_to_search>] [<before_after>] <left_character>":
+        #     R(Function(copypaste_delete_until_phrase,
         #                dict(left_character="phrase"),
         #                left_right="left"),
         #       rdescript="delete left until chosen character (exclusive)"),
-        # "wipe ross <right_character>":
-        #     R(Function(navigation.copypaste_delete_until_phrase,
+        # "wipe ross [<number_of_lines_to_search>] [<before_after>] <right_character>":
+        #     R(Function(copypaste_delete_until_phrase,
         #                dict(right_character="phrase"), 
         #                left_right="right"),
         #       rdescript="delete left until chosen character"),

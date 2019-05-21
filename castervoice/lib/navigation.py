@@ -61,8 +61,8 @@ def dragon_capitalize(phrase):
     return word_list
 
     
-
-punctuation_list = [".", ",", "'", "(", ")", "[", "]", "<", ">", "{", "}", "?", "–", "-", ";", "=", "/", "\\", "$"] # is this correct with the backslash?
+# test = regex.search(r'(?<=[\W_]+|^)and(?=[\W_]+|$)', string.lower())
+punctuation_list = [".", ",", "'", "(", ")", "[", "]", "<", ">", "{", "}", "?", "–", "-", ";", "=", "/", "\\", "$", "_"] # is this correct with the backslash?
 
 def get_start_end_position(text, phrase, left_right):
     if left_right == "left":
@@ -72,15 +72,16 @@ def get_start_end_position(text, phrase, left_right):
             # the \b avoids e.g. matching 'and' in 'land' but seems to allow e.g. matching 'and' in 'hello.and'
             # for matching purposes use lowercase
 
-            pattern = r"\b" + re.escape(phrase.lower()) + r"\b"            
-        
+            # pattern = r"\b" + re.escape(phrase.lower()) + r"\b"            
+            pattern = '(?:[^A-Za-z]|\A)({})(?:[^A-Za-z]|\Z)'.format(phrase.lower()) # must get group 1
+
         if not re.search(pattern, text.lower()):
             # replaced phase not found
             print("'{}' not found".format(phrase))
             return
         
         match_iter = re.finditer(pattern, text.lower())
-        match_list = [(m.start(), m.end()) for m in match_iter]
+        match_list = [(m.start(1), m.end(1)) for m in match_iter] # first group
         last_match = match_list[-1]
         left_index, right_index = last_match
 
@@ -91,13 +92,15 @@ def get_start_end_position(text, phrase, left_right):
             pattern = re.escape(phrase.lower())
         # phrase contains a word
         else:
-            pattern = r"\b" + re.escape(phrase.lower()) + r"\b"
+            # pattern = r"\b" + re.escape(phrase.lower()) + r"\b"
+            pattern = '(?:[^A-Za-z]|\A)({})(?:[^A-Za-z]|\Z)'.format(phrase.lower()) # must get group 1
+
         match = re.search(pattern, text.lower())
         if not match:
             print("'{}' not found".format(phrase))
             return
         else:
-            left_index, right_index = match.span()
+            left_index, right_index = match.span(1) # Group 1
     return (left_index, right_index)
 
 

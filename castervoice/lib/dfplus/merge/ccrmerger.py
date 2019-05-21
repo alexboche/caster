@@ -36,6 +36,7 @@ def app_merge(mp):
 
 
 class CCRMerger(object):
+    # CORE = ["alphabet", "navigation", "numbers", "punctuation", "text manipulation"]
     CORE = ["alphabet", "navigation", "numbers", "punctuation"]
     _GLOBAL = "global"
     _APP = "app"

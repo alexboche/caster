@@ -51,11 +51,11 @@ for spec in braces_math_vocab:
     full_lyx_math_vocab[spec] = braces_math_vocab[spec]
 
 
-class LyxNonCcrRule(MergeRule):
-    mapping    = {
-        # mwith = i don't know what to put on the right-hand side
-        "testing Lyx": Key("a, b"),
-    }
+# class LyxNonCcrRule(MergeRule):
+#     mapping    = {
+#         # mwith = i don't know what to put on the right-hand side
+#         "testing Lyx": Key("a, b"),
+#     }
 
 class LyxCcrRule(MergeRule):
     pronunciation = "Lix"
@@ -126,6 +126,15 @@ class LyxCcrRule(MergeRule):
     }
 
     extras = [
+        Choice("symbol_1", format_without_braces(full_lyx_math_vocab)),
+        Choice(
+            "index_operator", 
+                format_without_braces(math_vocab["braces"]["index_operators"])),
+        Choice(
+            "fraction_type", format_without_braces(math_vocab["braces"]["fractions"])),
+        Choice(
+            "accent", format_without_braces(math_vocab["braces"]["accents"])),
+                
         alphanumeric.get_alphabet_choice("letter"),
         Dictation("my_words"),
         Choice("big", {
@@ -182,13 +191,6 @@ class LyxCcrRule(MergeRule):
                 "twentieth": "20",
             }),
 
-        Choice(
-            "index_operator", 
-                format_without_braces(math_vocab["braces"]["index_operators"])),
-        Choice(
-            "fraction_type", format_without_braces(math_vocab["braces"]["fractions"])),
-        Choice(
-            "accent", format_without_braces(math_vocab["braces"]["accents"])),
         Choice("delimiter", {"paren": "(", "bracket": "[]"}),
 
         Choice(
@@ -200,7 +202,6 @@ class LyxCcrRule(MergeRule):
              "naturals": "N",
             }),    
 
-        Choice("symbol_1", format_without_braces(full_lyx_math_vocab)),
         
         Choice("environment", {
             "(in line formula | in line)": "i",
@@ -271,7 +272,7 @@ grammar = Grammar("lyx", context=context)
 
 # Initialise the rule.
 ccr_rule = LyxCcrRule()
-non_ccr_rule = LyxNonCcrRule()
+# non_ccr_rule = LyxNonCcrRule()
 
 # Run caster's filter on it.
 # gfilter.run_on(ccr_rule)
@@ -284,7 +285,7 @@ control.nexus().merger.add_app_rule(ccr_rule, context)
 
 context = AppContext(executable="lyx")
 grammar = Grammar("lyx", context=context)
-rule = LyxNonCcrRule()
+# rule = LyxNonCcrRule()
 grammar.add_rule(rule)
 grammar.load()
 

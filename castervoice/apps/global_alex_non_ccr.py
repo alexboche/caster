@@ -202,11 +202,7 @@ class GlobalAlexNonCcrRule(MergeRule):
         "(satch | sosh) [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),
         
 
-        # eye X mouse
-        "Eye Mouse":
-            Function(eyemouse_launcher, kill=False),
-        "stop mouse":
-            Function(eyemouse_launcher, kill=True),
+
 
         # discrete mouse-movement command
         # "cursor [<left_right>] [<horizontal_distance>] [<up_down>] [<vertical_distance>]":

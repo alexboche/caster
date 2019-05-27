@@ -9,6 +9,7 @@ from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.apps import utils
+from castervoice.apps import global_alex_non_ccr
 
 
 _NEXUS = control.nexus()
@@ -19,7 +20,12 @@ class AlexCcrRule(MergeRule):
     #pronunciation = CCRMerger.CORE[5]
     
     mapping = {
-        "Alex hello": Function(navigation.paper),
+        # "Alex hello": Function(navigation.paper),
+                # eye X mouse
+        "Eye Mouse":
+            Function(global_alex_non_ccr.eyemouse_launcher, kill=False),
+        "stop mouse":
+            Function(global_alex_non_ccr.eyemouse_launcher, kill=True),
         "sample command": Key("b"), 
          "mick": Mouse("left:1"),
           "dick": Mouse("left:2"),

@@ -38,6 +38,8 @@ class AcrobatRule(MergeRule):
         "(next tab | nab) [<n>]": R(Key("c-tab")) * Repeat(extra="n"),
         "(previous tab | lab) [<n>]": R(Key("cs-tab")) * Repeat(extra="n"),
         "(home button|homer)": R(Mouse("[100, 101], left")),
+        "page up <n>": Key("pgup:%(n)s"),
+        "page down <n>": Key("pgdown:%(n)s"),
 
         
         # Sticky Note Commands

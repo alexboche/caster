@@ -368,63 +368,6 @@ class GlobalTestRule(MergeRule):
         "bathroom": R(Text("de"), rdescript="red blue"), 
 
         
-        "change <lease_ross> [<number_of_lines_to_search>] <dictation> to <dictation2>":
-            R(Function(copypaste_replace_phrase_with_phrase,
-                       dict(dictation="replaced_phrase", dictation2="replacement_phrase", lease_ross="left_right")),
-              rdescript="Core: replace text to the left or right of the cursor"),
-        
-        "remove <lease_ross> <dictation>":
-            R(Function(copypaste_remove_phrase_from_text,
-                       dict(dictation="phrase", lease_ross="left_right")),
-              rdescript="remove chosen phrase to the left or right of the cursor"),
-        "remove lease <left_character>":
-            R(Function(copypaste_remove_phrase_from_text,
-                       dict(left_character="phrase"),
-                       left_right="left"),
-              rdescript="remove chosen character to the left of the cursor"),
-        "remove ross <right_character>":
-            R(Function(copypaste_remove_phrase_from_text,
-                       dict(right_character="phrase"),
-                       left_right="right"),
-              rdescript="remove chosen character to the right of the cursor"),
-        "go [<lease_ross>] [<before_after>] <dictation>":
-            R(Function(move_until_phrase,
-                       dict(dictation="phrase", lease_ross="left_right")),
-              rdescript="move to chosen phrase to the left or right of the cursor"),
-        "go [lease] [<before_after>] <left_character>":
-            R(Function(move_until_phrase,
-                       dict(left_character="phrase"),
-                       left_right="left"),
-              rdescript="move to chosen character to the left of the cursor"),
-        "go ross [<before_after>] <right_character>":
-            R(Function(move_until_phrase,
-                       dict(right_character="phrase"),
-                       left_right="right"),
-              rdescript="move to chosen character to the right of the cursor"),
-        "grab <lease_ross> <dictation> ":
-            R(Function(select_until_phrase, dict(dictation="phrase", lease_ross="left_right")),
-                 rdescript="select until chosen phrase (inclusive)"),
-        "grab lease <left_character>":
-            R(Function(select_until_phrase, dict(left_character="phrase"), left_right="left"),
-            rdescript="select left until chosen character"),
-        "grab ross <right_character>":
-            R(Function(select_until_phrase, dict(right_character="phrase"), left_right="right"),
-            rdescript="select right until chosen character"),
-        "wipe <lease_ross> <dictation>":
-            R(Function(copypaste_delete_until_phrase,
-                       dict(dictation="phrase", lease_ross="left_right")),
-              rdescript="delete left until chosen phrase (exclusive)"),
-        "wipe lease <left_character>":
-            R(Function(copypaste_delete_until_phrase,
-                       dict(left_character="phrase"),
-                       left_right="left"),
-              rdescript="delete left until chosen character (exclusive)"),
-        "wipe ross <right_character>":
-            R(Function(copypaste_delete_until_phrase,
-                       dict(right_character="phrase"), 
-                       left_right="right"),
-              rdescript="delete left until chosen character"),
-        
 
 
 

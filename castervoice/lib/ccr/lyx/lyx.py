@@ -51,11 +51,11 @@ for spec in braces_math_vocab:
     full_lyx_math_vocab[spec] = braces_math_vocab[spec]
 
 
-# class LyxNonCcrRule(MergeRule):
-#     mapping    = {
-#         # mwith = i don't know what to put on the right-hand side
-#         "testing Lyx": Key("a, b"),
-#     }
+class LyxNonCcrRule(MergeRule):
+    mapping    = {
+        # mwith = i don't know what to put on the right-hand side
+        "testing Lyx": Key("a, b"),
+    }
 
 class LyxCcrRule(MergeRule):
     pronunciation = "Lix"
@@ -272,7 +272,7 @@ grammar = Grammar("lyx", context=context)
 
 # Initialise the rule.
 ccr_rule = LyxCcrRule()
-# non_ccr_rule = LyxNonCcrRule()
+non_ccr_rule = LyxNonCcrRule()
 
 # Run caster's filter on it.
 # gfilter.run_on(ccr_rule)
@@ -285,7 +285,7 @@ control.nexus().merger.add_app_rule(ccr_rule, context)
 
 context = AppContext(executable="lyx")
 grammar = Grammar("lyx", context=context)
-# rule = LyxNonCcrRule()
+rule = LyxNonCcrRule()
 grammar.add_rule(rule)
 grammar.load()
 

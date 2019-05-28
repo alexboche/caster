@@ -7,6 +7,56 @@ from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 
+text_punc_dict = {
+    "semper":                               ";",
+    "[is] greater than":                    ">",  
+    "[is] less than":                       "<",
+    "[is] greater [than] [or] equal [to]": ">=",
+    "[is] less [than] [or] equal [to]":    "<=",
+    "[is] equal to":                       "==",
+    "equals":                               "=",
+    "plus":                                 "+",
+    "minus":                                "-",
+    "pipe (sim | symbol)":                  "|",
+    "ace":                                  " ",
+    "clamor":                               "!",     
+    "deckle":                               ":",
+    "starling":                             "*",  
+    "questo":                               "?", 
+    "comma":                                ",",  
+    "carrot":                               "^", 
+    "(period | dot)":                       ".", 
+    "(atty | at symbol)":                   "@", 
+    "hash tag":                             "#",
+    "apostrophe | single quote | chicky":   "'",   
+    "underscore":                           "_",
+    "backslash":                           "\\", 
+    "slash":                                "/",
+    "Dolly":                                "$",
+    "modulo":                               "%",
+    "ampersand":                            "&",
+    "tilde":                                "~",
+    "(left prekris | lay)":                 "(",
+    "(right prekris | ray)":                ")",
+    "(left brax | lack)":                   "[",
+    "(right brax | rack)":                  "]",
+    "(left angle | lang)":                  "<",
+    "(right angle | rang)":                 ">",
+    "(left curly | lace)":                  "{",
+    "(right curly | race)":                 "}",
+    "ticky":                                "`",
+    "chocky":                              "\"",
+}
+
+double_text_punc_dict = {
+    "quotes":                            "\"\"",
+    "thin quotes":                         "''",
+    "bakes":                               "``",
+    "prekris":                             "()",
+    "brax":                                "[]",
+    "curly":                               "{}",
+    "angle":                               "<>",
+}
 
 class Punctuation(MergeRule):
     pronunciation = CCRMerger.CORE[3]

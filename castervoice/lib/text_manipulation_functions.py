@@ -55,11 +55,6 @@ def select_text_and_return_it(left_right, number_of_lines_to_search):
     if left_right == "left":
         # Key("s-home, s-up:%d, s-home, c-c" %number_of_lines_to_search).execute()
         Key("s-home, s-up:%d, s-home" %number_of_lines_to_search).execute()
-        err, selected_text = context.read_selected_without_altering_clipboard()
-        if err != 0:
-            # I'm not discriminating between err = 1 and err = 2
-            print("failed to copy text")
-            return
     if left_right == "right":
         Key("s-end, s-down:%d, s-end" %number_of_lines_to_search).execute()
     err, selected_text = context.read_selected_without_altering_clipboard()

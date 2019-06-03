@@ -26,7 +26,7 @@ command_sets = {
     "sql.sql": ("SQL", ),
     "prolog.prolog": ("Prolog", ),
     "vhdl.vhdl": ("VHDL", ),
-    "vscode.vscode": ("VSCode"),
+    # "vscode.vscode": ("VSCode"),
     "alex_ccr.alex_ccr": ("Alex", ),
     "dragonfly_dev_commands.dragonfly_dev_commands": ("Dragonflydev", ),
     "lyx.lyx": ("Lyx", ),

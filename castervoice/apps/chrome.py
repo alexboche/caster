@@ -127,9 +127,9 @@ class ChromeRule(MergeRule):
 # these require the click by voice Chrome extension
 # these allow you to browse Google Chrome hands-free
 #  (I haven't tried surfer keys yet, but apparently that's another good option)
-        "<numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
-            + Key("enter/30") + Text("%(dictation)s"), 
-            rdescript="input dictation into numbered text field"),
+        # "<numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+        #     + Key("enter/30") + Text("%(dictation)s"), 
+        #     rdescript="input dictation into numbered text field"),
         "go <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
             + Key("enter/30") + Text("%(dictation)s") + Key("enter"), 
             rdescript="input dictation into numbered text field then press enter"),

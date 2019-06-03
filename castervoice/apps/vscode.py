@@ -132,6 +132,8 @@ class VSCodeCcrRule(MergeRule):
         "go line <n>": 
             R(Key("c-g") + Text("%(n)d") + Key("enter"),
               rdescript="Visual Studio Code: Go to Line"),
+        "(Opener [file] | Go to [tab]) [<text>]":
+            R(Key("c-p") + Text("%(text)s"), rdescript="Visual Studio Code: Go To File"),
         
     # These require the Paredit eextension, unfortunately they don't seem to work I don't know why 
         # "slurp left": R(Key("ca-langle"), rdescript=""),
@@ -200,8 +202,7 @@ class VisualStudioCodeNonCcrRule(MergeRule):
         # File management
         "[open] command palette":
             R(Key("cs-p"), rdescript="Visual Studio Code: Command Palette"),
-        "(Opener [file] | Go to [tab]) [<text>]":
-            R(Key("c-p") + Text("%(text)s"), rdescript="Visual Studio Code: Go To File"),
+
         "open folder": R(Key("c-k, c-o"), rdescript=""),
         "Save file":
             R(Key("c-s"), rdescript="Visual Studio Code: Save File"),

@@ -1,7 +1,7 @@
 import time
 
 
-from dragonfly import AppContext
+from dragonfly import AppContext, Pause
 
 from castervoice.lib import utilities, settings
 from castervoice.lib.actions import Key
@@ -125,6 +125,7 @@ def read_selected_without_altering_clipboard(same_is_okay=False):
         Key("c-c").execute()
         time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/
                    1000.)  # time for keypress to execute
+        Pause("100").execute()
         temporary = Clipboard.get_system_text()
         cb.copy_to_system()
 

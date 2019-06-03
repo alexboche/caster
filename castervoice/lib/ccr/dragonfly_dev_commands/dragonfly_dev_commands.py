@@ -91,7 +91,8 @@ class DragonflyDevCommandsRule(MergeRule):
         # pronunciation = "dragonfly dev commands"
     
         
-
+        "execute": R(Key("end")+Text(".execute()"), 
+            rdescript="call 'execute' method at end of line"),
         # snippets
         "dev Key": R(Text('Key("")') + Key("left:2"),  
             rdescript="snippet for key action"),

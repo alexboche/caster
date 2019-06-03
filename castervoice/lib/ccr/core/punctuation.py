@@ -116,7 +116,7 @@ class Punctuation(MergeRule):
             R(Text("@"), rdescript="At Sign"),
         "hash tag":
             R(Text("#"), rdescript="Hash Tag"),
-        "(apostrophe | apo)":
+        "(apostrophe | appy)":
             R(Text("'"), rdescript="Apostrophe"),
         "score":
             R(Text("_"), rdescript="Underscore"),

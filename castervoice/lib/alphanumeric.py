@@ -58,7 +58,7 @@ def get_alphabet_choice(spec):
             "(whiskey|whale)": "w",
             "(ex|plex)": "x",
             "yank": "y",
-            "(Zulu|zip)": "z",
+            "Zulu": "z",
         })
 
 
@@ -79,7 +79,8 @@ def word_number(wn):
 
 
 def numbers_list_1_to_9():
-    result = ["one", "torque", "traio", "fairn", "faif", "six", "seven", "eigen", "nine"]
+    # result = ["one", "torque", "traio", "fairn", "faif", "six", "seven", "eigen", "nine"]
+    result = ["one", "torque", "three", "four", "five", "six", "seven", "eight", "nine"]
     if not settings.SETTINGS["miscellaneous"]["integer_remap_opt_in"]:
         result[1] = "two"
         result[2] = "three"

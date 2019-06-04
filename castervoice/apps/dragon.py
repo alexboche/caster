@@ -84,10 +84,7 @@ class DragonRule(MergeRule):
             R(Playback([(["MouseGrid"], 0.1), (["click"], 0.0)]),
               rdescript="Mouse: Center Point"),
         
-        # A Natlink Command
-        # "clear caster log": R(Function(utilities.clear_log), rdescript="Core: Clear Caster Log"),
-
-        # new commands from Alex      
+        
         "show windows": R(Mimic("list", "all", "windows"),  
             rdescript="Dragon: emulate Dragon command for listing windows"),
         "cory <text>": 
@@ -119,7 +116,9 @@ class DragonRule(MergeRule):
         "[dictation] sources": R(Mimic("manage", "dictation", "sources"), 
             rdescript="Dragon: manage dictation sources"),
         
-        
+        # A Natlink Command
+        # "clear caster log": R(Function(utilities.clear_log), rdescript="Core: Clear Caster Log"),
+
         
     }
     # see above
@@ -127,13 +126,13 @@ class DragonRule(MergeRule):
     defaults = defaults_for_whole_file
 class SpellingWindowRule(MergeRule):
     mapping = {
-         
+         # todo: make these CCR
          "<first_second_third> word": 
             R(Key("home, c-right:%(first_second_third)d, cs-right"), 
             rdescript="Dragon: select the first second or third etc. word"),
-         "last [word]": R(Key("right, cs-left"), rdescript="select the last word"),
-         "second [to] last word": R(Key("right, c-left:1, cs-left"), rdescript="select the second to last word"), 
-         "<n10>": R(Mimic("choose", extra="n10"), rdescript="e.g. instead of having to say 'choose two' you can just say 'two'") 
+         "last [word]": R(Key("right, cs-left"), rdescript="Dragon: select the last word"),
+         "second [to] last word": R(Key("right, c-left:1, cs-left"), rdescript="Dragon: select the second to last word"), 
+         "<n10>": R(Mimic("choose", extra="n10"), rdescript="Dragon: e.g. instead of having to say 'choose two' you can just say 'two'"),
             # consider making the above command global so that it works when you say something like 
             # "insert before 'hello'" where there are multiple instances of 'hello'
             # personally I think it's better just to have the setting where Dragon choose is the closest instance

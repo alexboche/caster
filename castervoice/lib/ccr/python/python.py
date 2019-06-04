@@ -114,8 +114,8 @@ class Python(MergeRule):
         #     R(Text(".py"), rdescript="Python: .py"),
         "toml":
             R(Text("toml"), rdescript="Python: toml"),
-        "jason":
-            R(Text("toml"), rdescript="Python: json"),
+        # "jason":
+        #     R(Text("toml"), rdescript="Python: json"),
         "identity is":
             R(Text(" is "), rdescript="Python: is"),
         # "yield":

@@ -2,7 +2,7 @@ import toml
 import io
 from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
                        Function, Choice, Mouse)
-from castervoice.lib import context, navigation, alphanumeric, textformat, text_utils
+from castervoice.lib import context, navigation, alphanumeric, textformat  
 from castervoice.lib import control 
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger

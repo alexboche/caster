@@ -79,9 +79,9 @@ def word_number(wn):
     Text(numbers_to_words[int(wn)]).execute()
 
 
-def numbers_list_1_to_9():
+def numbers_list_1_to_10():
     # result = ["one", "torque", "traio", "fairn", "faif", "six", "seven", "eigen", "nine"]
-    result = ["one", "torque", "three", "four", "five", "six", "seven", "eight", "nine"]
+    result = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "torque"]
     if not settings.SETTINGS["miscellaneous"]["integer_remap_opt_in"]:
         result[1] = "two"
         result[2] = "three"
@@ -91,9 +91,9 @@ def numbers_list_1_to_9():
     return result
 
 
-def numbers_map_1_to_9():
+def numbers_map_1_to_10():
     result = {}
-    l = numbers_list_1_to_9()
+    l = numbers_list_1_to_10()
     for i in range(0, len(l)):
         result[l[i]] = i + 1
     return result

@@ -26,11 +26,12 @@ from castervoice.lib.dfplus.state.short import R
 class ChromeRule(MergeRule):
     pronunciation = "google chrome"
     mapping = {
+        
         "new window":
             R(Key("c-n")),
         "(new incognito window | incognito)":
             R(Key("cs-n")),
-        "new tab [<n>]":
+        "new [tab] [<n>]":
             R(Key("c-t")*Repeat(extra="n")),
         "reopen tab [<n>]":
             R(Key("cs-t"))*Repeat(extra="n"),
@@ -38,9 +39,9 @@ class ChromeRule(MergeRule):
             R(Key("c-w"))*Repeat(extra='n'),
         "close all tabs":
             R(Key("cs-w")),
-        "next tab [<n>]":
+        "(nab | next tab) [<n>]":
             R(Key("c-tab"))*Repeat(extra="n"),
-        "previous tab [<n>]":
+        "(lab | previous tab) [<n>]":
             R(Key("cs-tab"))*Repeat(extra="n"),
         "new tab that":
             R(Mouse("middle") + Pause("20") + Key("c-tab")),

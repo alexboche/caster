@@ -60,12 +60,12 @@ def select_text_and_return_it(left_right, number_of_lines_to_search):
     Key("c-c").execute()
     Pause("70").execute()
     selected_text = pyperclip.paste()
-    Pause("30").execute()
     # err, selected_text = context.read_selected_without_altering_clipboard()
     # if err != 0:
     #         # I'm not discriminating between err = 1 and err = 2
     #         print("failed to copy text")
     #         return
+    Pause("10").execute()
     pyperclip.copy(temp_for_previous_clipboard_item)
     # return (selected_text, temp_for_previous_clipboard_item)
     return selected_text

@@ -45,7 +45,7 @@ if not settings.SETTINGS["miscellaneous"]["integer_remap_crash_fix"]:
         ]
 
     if "en" in language.language_map and settings.SETTINGS["miscellaneous"]["integer_remap_opt_in"]:
-        mapping = alphanumeric.numbers_map_1_to_9()
+        mapping = alphanumeric.numbers_map_1_to_10()
         IntegerContentST.builders[1] = MapIntBuilder(mapping)
         INTEGER_CONTENT = IntegerContentST
 

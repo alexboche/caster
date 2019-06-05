@@ -130,13 +130,13 @@ class ChromeRule(MergeRule):
         # "<numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
         #     + Key("enter/30") + Text("%(dictation)s"), 
         #     rdescript="input dictation into numbered text field"),
-        "go <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
-            + Key("enter/30") + Text("%(dictation)s") + Key("enter"), 
-            rdescript="input dictation into numbered text field then press enter"),
-        "next <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
-            + Key("enter/30") + Text("%(dictation)s") + Key("tab"), 
-            rdescript="input dictation into numbered text field then press tab"),
-        "<numbers> [<click_by_voice_options>]": R(Key("cs-space/30")
+        # "go <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+        #     + Key("enter/30") + Text("%(dictation)s") + Key("enter"), 
+        #     rdescript="input dictation into numbered text field then press enter"),
+        # "next <numbers> <dictation>": R(Key("cs-space/30")+Text("%(numbers)d:%(click_by_voice_options)s")
+        #     + Key("enter/30") + Text("%(dictation)s") + Key("tab"), 
+        #     rdescript="input dictation into numbered text field then press tab"),
+        "<click_by_voice_options> <numbers>": R(Key("cs-space/30")
             + Text("%(numbers)d:%(click_by_voice_options)s") + Key("enter"), 
             rdescript="click link with click by voice options"),
         "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter"),
@@ -148,14 +148,14 @@ class ChromeRule(MergeRule):
         }
     extras = [
         Choice("click_by_voice_options", {
-            "go": "f",
+            "go": "f", # focuses the element (doesn't work on all elements, does work on iframes)
             "click": "c",
             "push": "b", # open as new tab but don't go to it
             "tab": "t", # open as new tab and go to it
-            "window": "w",
-            "hover": "h",
-            "link": "k",
-            "copy": "s",
+            "window": "w", # open in new window
+             "hover": "h", # simulates hovering the mouse over the element; repeat to unhover
+            "copy [link]": "k", # copy link URL
+            "copy [link] name": "s", # copies the name of the link e.g. "images" on the link for Google images.
         }),
         Choice("extension_buttons", {
             "send from Gmail": 7,

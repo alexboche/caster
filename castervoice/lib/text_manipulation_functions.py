@@ -69,25 +69,21 @@ def select_text_and_return_it(left_right, number_of_lines_to_search):
 
 # def deal_with_phrase_not_found(selected_text, temp_for_previous_clipboard_item, cursor_behavior, left_right):
 def deal_with_phrase_not_found(selected_text, cursor_behavior, left_right):
-        # Approach 1: unselect text by using the arrow keys, a little faster but does not work in texstudio
+        # Approach 1: unselect text by pressing opposite arrow key, does not work in Tex studio
         if cursor_behavior == "standard":
             if left_right == "left":
                 Key("right").execute()
             if left_right == "right":
                 Key("left").execute()
-        # Approach 2: paste selected text over itself, sometimes a little slower but works in texstudio
+        # Approach 2: unselect text by pressing left and then right, works in Tex studio
         if cursor_behavior == "texstudio":
-            # move cursor to the right side of selection by pasting, 
-            # another way to do this in tex studio is to press left then right or vice versa
-            # depending on whether you're selecting from left to right or right to left
-            # Key("c-v").execute() # move cursor to the right side of selection by pasting, 
-            context.paste_string_without_altering_clipboard(selected_text)
+            Key("left, right").execute() # unselect text
             if left_right == "right":
                 Key("left:%d" %len(selected_text)).execute()
-    
         # put previous clipboard item back in the clipboard
         # Pause("20").execute()
         # pyperclip.copy(temp_for_previous_clipboard_item)
+
 
 
 def replace_phrase_with_phrase(text, replaced_phrase, replacement_phrase, left_right, occurrence_number):

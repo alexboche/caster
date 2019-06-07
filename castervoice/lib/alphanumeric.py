@@ -35,7 +35,7 @@ def get_alphabet_choice(spec):
             # "zip": "z",
             "(air|arch)": "a",
             "(bat|brav)": "b",
-            "(charlie|carp)": "c", 
+            "(charlie|kate)": "c", 
             # "(dutch|drum)": "d",
             "dutch": "d",
             "(echo|each)": "e",

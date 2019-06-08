@@ -142,6 +142,13 @@ class ChromeRule(MergeRule):
             R(Key("cs-i")),
         "more tools":
             R(Key("a-f/5, l")),
+         "[<click_by_voice_options>] <numbers>": R(Key("cs-space/30")
+            + Text("%(numbers)d:%(click_by_voice_options)s") + Key("enter"), 
+            rdescript="click link with click by voice options"),
+        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter"),
+             rdescript="hide click by voice hints (i.e. numbers)"),
+        "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter"),
+            rdescript="show click by voice hints (i.e. numbers)"),
     }
     extras = [
         Choice(

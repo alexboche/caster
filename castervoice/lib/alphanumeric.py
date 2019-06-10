@@ -4,63 +4,65 @@ from castervoice.lib import settings
 from castervoice.lib.actions import Key, Text
 
 
+caster_alphabet = {
+        #     "arch"    : "a",
+        #     "brov"    : "b",
+        #     "char"    : "c",
+        #     "delta"   : "d",
+        #     "echo"    : "e",
+        #     "foxy"    : "f",
+        #     "goof"    : "g",
+        #     "hotel"   : "h",
+        #     "India"   : "i",
+        #     "julia"   : "j",
+        #     "kilo"    : "k",
+        #     "Lima"    : "l",
+        #     "Mike"    : "m",
+        #     "Novakeen": "n",
+        #     "oscar"   : "o",
+        #     "prime"   : "p",
+        #     "Quebec"  : "q",
+        #     "Romeo"   : "r",
+        #     "Sierra"  : "s",
+        #     "tango"   : "t",
+        #     "uniform" : "u",
+        #     "victor"  : "v",
+        #     "whiskey" : "w",
+        #     "x-ray"   : "x",
+        #     "yankee"  : "y",
+        #     "Zulu"    : "z",
+        "(air|arch)": "a",
+        "(bat|brav)": "b",
+        "(charlie|kate)": "c", 
+        # "(dutch|drum)": "d",
+        "dutch": "d",
+        "(echo|each)": "e",
+        "(fail|fine)": "f",
+        "gust": "g",
+        "(hotel|harp)": "h",
+        "(itch|sit)": "i",
+        "(julie|jury)": "j",
+        "(kilo|crunch)": "k",
+        "(Lima|look)": "l",
+        "(Mike|made)": "m",
+        "(Nova|near)": "n",
+        "(oscar|odd)": "o",
+        "(prime | pit) ": "p",
+        "(quill|quench)": "q",
+        "(rat|red)": "r",
+        "(slap|sun)": "s",
+        "(tango|trap)": "t",
+        "urge": "u",
+        "(victor|vest)": "v",
+        "(whiskey|whale)": "w",
+        "(ex|plex)": "x",
+        "yank": "y",
+        "Zulu": "z",
+
+        }
+
 def get_alphabet_choice(spec):
-    return Choice(
-       spec, {
-            # "arch": "a",
-            # "brav": "b",
-            # "charlie": "c", 
-            # "dutch": "d",
-            # "echo": "e",
-            # "fail": "f",
-            # "goof": "g",
-            # "hotel": "h",
-            # "sit": "i",
-            # "julie": "j",
-            # "kilo": "k",
-            # "Lima": "l",
-            # "Mike": "m",
-            # "Nova": "n",
-            # "oscar": "o",
-            # "prime ": "p",
-            # "quill": "q",
-            # "rat": "r",
-            # "slap": "s",
-            # "tango": "t",
-            # "urge": "u",
-            # "victor": "v",
-            # "whiskey": "w",
-            # "ex": "x",
-            # "yank": "y",
-            # "zip": "z",
-            "(air|arch)": "a",
-            "(bat|brav)": "b",
-            "(charlie|kate)": "c", 
-            # "(dutch|drum)": "d",
-            "dutch": "d",
-            "(echo|each)": "e",
-            "(fail|fine)": "f",
-            "gust": "g",
-            "(hotel|harp)": "h",
-            "(itch|sit)": "i",
-            "(julie|jury)": "j",
-            "(kilo|crunch)": "k",
-            "(Lima|look)": "l",
-            "(Mike|made)": "m",
-            "(Nova|near)": "n",
-            "(oscar|odd)": "o",
-            "(prime | pit) ": "p",
-            "(quill|quench)": "q",
-            "(rat|red)": "r",
-            "(slap|sun)": "s",
-            "(tango|trap)": "t",
-            "urge": "u",
-            "(victor|vest)": "v",
-            "(whiskey|whale)": "w",
-            "(ex|plex)": "x",
-            "yank": "y",
-            "Zulu": "z",
-        })
+    return Choice(spec, caster_alphabet)
 
 
 def word_number(wn):
@@ -79,9 +81,8 @@ def word_number(wn):
     Text(numbers_to_words[int(wn)]).execute()
 
 
-def numbers_list_1_to_10():
-    # result = ["one", "torque", "traio", "fairn", "faif", "six", "seven", "eigen", "nine"]
-    result = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "torque"]
+def numbers_list_1_to_9():
+    result = ["one", "torque", "traio", "fairn", "faif", "six", "seven", "eigen", "nine"]
     if not settings.SETTINGS["miscellaneous"]["integer_remap_opt_in"]:
         result[1] = "two"
         result[2] = "three"
@@ -91,9 +92,9 @@ def numbers_list_1_to_10():
     return result
 
 
-def numbers_map_1_to_10():
+def numbers_map_1_to_9():
     result = {}
-    l = numbers_list_1_to_10()
+    l = numbers_list_1_to_9()
     for i in range(0, len(l)):
         result[l[i]] = i + 1
     return result
@@ -123,14 +124,6 @@ def letters2(big, letter):
         Key(letter.capitalize()).execute()
     else:
         Key(letter).execute()
-
-# alex made this
-def word_capitalize(big, word):
-    if big:
-        Text(word.capitalize()).execute()
-    else:
-        Text(word).execute()
-
 
 
 '''for fun'''

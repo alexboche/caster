@@ -145,7 +145,12 @@ class ChromeRule(MergeRule):
          "[<click_by_voice_options>] <numbers>": R(Key("cs-space/30")
             + Text("%(numbers)d:%(click_by_voice_options)s") + Key("enter"), 
             rdescript="click link with click by voice options"),
-        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter"),
+        "go <numbers> <dictation>": Key("cs-space/30") + Text("%(numbers)d")
+            + Key("enter") + Text("%(dictation)s"),
+        "hit <numbers> <dictation>": 
+            Key("cs-space/30") + Text("%(numbers)d") + Key("enter")
+            + Text("%(dictation)s") + Key("enter"),
+        "hide": R(Key("cs-space/30")+Text(":-")+Key("enter"),
              rdescript="hide click by voice hints (i.e. numbers)"),
         "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter"),
             rdescript="show click by voice hints (i.e. numbers)"),
@@ -154,7 +159,7 @@ class ChromeRule(MergeRule):
         Choice(
             "click_by_voice_options",
             {
-                "go": "f",
+                "focus": "f",
                 "click": "c",
                 "push": "b",  # open as new tab but don't go to it
                 "tab": "t",  # open as new tab and go to it

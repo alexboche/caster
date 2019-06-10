@@ -56,7 +56,7 @@ class AlexCcrRule(MergeRule):
         # "queue ranter": Key("cs-end"),
         # "shin ranter": Key("s-end"),
         "win search": Mouse("[80, 60], left"),
-        "quick bar": Key("c-l"),
+        "quick bar": Key("c-l/10"),
          
         "smack [<n>]": R(Key("cs-left:%(n)s, del")),
                 # "frack [<n>]": R(Key("cs-right:%(n)s, del")),

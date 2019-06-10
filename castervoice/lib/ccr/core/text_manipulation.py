@@ -10,11 +10,12 @@ from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 from castervoice.lib.dfplus.state.short import R
 from castervoice.lib.ccr.core.punctuation import text_punc_dict,  double_text_punc_dict
-# from castervoice.lib.alphanumeric import caster_alphabet
+from castervoice.lib.alphanumeric import caster_alphabet
 
 # Advertisement
 print("""Check out the new experimental text manipulation commands in castervoice\lib\ccr\core\\text_manipulation.py 
-    where you can disable this message. Enable them by saying "enable text manipulation". You may want to reduce the pause time in the function select_text_and_return_it in castervoice\lib\\text_manipulation_functions.py
+    where you can disable this message. Enable them by saying "enable text manipulation". You may want to reduce the pause or sleep time
+    in the functions text_manipulation_copy and text_manipulation_paste in castervoice\lib\\text_manipulation_functions.py
     These are WIP, Please give feedback and report bugs""")
 
 
@@ -22,18 +23,26 @@ print("""Check out the new experimental text manipulation commands in castervoic
 
 """ requires a recent version of dragonfly because of recent modification of the Function action
     # I think dragonfly2-0.13.0
-    The PAUSE TIMES in these functions should be reduced (possibly depending on the application, eventually can use a context action ).
-    I have them cranked up very high right now just to make sure everything works.
-    the keypress waittime should probably be made shorter for these commands.
+    The wait times should be adjusted depending on the application by changing the numbers in copy_pause_time_dict
+    and paste_pause_time_dict which are called by the functions text_manipulation_copy and text_manipulation_paste 
+    in text_manipulation_functions.py. The wait times can be further adjusted by adjusting the sleep times in the 
+    functions that those functions call: lib.context.read_selected_without_altering_clipboard 
+    and lib.context.paste_string_without_altering_clipboard
+    the keypress waittime should possibly be made shorter for these commands, though note that the keypress wait time is
+    used by the aforementioned functions and lib.context.
     When these commands are not working in a particular application sometimes the problem is that 
     there is not enough time from when control-c is pressed until the contents of the clipboard are passed into the function
-    The solution is to add a longer pause after pressing control see in the supporting functions in text_manipulation_functions.py
-    For some applications this pause ( and other pauses in the functions for that matter ) is not necessary
-    and may be removed by the user if they wish to speed up the execution of these commands
-    These functions copy text into the clipboard and then return whatever you had there before backing onto the clipboardcenter.
-    If you are using the multi clipboard, thins might be annoying because you will have some
-    extra junk put on the second slot on your multi clipboard. To combat this problem you
-    could use castervoice.lib.context.read_selected_without_altering_clipboard() instead of pyperclip
+    In that case you need to increase the pause time in that application in copy_pause_time_dict
+    
+    The functions in text_manipulation_functions.py copy text into the clipboard and then return whatever
+    you had there before back onto the clipboard. If you are using the multi clipboard (windows-x on Windows 10),
+    this might be annoying because you will have some extra junk put on the second (and sometimes third) 
+    slot on your multi clipboard. If you get the wait times exactly right, in principle
+    this problem can be avoided using the functions lib.context.read_selected_without_altering_clipboard 
+    and lib.context.paste_string_without_altering_clipboard
+    In my experience, often times the paste part doesn't add
+    any junk to the multi-clipboard although the copy (a.k.a. read) part does.
+
 """
 
 class TextManipulation(MergeRule):
@@ -51,168 +60,74 @@ class TextManipulation(MergeRule):
                 
         # PROBLEM: sometimes Dragon thinks the variables are part of dictation.           
         
+        # replace text or character
         "replace <direction> [<number_of_lines_to_search>] [<occurrence_number>] <dictation> with <dictation2>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
-                       dict(dictation="replaced_phrase", dictation2="replacement_phrase", direction="left_right"), 
-                       cursor_behavior="standard"), actions=[
-                        # Use different cursor method for texstudio
-                        (AppContext(executable="texstudio"), Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
-                       dict(dictation="replaced_phrase", dictation2="replacement_phrase", direction="left_right"), 
-                       cursor_behavior="texstudio"))]),
+            R(Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
+                       dict(dictation="replaced_phrase", dictation2="replacement_phrase")), 
               rdescript="Text Manipulation: replace text to the left or right of the cursor"),
-        
         "replace <direction>  [<number_of_lines_to_search>] [<occurrence_number>] <character> with <character2>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
-                       dict(character="replaced_phrase", character2="replacement_phrase", direction="left_right"), 
-                       cursor_behavior="standard"), actions=[
-                        # Use different cursor method for texstudio
-                        (AppContext(executable="texstudio"), Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
-                       dict(character="replaced_phrase", character2="replacement_phrase", direction="left_right"), 
-                       cursor_behavior="texstudio"))]),
+            R(Function(text_manipulation_functions.copypaste_replace_phrase_with_phrase,
+                       dict(character="replaced_phrase", character2="replacement_phrase")), 
               rdescript="Text Manipulation: replace character to the left of the cursor"),
         
+        # remove text or character 
         "remove <direction> [<number_of_lines_to_search>] [<occurrence_number>] <dictation>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="standard"),
-                       actions=[(AppContext(executable="texstudio"), Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="texstudio"))]),
-              rdescript="Text Manipulation: remove chosen phrase to the left or right of the cursor"),
+            R(Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
+                       dict(dictation="phrase")),
+                        rdescript="Text Manipulation: remove chosen phrase to the left or right of the cursor"),
         "remove <direction> [<number_of_lines_to_search>] [<occurrence_number>] <character>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="standard"), actions=[(AppContext(executable="texstudio"), 
-                       Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="texstudio"))]),
+            R(Function(text_manipulation_functions.copypaste_remove_phrase_from_text,
+                       dict(character="phrase")), 
               rdescript="Text Manipulation: remove chosen character to the left of the cursor"),
         
-        "go <direction> [<number_of_lines_to_search>] [<before_after>] [<occurrence_number>] <dictation>":
-            R(ContextAction(default = Function(text_manipulation_functions.move_until_phrase,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="standard"), 
-                       # Use different method for texstudio
-                       actions=[             
-                (AppContext(executable="texstudio"), Function(text_manipulation_functions.move_until_phrase,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="texstudio")),
-                ]), rdescript="Text Manipulation: move to chosen phrase to the left or right of the cursor"),
-        "go <direction> [<before_after>] [<number_of_lines_to_search>] [<occurrence_number>] <character>":
-            R(ContextAction(default=Function(text_manipulation_functions.move_until_phrase,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="standard"), actions=[(AppContext("texstudio"),
-                       Function(text_manipulation_functions.move_until_phrase,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="texstudio"))]),
-              rdescript="Text Manipulation: move to chosen character to the left of the cursor"),
-        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <dictation>":
-            R(ContextAction(default=Function(text_manipulation_functions.select_phrase, 
-            dict(dictation="phrase", direction="left_right"), 
-            cursor_behavior="standard"), actions=[(AppContext("texstudio"),
-            Function(text_manipulation_functions.select_phrase,
-                       dict(dictation="phrase", direction="left_right"),
-                       cursor_behavior="texstudio"))]),
-                 rdescript="Text Manipulation: select chosen phrase"),
-        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <character>":
-            R(ContextAction(default=Function(text_manipulation_functions.select_phrase,
-            dict(character="phrase", direction="left_right"),
-            cursor_behavior="standard"), actions=[(AppContext("texstudio"),
-            Function(text_manipulation_functions.select_phrase, dict(character="phrase", direction="left_right"),
-            cursor_behavior="texstudio"))]),
-            rdescript="Text Manipulation: select chosen character"),
-        
-        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <dictation> ":
-            R(ContextAction(default=Function(text_manipulation_functions.select_until_phrase, 
-            dict(dictation="phrase", direction="left_right"), 
-            cursor_behavior="standard"), actions=[(AppContext("texstudio"),
-            Function(text_manipulation_functions.select_until_phrase, dict(dictation="phrase", direction="left_right"), 
-            cursor_behavior="texstudio"))]),
-                 rdescript="Text Manipulation: select until chosen phrase"),
-        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <character>":
-            R(ContextAction(default=Function(text_manipulation_functions.select_until_phrase,
-            dict(character="phrase", direction="left_right"), 
-            cursor_behavior="standard"), actions=[(AppContext("texstudio"),
-            Function(text_manipulation_functions.select_until_phrase, 
-            dict(character="phrase", direction="left_right"), 
-            cursor_behavior="texstudio"))]),
-            rdescript="Text Manipulation: select until chosen character"),
+        # remove until text or character
         "remove <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <dictation>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_delete_until_phrase,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="standard"),
-                       actions=[(AppContext("texstudio"), Function(text_manipulation_functions.copypaste_delete_until_phrase,
-                       dict(dictation="phrase", direction="left_right"), cursor_behavior="texstudio"))]),
+            R(Function(text_manipulation_functions.copypaste_delete_until_phrase,
+                       dict(dictation="phrase")), 
               rdescript="Text Manipulation: delete until chosen phrase"),
         "remove <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <character>":
-            R(ContextAction(default=Function(text_manipulation_functions.copypaste_delete_until_phrase,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="standard"),
-                       actions=[(AppContext("texstudio"), Function(text_manipulation_functions.copypaste_delete_until_phrase,
-                       dict(character="phrase", direction="left_right"),
-                       cursor_behavior="texstudio"))]),
+            R(Function(text_manipulation_functions.copypaste_delete_until_phrase,
+                       dict(character="phrase")),
               rdescript="Text Manipulation: delete until chosen character"),
+        
+        # move cursor
+        "(go | move) <direction> [<number_of_lines_to_search>] [<before_after>] [<occurrence_number>] <dictation>":
+            R(Function(text_manipulation_functions.move_until_phrase,
+                       dict(dictation="phrase")), 
+               rdescript="Text Manipulation: move to chosen phrase to the left or right of the cursor"),
+        "(go | move) <direction> [<before_after>] [<number_of_lines_to_search>] [<occurrence_number>] <character>":
+            R(Function(text_manipulation_functions.move_until_phrase,
+                       dict(character="phrase")),
+              rdescript="Text Manipulation: move to chosen character to the left of the cursor"),
+
+        # select text or character
+        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <dictation>":
+            R(Function(text_manipulation_functions.select_phrase, 
+            dict(dictation="phrase")), 
+                 rdescript="Text Manipulation: select chosen phrase"),
+        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <character>":
+            R(Function(text_manipulation_functions.select_phrase,
+            dict(character="phrase")),
+            rdescript="Text Manipulation: select chosen character"),
+        
+        # select until text or character
+        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <dictation> ":
+            R(Function(text_manipulation_functions.select_until_phrase, 
+            dict(dictation="phrase")), 
+                 rdescript="Text Manipulation: select until chosen phrase"),
+        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <character>":
+            R(Function(text_manipulation_functions.select_until_phrase,
+            dict(character="phrase")), 
+            rdescript="Text Manipulation: select until chosen character"),
+        
         
 
 
         
     }
-    # text_punc_dict.update(caster_alphabet)
+    text_punc_dict.update(caster_alphabet)
     character_dict = text_punc_dict
-    # character_dict = {
-    #             "(left prekris | lay)": "(",
-    #             "(right prekris | ray)": ")",
-    #             "(left brax | lack)": "[",
-    #             "(right brax | rack)": "]",
-    #             "(left angle | lang)": "<",
-    #             "(right angle | rang)": ">",
-    #             "(left curly | lace)": "{",
-    #             "(right curly | race)": "}",
-    #             "quotes": '"',
-    #             "(single quote | thin quote)": "'",
-    #             "comma": ",",
-    #             "(dot | period)": ".",
-    #             "questo": "?",
-    #             "deckle": ":",
-    #             "semper": ";",
-    #             "backtick": "`",
-    #             "equals": "=",
-    #             "dolly": "$",
-    #             "slash": "/",
-    #             "backslash": "\\",
-    #             "minus": "-",
-    #             "plus": "+",
-    #             "starling": "*",
-    #             "clamor": "!",
-    #             "ampersand": "&",
-    #             "modulo": "%",
-    #             "atty": "@",
-    #             "tilde": "~",
-    #             "pipe (sim | symbol)": "|",
-                
-    #             "arch"    : "a",
-    #             "brov"    : "b",
-    #             "char"    : "c",
-    #             "delta"   : "d",
-    #             "echo"    : "e",
-    #             "foxy"    : "f",
-    #             "goof"    : "g",
-    #             "hotel"   : "h",
-    #             "India"   : "i",
-    #             "julia"   : "j",
-    #             "kilo"    : "k",
-    #             "Lima"    : "l",
-    #             "Mike"    : "m",
-    #             "Novakeen": "n",
-    #             "oscar"   : "o",
-    #             "prime"   : "p",
-    #             "Quebec"  : "q",
-    #             "Romeo"   : "r",
-    #             "Sierra"  : "s",
-    #             "tango"   : "t",
-    #             "uniform" : "u",
-    #             "victor"  : "v",
-    #             "whiskey" : "w",
-    #             "x-ray"   : "x",
-    #             "yankee"  : "y",
-    #             "Zulu"    : "z",
-    # }
-
+    
     extras = [
         Dictation("dict"),
         Dictation("dictation"),
@@ -231,8 +146,12 @@ class TextManipulation(MergeRule):
         Choice("direction", {
             "lease": "left",
             "ross": "right",
-            "sauce": "left",
-            "dunce": "right",
+            "sauce": "up",
+            "dunce": "down",
+            # note: "sauce" (i.e. "up") will be treated the same as "lease" (i.e. "left") except that
+            # the default number_of_lines_to_search will be set to 3
+            # in the same way, "dunce" (i.e. "down") will be treated the same as
+            # "ross" (i.e. "right")
         }),
         Choice("before_after", {
             "before": "before",
@@ -256,8 +175,11 @@ class TextManipulation(MergeRule):
     defaults = {
 
         "before_after": None,
-        "number_of_lines_to_search": 0,
-        "occurrence_number": 1,}
+        "number_of_lines_to_search": 0, # before changing this default, please read the function deal_with_up_down_directions
+        "occurrence_number": 1,} # if direction is up or down, the default number_of_lines_to_search 
+        # will be 3 instead of zero. 
+        # This can be changed in the function deal_with_up_down_directions 
+        # 'number_of_lines_to_search = zero' means you are searching only on the current line
 
 control.nexus().merger.add_global_rule(TextManipulation())
 

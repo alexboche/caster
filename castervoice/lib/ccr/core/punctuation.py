@@ -38,7 +38,7 @@ text_punc_dict = {
     "lean slash":                          "\\",
     "right brax":                           "]",
     "carrot":                               "^", 
-    "underscore":                           "_",
+    "[under] score":                           "_",
     "ticky":                                "`",
     "left curly":                           "{",
     "pipe (sim | symbol)":                  "|",

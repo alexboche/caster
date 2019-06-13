@@ -138,7 +138,8 @@ def copypaste_replace_phrase_with_phrase(replaced_phrase, replacement_phrase, di
     application = get_application()
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
+        if selected_text == "":
+            print("no text to select")
         return 
     replaced_phrase = str(replaced_phrase)
     replacement_phrase = str(replacement_phrase) 
@@ -179,7 +180,8 @@ def copypaste_remove_phrase_from_text(phrase, direction, number_of_lines_to_sear
     application = get_application()
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
+        if selected_text == "":
+            print("no text to select")
         return 
     phrase = str(phrase)
     new_text = remove_phrase_from_text(selected_text, phrase, direction, occurrence_number)
@@ -235,7 +237,8 @@ def copypaste_delete_until_phrase(direction, phrase, number_of_lines_to_search, 
 
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
+        if selected_text == "":
+            print("no text to select")
         return 
     phrase = str(phrase)
     new_text = delete_until_phrase(selected_text, phrase, direction, before_after, occurrence_number)
@@ -274,8 +277,9 @@ def move_until_phrase(direction, before_after, phrase, number_of_lines_to_search
 
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
-        return
+        if selected_text == "":
+            print("no text to select")
+        return 
     phrase = str(phrase)
     match_index = get_start_end_position(selected_text, phrase, direction, occurrence_number)
     if match_index:
@@ -343,7 +347,8 @@ def select_phrase(phrase, direction, number_of_lines_to_search, occurrence_numbe
     application = get_application()
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
+        if selected_text == "":
+            print("no text to select")
         return 
     phrase = str(phrase)
     match_index = get_start_end_position(selected_text, phrase, direction, occurrence_number)
@@ -406,7 +411,8 @@ def select_until_phrase(direction, phrase, before_after, number_of_lines_to_sear
     
     selected_text = select_text_and_return_it(direction, number_of_lines_to_search, application)
     if not selected_text:
-        print("no text to select")
+        if selected_text == "":
+            print("no text to select")
         return 
     phrase = str(phrase)
     match_index = get_start_end_position(selected_text, phrase, direction, occurrence_number)

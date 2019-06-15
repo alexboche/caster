@@ -22,9 +22,9 @@ class AlexCcrRule(MergeRule):
     mapping = {
         # "Alex hello": Function(navigation.paper),
                 # eye X mouse
-        "Eye Mouse":
+        "(Eye Mouse | mousy)":
             Function(global_alex_non_ccr.eyemouse_launcher, kill=False),
-        "stop mouse":
+        "(stop mouse | stoppy)":
             Function(global_alex_non_ccr.eyemouse_launcher, kill=True),
         "sample command": Key("b"), 
          "mick": Mouse("left:1"),

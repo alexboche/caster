@@ -13,7 +13,7 @@ text_punc_dict = {
     "chocky":                              "\"",
     "hash tag":                             "#",
     "Dolly":                                "$",
-    "modulo":                               "%",
+    "(modulo | moddy)":                               "%",
     "ampersand":                            "&",
     "apostrophe | single quote | chicky":   "'",   
     "left prekris":                         "(",

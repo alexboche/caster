@@ -16,8 +16,10 @@ from castervoice.lib.dfplus.state.actions2 import UntilCancelled
 from castervoice.lib.dfplus.state.short import L, S, R
 from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
-
+from castervoice.lib.alphanumeric import caster_alphabet
+from castervoice.lib.ccr.core.punctuation import text_punc_dict
 _NEXUS = control.nexus()
+
 
 
 class NavigationNon(MergeRule):
@@ -206,8 +208,8 @@ class Navigation(MergeRule):
         'shock [<nnavi50>]':
             R(Key("enter"), rspec="shock")* Repeat(extra="nnavi50"),
 
-        "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
-            R(Function(text_utils.master_text_nav)),
+        # "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
+        #     R(Function(text_utils.master_text_nav)),
 
         "shift click":
             R(Key("shift:down") + Mouse("left") + Key("shift:up")),
@@ -239,13 +241,13 @@ class Navigation(MergeRule):
             R(Key("c-space"), rspec="Kraken"),
 
     # text formatting
-        "set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel)":
+        "set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>)":
             R(Function(textformat.set_text_format)),
         "clear castervoice [<big>] formatting":
             R(Function(textformat.clear_text_format)),
         "peek [<big>] format":
             R(Function(textformat.peek_text_format)),
-        "(<capitalization> <spacing> | <capitalization> | <spacing>) (bow|bowel) <textnv> [brunt]":
+        "(<capitalization> <spacing> | <capitalization> | <spacing>)  <textnv> [brunt]":
             R(Function(textformat.master_format_text)),
         "[<big>] format <textnv>":
             R(Function(textformat.prior_text_format)),
@@ -256,11 +258,24 @@ class Navigation(MergeRule):
             R(Function(text_utils.enclose_selected)),
         "dredge":
             R(Key("a-tab")),
+        "<modifier> <button_dictionary_500> [<nnavi500>]":
+              R(Key("%(modifier)s-%(button_dictionary_500)s") * Repeat(extra='nnavi500')),
+        "<modifier> <button_dictionary_10> [<nnavi10>]":
+              R(Key("%(modifier)s-%(button_dictionary_10)s") * Repeat(extra='nnavi10')),
     
-
+        "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500')),
+        "<extreme_direction> [<nnavi10>]": R(Key("%(extreme_direction)s")),
 
     }
-
+    button_dictionary_500 = {"(tab | tabby)": "tab", "backspace": "backspace", "delete": "del", "(escape | cancel)": "escape", "(enter | shock)": "enter",
+    "(left | lease)": "left", "(right | ross)": "right", "(up | sauce)": "up",
+    "(down | dunce)": "down", "page (down | dunce)": "pgdown", "page (up | sauce)": "pgup", 
+    "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six":"6", "seven": "7", "eight": "8", "nine": "9"}
+    button_dictionary_10 = {"home": "(home | lease wally)", "(end | ross wally)": "end", "insert": "insert", "zero": "0",
+    "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six":"6", "seven": "7", "eight": "8", "nine": "9"}
+    
+    button_dictionary_10.update(caster_alphabet)
+    button_dictionary_10.update(text_punc_dict)
     extras = [
         IntegerRefST("nnavi10", 1, 11),
         IntegerRefST("nnavi50", 1, 50),
@@ -269,7 +284,29 @@ class Navigation(MergeRule):
         IntegerRefST("nnavi500", 1, 500),
         Dictation("textnv"),
         Dictation("dictation"),
-        Dictation("dictation2"),
+        Dictation("dictation2"), 
+        Choice("direction", {
+            "dunce": "down",
+            "sauce": "up",
+            "lease": "left",
+            "ross": "right",
+        }),
+        Choice("extreme_direction", {
+            "lease wally": "home",
+            "ross wally": "end",
+        }),
+        Choice("button_dictionary_10", button_dictionary_10), 
+        Choice("button_dictionary_500", button_dictionary_500), 
+        Choice("modifier", {
+            "(control | fly)": "c",
+            "(shift | shin)": "s",
+            "alt": "a",
+            "(control shift | que)": "cs",
+            "(control alt | alt control)": "ca",
+            "(shift alt | alt shift)": "sa",
+            "(control alt shift | control shift alt)": "csa", # control must go first
+
+        }),
         Choice(
             "enclosure", {
                 "prekris": "(~)",
@@ -300,7 +337,9 @@ class Navigation(MergeRule):
         Choice("semi", {
             "dock": ";",
             "doc": ";",
-            "sink": ""
+            "sink": "",
+            "(com | comma)": ",",
+            "(deck | deckle)": ":",
         }),
         Choice("word_limit", {
             "single": 1,

@@ -259,23 +259,32 @@ class Navigation(MergeRule):
         "dredge":
             R(Key("a-tab")),
         "<modifier> <button_dictionary_500> [<nnavi500>]":
-              R(Key("%(modifier)s-%(button_dictionary_500)s") * Repeat(extra='nnavi500')),
+              R(Key("%(modifier)s-%(button_dictionary_500)s") * Repeat(extra='nnavi500'), 
+              rdescript="press modifiers plus buttons from button_dictionary_500"),
         "<modifier> <button_dictionary_10> [<nnavi10>]":
-              R(Key("%(modifier)s-%(button_dictionary_10)s") * Repeat(extra='nnavi10')),
-    
-        "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500')),
-        "<extreme_direction> [<nnavi10>]": R(Key("%(extreme_direction)s")),
+              R(Key("%(modifier)s-%(button_dictionary_10)s") * Repeat(extra='nnavi10'),
+              rdescript="press modifiers plus buttons from button_dictionary_10"),
+        "<modifier> <button_dictionary_1>":
+              R(Key("%(modifier)s-%(button_dictionary_1)s"),
+              rdescript="press modifiers plus buttons from button_dictionary_1, non-repeatable"),
+        
+        "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500'),
+            rdescript="arrow keys"),
+        "ross wally [<nnavi10>]": R(Key("end") * Repeat(extra='nnavi10')),
+        "lease wally [<nnavi10>]": R(Key("home") * Repeat(extra='nnavi10')),
+        # "<extreme_direction> [<nnavi10>]": R(Key("%(extreme_direction)s"),
+        #  rdescript="end and home"),
+
 
     }
     button_dictionary_500 = {"(tab | tabby)": "tab", "backspace": "backspace", "delete": "del", "(escape | cancel)": "escape", "(enter | shock)": "enter",
     "(left | lease)": "left", "(right | ross)": "right", "(up | sauce)": "up",
-    "(down | dunce)": "down", "page (down | dunce)": "pgdown", "page (up | sauce)": "pgup", 
-    "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six":"6", "seven": "7", "eight": "8", "nine": "9"}
-    button_dictionary_10 = {"home": "(home | lease wally)", "(end | ross wally)": "end", "insert": "insert", "zero": "0",
-    "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six":"6", "seven": "7", "eight": "8", "nine": "9"}
-    
+    "(down | dunce)": "down", "page (down | dunce)": "pgdown", "page (up | sauce)": "pgup",}
+    button_dictionary_10 = {}
     button_dictionary_10.update(caster_alphabet)
     button_dictionary_10.update(text_punc_dict)
+    button_dictionary_1 = {"home": "(home | lease wally)", "(end | ross wally)": "end", "insert": "insert", "zero": "0",
+    "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six":"6", "seven": "7", "eight": "8", "nine": "9"}
     extras = [
         IntegerRefST("nnavi10", 1, 11),
         IntegerRefST("nnavi50", 1, 50),
@@ -291,10 +300,7 @@ class Navigation(MergeRule):
             "lease": "left",
             "ross": "right",
         }),
-        Choice("extreme_direction", {
-            "lease wally": "home",
-            "ross wally": "end",
-        }),
+        Choice("button_dictionary_1", button_dictionary_1),
         Choice("button_dictionary_10", button_dictionary_10), 
         Choice("button_dictionary_500", button_dictionary_500), 
         Choice("modifier", {
@@ -302,7 +308,7 @@ class Navigation(MergeRule):
             "(shift | shin)": "s",
             "alt": "a",
             "(control shift | que)": "cs",
-            "(control alt | alt control)": "ca",
+            "control alt": "ca",
             "(shift alt | alt shift)": "sa",
             "(control alt shift | control shift alt)": "csa", # control must go first
 

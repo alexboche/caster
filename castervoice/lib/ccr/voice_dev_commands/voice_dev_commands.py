@@ -109,7 +109,7 @@ class VoiceDevCommands(MergeRule):
         "dev bring app":
             R(Text("BringApp()") + Key("left"), rdescript="CasterDev: Snippet for Bring App"),
         "dev descript":
-            R(Text(' rdescript="MyGrammar: "') + Key("left"), rdescript="CasterDev: Add the rdescript"),
+            R(Text(' rdescript=""') + Key("left"), rdescript="CasterDev: Add the rdescript"),
 
  # Snippets for emulating Dragonfly or Caster recognition.
         "dev mimic [<text>]":

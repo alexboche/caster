@@ -1,4 +1,4 @@
-from dragonfly import Function, Key, Text, Mouse, Pause, Dictation, Choice, Grammar , ContextAction
+from dragonfly import Function, Key, Text, Mouse, Pause, Dictation, Choice, Grammar , ContextAction, Repetition
 
 
 from castervoice.lib import control, settings, text_manipulation_functions
@@ -12,39 +12,6 @@ from castervoice.lib.dfplus.state.short import R
 from castervoice.lib.ccr.core.punctuation import text_punc_dict,  double_text_punc_dict
 from castervoice.lib.alphanumeric import caster_alphabet
 
-# Advertisement
-print("""Check out the new experimental text manipulation commands in castervoice\lib\ccr\core\\text_manipulation.py 
-    where you can disable this message. Enable them by saying "enable text manipulation". You may want to reduce the pause or sleep time
-    in the functions text_manipulation_copy and text_manipulation_paste in castervoice\lib\\text_manipulation_functions.py
-    These are WIP, Please give feedback and report bugs""")
-
-
-
-
-""" requires a recent version of dragonfly because of recent modification of the Function action
-    # I think dragonfly2-0.13.0
-    The wait times should be adjusted depending on the application by changing the numbers in copy_pause_time_dict
-    and paste_pause_time_dict which are called by the functions text_manipulation_copy and text_manipulation_paste 
-    in text_manipulation_functions.py. The wait times can be further adjusted by adjusting the sleep times in the 
-    functions that those functions call: lib.context.read_selected_without_altering_clipboard 
-    and lib.context.paste_string_without_altering_clipboard
-    the keypress waittime should possibly be made shorter for these commands, though note that the keypress wait time is
-    used by the aforementioned functions and lib.context.
-    When these commands are not working in a particular application sometimes the problem is that 
-    there is not enough time from when control-c is pressed until the contents of the clipboard are passed into the function
-    In that case you need to increase the pause time in that application in copy_pause_time_dict
-    
-    The functions in text_manipulation_functions.py copy text into the clipboard and then return whatever
-    you had there before back onto the clipboard. If you are using the multi clipboard (windows-x on Windows 10),
-    this might be annoying because you will have some extra junk put on the second (and sometimes third) 
-    slot on your multi clipboard. If you get the wait times exactly right, in principle
-    this problem can be avoided using the functions lib.context.read_selected_without_altering_clipboard 
-    and lib.context.paste_string_without_altering_clipboard
-    In my experience, often times the paste part doesn't add
-    any junk to the multi-clipboard although the copy (a.k.a. read) part does.
-
-"""
-
 class TextManipulation(MergeRule):
     pronunciation = "text manipulation"
 
@@ -54,9 +21,8 @@ class TextManipulation(MergeRule):
         
     mapping = {
 
-    # Todo: Find way to to better consolidate these context actions. 
-    # Todo: Put context actions for different apps based on pause time requirements
-    # Todo: Consolidate command definitions for left character versus right character; handle defaults in the functions, rather than choice objects.
+    
+    
                 
         # PROBLEM: sometimes Dragon thinks the variables are part of dictation.           
         
@@ -120,15 +86,13 @@ class TextManipulation(MergeRule):
             dict(character="phrase")), 
             rdescript="Text Manipulation: select until chosen character"),
         
-        
-
-
-        
+     
     }
     text_punc_dict.update(caster_alphabet)
     character_dict = text_punc_dict
-    
+    character_sequence = Choice("character", character_dict) 
     extras = [
+        Repetition(character_sequence, min=2, max=3, name="character_sequence_name"),
         Dictation("dict"),
         Dictation("dictation"),
         Dictation("dictation2"),

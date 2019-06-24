@@ -15,15 +15,10 @@ from castervoice.lib.alphanumeric import caster_alphabet
 class TextManipulation(MergeRule):
     pronunciation = "text manipulation"
 
-
-    
-
         
     mapping = {
 
-    
-    
-                
+              
         # PROBLEM: sometimes Dragon thinks the variables are part of dictation.           
         
         # replace text or character

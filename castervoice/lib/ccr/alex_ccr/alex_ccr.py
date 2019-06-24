@@ -17,7 +17,6 @@ _NEXUS = control.nexus()
 
 
 class AlexCcrRule(MergeRule):
-    #pronunciation = CCRMerger.CORE[5]
     
     mapping = {
         # "Alex hello": Function(navigation.paper),
@@ -35,17 +34,13 @@ class AlexCcrRule(MergeRule):
         "center [click]": Mouse("[0.5, 0.5], left"),
         # "execute": R(Key("end")+Text(".execute()"), rdescript="call execute method"),
         
-        # "squat":
-        #     R(Function(navigation.left_down, nexus=_NEXUS), rdescript="Mouse: Left Down"),
-        # "bench":
-        #     R(Function(navigation.left_up, nexus=_NEXUS), rdescript="Mouse: Left Up"),
-        # "taller": Key("a-tab"),
+        
         "Roper": Key("end, enter"),
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),
         "rocking": Key("right, comma, enter"),
         "rocker": Key("right, comma, enter, dquote:2, left"),
         # "ecker": Key("escape"),
-        "arky":Key("a-tab"),
+
 
         "lanter [<n>]": Key("home:%(n)s"),
         "ranter [<n>]": Key("end:%(n)s"),
@@ -82,7 +77,7 @@ class AlexCcrRule(MergeRule):
         # "close time <dict>": Text("%(dict)s") + Key("enter"),
         "cut all": Key("c-a, c-x"),
 
-# don't seem to be working perfectly
+
         "select down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end"),         
         "select up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end"),          
         "copper down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end, c-c"),    
@@ -92,9 +87,7 @@ class AlexCcrRule(MergeRule):
         "deleter up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end, del"),
         "deleter down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end, del"),
     
-    
-    
-        
+           
 
 
     }

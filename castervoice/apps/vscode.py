@@ -63,8 +63,8 @@ class VSCodeCcrRule(MergeRule):
                     # but I don't really understand how this works 
         "tall cursor up": R(Key("csa-pgup"), rdescript="add cursors all the way up"),
         "tall cursor down": R(Key("csa-pgdown"), rdescript="add cursors all the way down"),
-        "expand  [<n>]": R(Key("sa-right"), 
-            rdescript="highlight current word(s)") * Repeat(extra='n'),
+        "expand  [<n>]": R(Key("sa-right:%(n)s"), 
+            rdescript="highlight current word(s)"),
             
         "shrink  [<n>]": R(Key("sa-left"), 
             rdescript="shrink the previous highlighting range or unhighlight") * Repeat(extra='n'),

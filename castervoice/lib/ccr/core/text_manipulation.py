@@ -57,12 +57,13 @@ class TextManipulation(MergeRule):
                        dict(dictation="phrase")), 
                rdescript="Text Manipulation: move to chosen phrase to the left or right of the cursor"),
         "(go | move) <direction> [<before_after>] [<number_of_lines_to_search>] [<occurrence_number>] <character>":
-            R(Function(text_manipulation_functions.move_until_phrase,
-                       dict(character="phrase")),
+            R(Function(lambda direction, before_after, number_of_lines_to_search, occurrence_number, character:
+             text_manipulation_functions.move_until_phrase(direction, before_after, character, number_of_lines_to_search, occurrence_number)),
+                       
               rdescript="Text Manipulation: move to chosen character to the left of the cursor"),
 
         # select text or character
-        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <dictation>":
+        "grab <direction> [<number_of_lines_to_searpch>] [<occurrence_number>] <dictation>":
             R(Function(text_manipulation_functions.select_phrase, 
             dict(dictation="phrase")), 
                  rdescript="Text Manipulation: select chosen phrase"),

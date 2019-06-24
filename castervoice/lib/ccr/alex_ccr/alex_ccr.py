@@ -33,7 +33,10 @@ class AlexCcrRule(MergeRule):
         "salor <dict>": Text("%(dict)s"),        
         "center [click]": Mouse("[0.5, 0.5], left"),
         # "execute": R(Key("end")+Text(".execute()"), rdescript="call execute method"),
-        
+        "left area": Mouse("[0.2, 0.5]"),
+        "right area": Mouse("[0.8, 0.5]"),
+        "top area": Mouse("[0.5, 0.2]"),
+        "bottom area": Mouse("[0.5, 0.8]"),
         
         "Roper": Key("end, enter"),
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),

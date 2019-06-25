@@ -37,6 +37,7 @@ class AlexCcrRule(MergeRule):
         "right area": Mouse("[0.8, 0.5]"),
         "top area": Mouse("[0.5, 0.2]"),
         "bottom area": Mouse("[0.5, 0.8]"),
+        "space [<n>]": Key("space:%(n)s"),
         
         "Roper": Key("end, enter"),
         "hard delete [<n>]": Key("s-delete") * Repeat(extra='n'),

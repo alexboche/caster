@@ -33,7 +33,7 @@ caster_alphabet = {
         #     "Zulu"    : "z",
         "(air|arch)": "a",
         "(bat|brav)": "b",
-        "(charlie|cru""nch)": "c", 
+        "(charlie|crunch)": "c", 
         # "(dutch|drum)""": "d",
         "dutch": "d",
         "(echo|each)": "e",

@@ -39,7 +39,7 @@ caster_alphabet = {
         "(echo|each)": "e",
         "(fail|fine)": "f",
         "gust": "g",
-        "(hotel|harp)": "h",
+        "(hotel|harp | hish)": "h",
         "(itch|sit)": "i",
         "(julie|jury)": "j",
         "(kilo|kate)": "k",

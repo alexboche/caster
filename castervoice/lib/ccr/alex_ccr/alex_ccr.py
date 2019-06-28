@@ -81,6 +81,21 @@ class AlexCcrRule(MergeRule):
         # "close time <dict>": Text("%(dict)s") + Key("enter"),
         "cut all": Key("c-a, c-x"),
 
+# git
+        "git add": R(Text("git add "), rdescript=""),
+        "git commit": R(Text('git commit -m ""') + Key("left"), rdescript=""),
+        "git push": R(Text("git push "), rdescript=""),
+        "git clone": R(Text("git clone "), rdescript=""),
+        "git checkout": R(Text("git checkout "), rdescript=""),
+        "git check out": R(Text("git fetch "), rdescript=""),
+        "git branch": R(Text("git branch "), rdescript=""),
+        "git status": R(Text("git status ") + Key("enter"), rdescript=""),
+        "git diff": R(Text("git diff ") + Key("enter"), rdescript=""),
+        "git remote": R(Text("git remote ") + Key("enter"), rdescript=""),
+        "git push set upstream orgin": Text("git push --set-upstream origin "),
+        "git graph": Text("git log --oneline --all --graph "),
+        "git fetch": R(Text("git fetch ")),        
+
 
         "select down <n_off_one>": Key("home, s-down:%(n_off_one)s, s-end"),         
         "select up <n_off_one>": Key("home, s-end, s-up:%(n_off_one)s, s-end"),          

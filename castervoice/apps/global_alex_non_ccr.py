@@ -196,7 +196,7 @@ class GlobalAlexNonCcrRule(MergeRule):
         #"delete current sentence": storeLeftString + Key("cs-end, c-c/2, c-a") + Function(deleter) + Key("c-v"),
 
 
-
+        
         "reload grammars": R(Function(reloader.reload_app_grammars)), 
         "save reload": R(Key("c-s") + Function(reloader.reload_app_grammars)),
         "(satch | sosh) [<n>]": Key("alt:down, tab/20:%(n)d, alt:up"),
@@ -244,22 +244,7 @@ class GlobalAlexNonCcrRule(MergeRule):
         "caster one": Text("cd C:\Users\\alex\Desktop\caster-1") + Key("enter"),
 
 
-        # git
-        "git add": R(Text("git add "), rdescript=""),
-        "git commit": R(Text('git commit -m ""') + Key("left"), rdescript=""),
-        "git push": R(Text("git push "), rdescript=""),
-        "git clone": R(Text("git clone "), rdescript=""),
-        "git checkout": R(Text("git checkout "), rdescript=""),
-        "git check out": R(Text("git fetch "), rdescript=""),
-        "git branch": R(Text("git branch "), rdescript=""),
-        "git status": R(Text("git status ") + Key("enter"), rdescript=""),
-        "git diff": R(Text("git diff ") + Key("enter"), rdescript=""),
-        "git remote": R(Text("git remote ") + Key("enter"), rdescript=""),
-        "git push set upstream orgin": Text("git push --set-upstream origin "),
-        "git graph": Text("git log --oneline --all --graph "),
-        "git fetch": R(Text("git fetch ")),        
-
-
+        
 
 
         "vocab": Playback([(["start", "vocabulary", "editor"], 0.03)]) * Repeat(extra="n"),

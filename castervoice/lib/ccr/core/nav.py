@@ -268,12 +268,16 @@ class Navigation(MergeRule):
               R(Key("%(modifier)s-%(button_dictionary_1)s"),
               rdescript="press modifiers plus buttons from button_dictionary_1, non-repeatable"),
         
-        "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500'),
+    "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500'),
             rdescript="arrow keys"),
-        "ross wally [<nnavi10>]": R(Key("end") * Repeat(extra='nnavi10')),
-        "lease wally [<nnavi10>]": R(Key("home") * Repeat(extra='nnavi10')),
-        # "<extreme_direction> [<nnavi10>]": R(Key("%(extreme_direction)s"),
-        #  rdescript="end and home"),
+        "(lease wally | latch) [<nnavi10>]": R(Key("home:%(nnavi10)s")),
+        "(ross wally | ratch) [<nnavi10>]": R(Key("end:%(nnavi10)s")),
+        "bird [<nnavi500>]": R(Key("c-left:%(nnavi500)s")),
+        "fird [<nnavi500>]": R(Key("c-right:%(nnavi500)s")),
+        "brick [<nnavi500>]": R(Key("s-left:%(nnavi500)s")),
+        "frick [<nnavi500>]": R(Key("s-right:%(nnavi500)s")),
+        "blitch [<nnavi500>]": R(Key("cs-left:%(nnavi500)s")),
+        "flitch [<nnavi500>]": R(Key("cs-right:%(nnavi500)s")),
 
 
     }

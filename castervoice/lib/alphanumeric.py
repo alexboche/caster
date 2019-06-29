@@ -54,7 +54,7 @@ caster_alphabet = {
         "(tango|trap)": "t",
         "urge": "u",
         "(victor|vest)": "v",
-        "(whiskey|whale)": "w",
+        "(whiskey|whale|whisk)": "w",
         "(ex|plex)": "x",
         "yank": "y",
         "Zulu": "z",

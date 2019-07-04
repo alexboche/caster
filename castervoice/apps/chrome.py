@@ -150,7 +150,7 @@ class ChromeRule(MergeRule):
         "hit <numbers> <dictation>": 
             Key("cs-space/30") + Text("%(numbers)d") + Key("enter")
             + Text("%(dictation)s") + Key("enter"),
-        "hide": R(Key("cs-space/30")+Text(":-")+Key("enter"),
+        "hide hints": R(Key("cs-space/30")+Text(":-")+Key("enter"),
              rdescript="hide click by voice hints (i.e. numbers)"),
         "show hints": R(Key("cs-space/30")+Text(":+")+Key("enter"),
             rdescript="show click by voice hints (i.e. numbers)"),

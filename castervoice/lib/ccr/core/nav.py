@@ -49,11 +49,11 @@ class NavigationNon(MergeRule):
             R(Key("f9")),
         "[show] context menu":
             R(Key("s-f10")),
-        "squat":
+        "(squat | mouse down)":
             R(Function(navigation.left_down, nexus=_NEXUS)),
-        "bench":
+        "(bench | mouse up)":
             R(Function(navigation.left_up, nexus=_NEXUS)),
-        "kick":
+        "(kick | slow click)":
             R(Function(navigation.left_click, nexus=_NEXUS)),
         "kick mid":
             R(Function(navigation.middle_click, nexus=_NEXUS)),

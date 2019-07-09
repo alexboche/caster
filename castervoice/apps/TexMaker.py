@@ -25,7 +25,7 @@ class TexMakerCcrRule(MergeRule):
         "double doll": Key("dollar:4, left:2"),
         "document class": Text("\\documentclass") + Curl + Text("article") + Key("end, enter"),
         "begin": Text("\\begin") + Curl + Text("document") + Key("enter"),
-        "compile": Mouse("[401, 138], left") + Mouse("[0.4, 0.4], left"),
+        "compile": Mouse("[401, 138], left") + Mouse("[0.7, 0.7], left"),
         
     }
     extras = [

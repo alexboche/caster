@@ -99,7 +99,7 @@ class DragonRule(MergeRule):
         "scratch [<n10>]": R(Playback([(["scratch", "that"], 0.03)]), 
             rdescript="Dragon: delete dictation from previous n utterances") * Repeat(extra="n10"),
              
-        "train word": R(Mimic("train", "that") + Key("a-r/200, s"),
+        "train word": R(Mimic("train", "that") + Pause("100") + Key("a-r/200, s"),
              rdescript="Dragon: quickly train word when you have it selected in a Dragon friendly text field"),
              # Unfortunately, the above command does not seem to work in non-full text control apps
         "(add train | train from add word)": R(Key("a-a/2, enter/300, a-s"),

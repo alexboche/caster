@@ -367,8 +367,9 @@ class TestRule(MergeRule):
 
 
 
-context = utils.MultiAppContext(relevant_apps={})
-grammar = Grammar("global_alex_non_ccr", context=context)
+# context = utils.MultiAppContext(relevant_apps={})
+# grammar = Grammar("global_alex_non_ccr", context=context)
+grammar = Grammar("global_alex_non_ccr")
 # grammar = Grammar("", context=context)
 
 if settings.SETTINGS["apps"]["global_alex_non_ccr"]:

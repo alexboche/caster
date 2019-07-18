@@ -54,6 +54,7 @@ class FirefoxRule(MergeRule):
         "IRC identify":
             R(Text("/msg NickServ identify PASSWORD"),
               rdescript="IRC Chat Channel Identify"),
+        # "elephant": Key("b"),
     }
     extras = [
         Dictation("dict"),
@@ -66,6 +67,7 @@ class FirefoxRule(MergeRule):
 
 context = AppContext(executable="firefox")
 grammar = Grammar("firefox", context=context)
+# grammar = Grammar("Atom", context=context)
 
 if settings.SETTINGS["apps"]["firefox"]:
     if settings.SETTINGS["miscellaneous"]["rdp_mode"]:

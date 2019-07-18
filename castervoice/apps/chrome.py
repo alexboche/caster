@@ -7,20 +7,115 @@
 Command-module for Chrome
 
 """
-#---------------------------------------------------------------------------
 
-from dragonfly import (Grammar, Context, AppContext, Dictation, Key, Text, Repeat,
-                       Function, Choice, Mouse, Pause)
+from __future__ import print_function
+import io
+import os
+import logging
+
+from dragonfly import *
 
 from castervoice.lib import control
 from castervoice.lib import settings
 from castervoice.lib.actions import Key, Text
 from castervoice.lib.temporary import Store, Retrieve
-from castervoice.lib.context import AppContext
+from castervoice.lib.context import AppContext  
 from castervoice.lib.dfplus.additions import IntegerRefST
 from castervoice.lib.dfplus.merge import gfilter
 from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
+
+"""Code to visualize dragonfly trees written by Caspar Kreiger aka CasparK"""
+# to get started, try `print get_grammar_complexity_tree(some_grammar, threshold=5)`.
+# If you don't get any interesting output, turn up the threshold (max depth visualized) to something like 7 or 10 :)
+
+class ComplexityNode(object):
+    def __init__(self, item):
+        self.item = item
+        self.children = []
+        self.total_descendents = 1
+
+
+def build_complexity_tree(thing):
+    node = ComplexityNode(thing)
+    if isinstance(thing, Rule):
+        children = [thing.element]
+        element = thing.element
+    elif isinstance(thing, RuleRef):
+        children = [thing.rule.element]
+    else:
+        # thing is probably an Element
+        children = thing.children
+
+    for child in children:
+        child_node = build_complexity_tree(child)
+        node.children.append(child_node)
+        node.total_descendents += child_node.total_descendents
+
+    if isinstance(thing, Alternative):
+        node.children = sorted(node.children, reverse=False,
+                               key=lambda node: str(node.item))
+        node.children = sorted(node.children, reverse=True,
+                               key=lambda node: node.total_descendents)
+
+    return node
+
+
+def get_rule_complexity_tree(rule, depth_threshold=10, complexity_threshold=10):
+    def render_complexity_tree(node, current_depth):
+        pluralized_children = "children" if len(
+            node.children) != 1 else "child"
+        node_name = "  " * current_depth + \
+            "- %-50s %-6d" % (node.item, node.total_descendents)
+
+        #if current_depth >= depth_threshold:
+         #   return ""
+        #elif node.total_descendents <= complexity_threshold:
+            #return "%s (+ %3d uncomplex direct %s)" % (node_name, len(node.children), pluralized_children)
+
+        if (isinstance(node.item, Integer)
+                or isinstance(node.item, Compound) and node.total_descendents <= 2):
+            children_repr = " (+ %3d trivial direct %s)" % (
+                len(node.children), pluralized_children)
+        elif False and current_depth + 1 == depth_threshold and node.total_descendents > 1:
+            children_repr = " (+ %3d truncated direct %s)" % (
+                len(node.children), pluralized_children)
+        else:
+            children_repr = ""
+            for child in node.children:
+                child_repr = render_complexity_tree(child, current_depth + 1)
+                if len(child_repr) > 0:
+                    children_repr += "\n" + child_repr
+
+        return node_name + children_repr
+
+    try:
+        tree = build_complexity_tree(rule)
+        return render_complexity_tree(tree, 0)
+    except Exception:
+        logging.exception("failed to build complexity tree")
+        return ""
+
+
+def get_grammar_complexity_score(grammar):
+    try:
+        return sum([build_complexity_tree(r).total_descendents for r in grammar.rules if r.exported])
+    except Exception:
+        logging.exception("failed to build grammar complexity score")
+        return 0
+
+
+def get_grammar_complexity_tree(grammar, threshold=5):
+    rules_all = grammar.rules
+    rules_top = [r for r in grammar.rules if r.exported]
+    rules_imp = [r for r in grammar.rules if r.imported]
+    text = ("%s: %d rules (%d exported, %d imported):" % (
+        grammar, len(rules_all), len(rules_top), len(rules_imp),
+    ))
+    for rule in rules_top:
+        text += "\n%s" % get_rule_complexity_tree(rule, threshold)
+    return text
+
 
 
 class ChromeRule(MergeRule):
@@ -199,3 +294,42 @@ if settings.SETTINGS["apps"]["chrome"]:
         gfilter.run_on(rule)
         grammar.add_rule(rule)
         grammar.load()
+
+
+
+
+# print grammar complexity tree for Chrome grammar
+with io.open(os.path.expanduser('~/visualize_chrome'), 'wb') as f:
+    print('------------------', file=f)
+    print(get_grammar_complexity_tree(grammar), file=f)
+
+  
+# print grammar complexity tree for all non-CCR grammars 
+with io.open(os.path.expanduser('~/visualize_all_non_ccr_grammars'), 'wb') as f:
+    engine = engines.get_engine()
+    for wrapper in engine._grammar_wrappers.values():
+        print(wrapper.grammar._name)
+        print(get_grammar_complexity_tree(wrapper.grammar), file=f)
+        print('------------------', file=f)  
+        print('------------------', file=f)  
+
+# print grammar complexity tree for caster CCR grammars
+    # This part Isn't Working anymore though use do not sure exactly why
+    
+# mr = control.nexus().merger
+# grs = mr._grammars
+# with io.open(os.path.expanduser('~/debugout_caster_ccr_grammars/'), 'wb') as f:
+#     # this is giving length zero right now, so it's an empty list
+#     print(len(grs), file=f) 
+#     for g in grs:
+#           print(g._name, file=f)
+#     for g in grs:
+#           print(g._name, file=f)
+               
+#           print(get_grammar_complexity_tree(g), file=f)
+#           print('------------------', file=f)
+#     for name, rule in control.nexus().merger._app_rules.items():
+#         print(name, file=f)
+#         print(get_rule_complexity_tree(rule), file=f)   
+#         print('-------------------------', file=f)
+    

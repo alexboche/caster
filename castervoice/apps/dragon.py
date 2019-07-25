@@ -83,6 +83,7 @@ class DragonRule(MergeRule):
         "center point":
             R(Playback([(["MouseGrid"], 0.1), (["click"], 0.0)]),
               rdescript="Mouse: Center Point"),
+        # "ard": Key("c"),
         
         
         "show windows": R(Mimic("list", "all", "windows"),  

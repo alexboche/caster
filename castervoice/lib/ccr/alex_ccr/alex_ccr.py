@@ -19,10 +19,11 @@ _NEXUS = control.nexus()
 class AlexCcrRule(MergeRule):
     
     mapping = {
-        "lecksy": Key("s-end"),
-        "recksy": Key("s-home"),
-        "scrish": Key("cs-right"),
-        "scram": Key("cs-left"),
+        "lecksy [<n>]": Key("s-end:%(n)s"),
+        "recksy [<n>]": Key("s-home:%(n)s"),
+        "scrish [<n>]": Key("cs-right:%(n)s"),
+        "scram [<n>]": Key("cs-left:%(n)s"),
+        "save": Key("c-s"),
         
         # "Alex hello": Function(navigation.paper),
                 # eye X mouse

@@ -10,7 +10,7 @@ from castervoice.lib import utilities, settings
 from castervoice.lib.actions import Key
 from castervoice.lib.clipboard import Clipboard
 
-
+import copy
 
 
 def read_selected_without_altering_clipboard(same_is_okay=False):
@@ -149,6 +149,52 @@ def cap_dictation(dictation):
             output_list.append(input_list[i])
     Text(" ".join(output_list)).execute()
 
+math_replacement_dictionary = {"math gamma": r"$\gamma$",
+    "math gamma below beta": r"$\gamma_\beta$"}
+def math_replace(dictation, dictionary):
+    input_list = str(dictation).split(" ")
+    output_list = []
+    for i in range(len(input_list)):
+        if input_list[i] == "cap":
+            input_list[i+1] = input_list[i+1].title()
+        else:
+            output_list.append(input_list[i])
+    pre_math_string = " ".join(output_list)
+   
+    output_string = copy.copy(pre_math_string)
+    for k, v in sorted(dictionary.items(), key=lambda pair: len(pair[0]), reverse=True):
+        output_string = output_string.replace(k, v)
+    Text(output_string).execute()
+    # output_string = 
+
+    # print(output_string)
+    # output_string = output_string.replace("math alpha", "$\\alpha$")
+    # output_string = output_string.replace("math Alpha", "$\\Alpha$")
+    
+
+
+# def replace_alpha(dictation):
+#     input_list = str(dictation).split(" ")
+#     output_list = []
+    
+#     i=0
+#     while i <= len(input_list)-1:
+
+        
+#         if input_list[i:i+2] == ["math", "alpha"]:
+#             output_list.append("\\alpha")
+#             i = i+1
+#         elif input_list[i:i+2] == ["math", "Alpha"]:
+#             output_list.append("\\Alpha")
+#             i = i+1
+        
+#         else:
+#             output_list.append(input_list[i])
+#         i=i+1
+#         print(output_list)
+#     Text(" ".join(output_list)).execute()
+
+
 
 from dragonfly import *
 
@@ -188,6 +234,7 @@ class GlobalAlexNonCcrRule(MergeRule):
 
 
     mapping = {
+        # "<dictation>": Function(math_replace, dictionary=math_replacement_dictionary),
         "red blue": R(Text("gr\n"), rdescript="red blue"), 
         # "add <n> <m> plus five plus six": RemapArgsFunction(add, dict(n='x', m='y'),  z=5, w=6),
         "add <n> <m>": Function(lambda n,m: add(n, m, 5, 6)),

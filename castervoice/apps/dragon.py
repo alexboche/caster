@@ -8,6 +8,9 @@ from castervoice.lib.dfplus.merge.mergerule import MergeRule
 from castervoice.lib.dfplus.state.short import R
 from castervoice.lib.dfplus.merge.ccrmerger import CCRMerger
 _NEXUS = control.nexus()
+from dragonfly import *
+
+
 
 
 def fix_dragon_double(nexus):
@@ -31,6 +34,7 @@ def cap_dictation(dictation):
 # extras are common to both classes in this file
 extras_for_whole_file = [
         Dictation("text"),
+        Dictation("dictation"),
         IntegerRefST("n10", 1, 10),
         Choice("first_second_third", {
             "first": 0,
@@ -49,6 +53,7 @@ class DragonRule(MergeRule):
     pronunciation = "dragon"
 
     mapping = {
+        # "Benjamin <dictation>": Function(format_dictation, input_state=formatting_state),
         "format <text>": Function(cap_dictation, extra={"text"}),
         '(lock Dragon | deactivate)':
             R(Playback([(["go", "to", "sleep"], 0.0)]), rdescript="Dragon: Go To Sleep"),

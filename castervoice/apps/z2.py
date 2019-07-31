@@ -1,9 +1,19 @@
 from dragonfly import *
+import nsformat
+formatting_state = None
+def format_dictation(dictation, input_state):
+        formatted_output, output_state = nsformat.formatWords(str(dictation), state=input_state)
+        formatted_output = str(formatted_output)
+        Text("%(formatted_output)s").execute()
+        global formatting_state 
+        formatting_state = output_state
+
+        
 class CommandRule(MappingRule):
     mapping = {
         "splat [<n>]":Key("c-backspace:%(n)s"),
         "fly lease [<n>]": Key("c-left:%(n)s"),
-        "fly ross [<n>]": Key("c-ross:%(n)s"),
+        "fly ross [<n>]": Key("c-right:%(n)s"),
         "lease [<n>]": Key("left:%(n)s"),
         "ross [<n>]": Key("right:%(n)s"),
 
@@ -12,8 +22,10 @@ class CommandRule(MappingRule):
     defaults = {"n":1}
 command_rule = CommandRule()
 class DictationRule(MappingRule):
+    
     mapping = {
-        "<dictation>": Text("%(dictation)s "), # adding a trailing space
+        # "<dictation>": Text("%(dictation)s "), # adding a trailing space
+        "<dictation>": Function(format_dictation, input_state=formatting_state)
     }
     extras = [ Dictation("dictation") ]
 dictation_rule = DictationRule()

@@ -40,7 +40,7 @@ caster_alphabet = {
         "(fail)": "f",
         "gust": "g",
         "(hotel|harp | hish)": "h",
-        "(itch|sit)": "i",
+        "(itch|sit | ike)": "i",
         "(julie|jury | jank)": "j",
         "(kilo|kate)": "k",
         "(Lima|look)": "l",

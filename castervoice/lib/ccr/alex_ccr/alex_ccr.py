@@ -25,7 +25,8 @@ class AlexCcrRule(MergeRule):
         "scrish [<n>]": Key("cs-right:%(n)s"),
         "scram [<n>]": Key("cs-left:%(n)s"),
         "save": Key("c-s"),
-        
+        "quotes <dict>": Key("dquote:2, left") + Text("%(dict)s") + Key("right"),
+
         
         # "Alex hello": Function(navigation.paper),
                 # eye X mouse
@@ -39,6 +40,7 @@ class AlexCcrRule(MergeRule):
           "rick": Mouse("right"),
         "middle click": Mouse("middle"),
         "salor <dict>": Text("%(dict)s"),        
+        "phrase <dict>": Text("%(dict)s"),        
         "center [click]": Mouse("[0.5, 0.5], left"),
         # "execute": R(Key("end")+Text(".execute()"), rdescript="call execute method"),
         "left area": Mouse("[0.2, 0.5]"),

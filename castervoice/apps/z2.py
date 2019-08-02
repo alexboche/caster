@@ -1,11 +1,13 @@
 from dragonfly import *
 import nsformat
-formatting_state = None
+formatting_state = -1
 def format_dictation(dictation, input_state):
+        print(input_state)
         formatted_output, output_state = nsformat.formatWords(str(dictation), state=input_state)
-        formatted_output = str(formatted_output)
-        Text("%(formatted_output)s").execute()
-        global formatting_state 
+        # formatted_output = str(formatted_output)
+        formatted_output = formatted_output
+        Text(formatted_output).execute()
+        global formatting_state
         formatting_state = output_state
 
         
@@ -25,7 +27,7 @@ class DictationRule(MappingRule):
     
     mapping = {
         # "<dictation>": Text("%(dictation)s "), # adding a trailing space
-        "<dictation>": Function(format_dictation, input_state=formatting_state)
+        # "<dictation>": Function(format_dictation, input_state=formatting_state)
     }
     extras = [ Dictation("dictation") ]
 dictation_rule = DictationRule()

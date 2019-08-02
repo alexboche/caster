@@ -270,8 +270,8 @@ class Navigation(MergeRule):
         
     "<direction> [<nnavi500>]": R(Key("%(direction)s") * Repeat(extra='nnavi500'),
             rdescript="arrow keys"),
-        "(lease wally | latch) [<nnavi10>]": R(Key("home:%(nnavi10)s")),
-        "(ross wally | ratch) [<nnavi10>]": R(Key("end:%(nnavi10)s")),
+        "(lease wally | latch | lairch) [<nnavi10>]": R(Key("home:%(nnavi10)s")),
+        "(ross wally | ratch | rairch) [<nnavi10>]": R(Key("end:%(nnavi10)s")),
         "bird [<nnavi500>]": R(Key("c-left:%(nnavi500)s")),
         "firch [<nnavi500>]": R(Key("c-right:%(nnavi500)s")),
         "brick [<nnavi500>]": R(Key("s-left:%(nnavi500)s")),

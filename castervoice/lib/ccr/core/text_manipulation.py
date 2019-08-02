@@ -63,24 +63,24 @@ class TextManipulation(MergeRule):
               rdescript="Text Manipulation: move to chosen character to the left of the cursor"),
 
         # select text or character
-        "grab <direction> [<number_of_lines_to_searpch>] [<occurrence_number>] <dictation>":
-            R(Function(text_manipulation_functions.select_phrase, 
-            dict(dictation="phrase")), 
-                 rdescript="Text Manipulation: select chosen phrase"),
-        "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <character>":
-            R(Function(text_manipulation_functions.select_phrase,
-            dict(character="phrase")),
-            rdescript="Text Manipulation: select chosen character"),
+        # "grab <direction> [<number_of_lines_to_searpch>] [<occurrence_number>] <dictation>":
+        #     R(Function(text_manipulation_functions.select_phrase, 
+        #     dict(dictation="phrase")), 
+        #          rdescript="Text Manipulation: select chosen phrase"),
+        # "grab <direction> [<number_of_lines_to_search>] [<occurrence_number>] <character>":
+        #     R(Function(text_manipulation_functions.select_phrase,
+        #     dict(character="phrase")),
+        #     rdescript="Text Manipulation: select chosen character"),
         
-        # select until text or character
-        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <dictation> ":
-            R(Function(text_manipulation_functions.select_until_phrase, 
-            dict(dictation="phrase")), 
-                 rdescript="Text Manipulation: select until chosen phrase"),
-        "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <character>":
-            R(Function(text_manipulation_functions.select_until_phrase,
-            dict(character="phrase")), 
-            rdescript="Text Manipulation: select until chosen character"),
+        # # select until text or character
+        # "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <dictation> ":
+        #     R(Function(text_manipulation_functions.select_until_phrase, 
+        #     dict(dictation="phrase")), 
+        #          rdescript="Text Manipulation: select until chosen phrase"),
+        # "grab <direction> [<number_of_lines_to_search>] until [<before_after>] [<occurrence_number>] <character>":
+        #     R(Function(text_manipulation_functions.select_until_phrase,
+        #     dict(character="phrase")), 
+        #     rdescript="Text Manipulation: select until chosen character"),
         
      
     }

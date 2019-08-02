@@ -26,6 +26,7 @@ class AlexCcrRule(MergeRule):
         "scram [<n>]": Key("cs-left:%(n)s"),
         "save": Key("c-s"),
         
+        
         # "Alex hello": Function(navigation.paper),
                 # eye X mouse
         "(Eye Mouse | mousy)":

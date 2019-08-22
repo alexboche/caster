@@ -21,12 +21,6 @@ complexity_report*
 # Ignore Natlink
 /core/
 
-# Ignore User Rules and Filters
-/caster/user
-
-# Ignore Custom Sikuli Scripts
-/caster/asynch/sikuli/scripts
-
 # Ignore SonarQube
 .sonar
 sonar-project.properties
@@ -38,3 +32,10 @@ sonar-project.properties
 
 # Ignore User Data
 caster/bin/data
+
+# Ignore dist files
+dist
+castervoice.egg-info
+
+# ignore vcl (vocola) files
+*_vcl.py
